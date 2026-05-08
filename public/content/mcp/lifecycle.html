@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The MCP Lifecycle | CampusX MCP Trilogy</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#f8f7ff;--surface:#fff;--card:#fff;--border:#e8e4ff;--border2:#d4ceff;
+    --text:#1a1730;--text2:#3d3860;--muted:#7a76a0;--dim:#b8b4d8;
+    --indigo:#4f35e8;--indigo-light:#7c65f5;--indigo-pale:#f0eeff;
+    --cyan:#00b4cc;--cyan-pale:#e6faff;
+    --emerald:#10b981;--emerald-pale:#ecfdf5;
+    --amber:#f59e0b;--amber-pale:#fffbeb;
+    --rose:#f43f5e;--rose-pale:#fff1f2;
+    --violet:#8b5cf6;--violet-pale:#f5f3ff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.75;}
+
+  /* COVER */
+  .cover{background:linear-gradient(145deg,#1a0a4a 0%,#0f1a4a 35%,#0a2a3a 70%,#081e2e 100%);
+    min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;
+    padding:80px 72px;position:relative;overflow:hidden;}
+  .cover-glow{position:absolute;width:500px;height:500px;border-radius:50%;
+    background:radial-gradient(circle,rgba(79,53,232,0.25) 0%,transparent 65%);top:-150px;right:-100px;}
+  .cover-glow2{position:absolute;width:350px;height:350px;border-radius:50%;
+    background:radial-gradient(circle,rgba(0,180,204,0.15) 0%,transparent 65%);bottom:0;left:100px;}
+  .cover-ring{position:absolute;border-radius:50%;border:1px solid;}
+  .r1{width:600px;height:600px;right:-200px;top:-150px;border-color:rgba(79,53,232,0.15);}
+  .r2{width:420px;height:420px;right:-140px;top:-100px;border-color:rgba(0,180,204,0.1);}
+  .cover-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(79,53,232,0.2);
+    border:1px solid rgba(79,53,232,0.4);color:#a89aff;font-family:'IBM Plex Mono',monospace;
+    font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:7px 18px;
+    border-radius:4px;width:fit-content;margin-bottom:32px;position:relative;}
+  .cover h1{font-size:clamp(40px,5.5vw,68px);font-weight:900;line-height:1.08;
+    margin-bottom:24px;position:relative;color:#fff;letter-spacing:-1px;}
+  .cover h1 .ac{color:#6ee7f7;}
+  .cover-desc{font-size:17px;color:rgba(255,255,255,0.5);max-width:660px;margin-bottom:60px;line-height:1.8;position:relative;}
+  .cover-meta{display:flex;gap:0;border-top:1px solid rgba(255,255,255,0.1);padding-top:32px;position:relative;}
+  .cm{flex:1;padding-right:32px;border-right:1px solid rgba(255,255,255,0.07);margin-right:32px;}
+  .cm:last-child{border-right:none;margin-right:0;padding-right:0;}
+  .cm-l{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.3);margin-bottom:5px;font-family:'IBM Plex Mono',monospace;}
+  .cm-v{font-size:15px;font-weight:600;color:rgba(255,255,255,0.75);}
+
+  /* TRILOGY BAR */
+  .tbar{background:var(--indigo);padding:14px 72px;display:flex;align-items:center;gap:20px;}
+  .tbar-l{font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;}
+  .tdots{display:flex;gap:8px;}
+  .td{width:32px;height:6px;border-radius:3px;}
+  .td.done{background:rgba(255,255,255,0.35);}
+  .td.active{background:#6ee7f7;}
+  .td.next{background:rgba(255,255,255,0.15);}
+
+  /* TOC */
+  .toc-sec{padding:48px 72px;background:var(--surface);border-bottom:1px solid var(--border);}
+  .toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border2);border-radius:14px;overflow:hidden;}
+  .toc-head{grid-column:1/-1;background:var(--indigo);padding:16px 24px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2px;color:rgba(255,255,255,0.9);font-weight:600;}
+  .te{display:flex;align-items:center;gap:14px;padding:12px 24px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);font-size:13.5px;color:var(--text2);}
+  .te:nth-child(even){border-right:none;}
+  .te:last-child,.te:nth-last-child(2){border-bottom:none;}
+  .tn{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--indigo);font-weight:600;min-width:28px;}
+
+  /* SECTIONS */
+  .sec{padding:64px 72px;border-bottom:1px solid var(--border);}
+  .sec.alt{background:var(--surface);}
+  .eye{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--indigo);margin-bottom:12px;}
+  .ed{width:5px;height:5px;background:var(--indigo);border-radius:50%;}
+  h2.st{font-size:34px;font-weight:800;color:var(--text);margin-bottom:16px;line-height:1.2;letter-spacing:-0.5px;}
+  h3.sh{font-size:20px;font-weight:700;color:var(--text);margin:32px 0 12px;}
+  p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
+
+  /* NOTES */
+  .note{border-radius:10px;padding:16px 20px;margin:22px 0;font-size:14.5px;line-height:1.75;border-left:3px solid;}
+  .ni{background:var(--indigo-pale);border-color:var(--indigo);color:#2a1a8a;}
+  .nc{background:var(--cyan-pale);border-color:var(--cyan);color:#004a57;}
+  .ne{background:var(--emerald-pale);border-color:var(--emerald);color:#065f46;}
+  .na{background:var(--amber-pale);border-color:var(--amber);color:#78350f;}
+  .nr{background:var(--rose-pale);border-color:var(--rose);color:#881337;}
+  .nv{background:var(--violet-pale);border-color:var(--violet);color:#4c1d95;}
+  .note strong{font-weight:700;}
+
+  /* PHASE BANNER */
+  .pb{border-radius:14px;overflow:hidden;margin:28px 0;border:1px solid var(--border2);}
+  .ph{padding:20px 26px;display:flex;align-items:center;gap:14px;color:#fff;font-weight:700;font-size:18px;}
+  .pn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;}
+  .ph-i{background:linear-gradient(135deg,#4f35e8,#7c65f5);}
+  .ph-o{background:linear-gradient(135deg,#00b4cc,#0dd8f0);}
+  .ph-s{background:linear-gradient(135deg,#10b981,#34d399);}
+  .pb-body{background:var(--surface);padding:22px 26px;}
+
+  /* STEPS */
+  .sl{display:flex;flex-direction:column;gap:0;}
+  .si{display:grid;grid-template-columns:48px 1fr;border-bottom:1px solid var(--border);}
+  .si:last-child{border-bottom:none;}
+  .sn{display:flex;align-items:flex-start;justify-content:center;padding-top:18px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--indigo);}
+  .sb{padding:16px 4px 16px 0;}
+  .sb h5{font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px;}
+  .sb p{font-size:13.5px;color:var(--muted);margin:0;line-height:1.65;}
+
+  /* CARDS */
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:24px 0;}
+  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:24px 0;}
+  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;box-shadow:0 1px 6px rgba(79,53,232,0.04);}
+  .ci-t{border-top:2.5px solid var(--indigo);}
+  .cc-t{border-top:2.5px solid var(--cyan);}
+  .ce-t{border-top:2.5px solid var(--emerald);}
+  .ca-t{border-top:2.5px solid var(--amber);}
+  .cr-t{border-top:2.5px solid var(--rose);}
+  .cv-t{border-top:2.5px solid var(--violet);}
+  .card h4{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;}
+  .card p{font-size:13.5px;color:var(--muted);line-height:1.65;margin:0;}
+  .ci{font-size:26px;margin-bottom:10px;}
+
+  /* DIAGRAM */
+  .dbox{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:28px;margin:28px 0;box-shadow:0 2px 16px rgba(79,53,232,0.05);}
+  .dbox-label{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--dim);margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+
+  /* CODE */
+  .code{background:#12102a;border-radius:10px;padding:20px 24px;margin:18px 0;overflow-x:auto;border:1px solid rgba(79,53,232,0.2);}
+  .code pre{font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.85;color:#e0deff;}
+  .kw{color:#c792ea;}.str{color:#a5e279;}.num{color:#f78c6c;}.cm{color:#4a4870;}.key2{color:#82aaff;}.val{color:#ffcb6b;}.ec{color:#f07178;}
+
+  /* TABLES */
+  .cap-t{width:100%;border-collapse:collapse;margin:24px 0;font-size:14px;}
+  .cap-t thead th{background:var(--indigo);color:#fff;padding:12px 16px;text-align:left;font-weight:600;font-size:13px;}
+  .cap-t tbody tr{border-bottom:1px solid var(--border);}
+  .cap-t tbody tr:hover{background:var(--indigo-pale);}
+  .cap-t td{padding:12px 16px;color:var(--text2);vertical-align:top;line-height:1.6;}
+  .cap-t td:first-child{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--indigo);font-weight:600;white-space:nowrap;}
+  .cap-t td:nth-child(2){font-weight:600;color:var(--text);}
+
+  .err-t{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;}
+  .err-t thead th{background:#12102a;color:rgba(255,255,255,0.8);padding:11px 14px;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:12px;}
+  .err-t tbody tr{border-bottom:1px solid var(--border);}
+  .err-t td{padding:11px 14px;color:var(--text2);}
+  .err-t td:first-child{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#f07178;font-weight:600;white-space:nowrap;}
+  .err-t td:nth-child(2){font-weight:600;color:var(--text);}
+
+  /* COMPARE */
+  .cmp{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-radius:14px;overflow:hidden;margin:24px 0;}
+  .cc{background:var(--surface);padding:26px;}
+  .cc h4{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+  .cc.ci h4{color:var(--indigo);}
+  .cc.chttp h4{color:var(--cyan);}
+  .crow{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--muted);}
+  .crow:last-child{border-bottom:none;}
+
+  /* SPECIAL CARD */
+  .sc{border:1px solid var(--border2);border-radius:14px;overflow:hidden;margin:24px 0;}
+  .sc-h{padding:18px 24px;display:flex;align-items:center;gap:12px;font-weight:700;font-size:16px;color:#fff;}
+  .sc-b{padding:22px 24px;background:var(--surface);}
+
+  footer{background:#12102a;color:rgba(255,255,255,0.35);text-align:center;padding:36px 72px;font-size:13px;}
+  footer span{color:#a89aff;}
+  svg text{font-family:'Inter',sans-serif;}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-glow"></div>
+  <div class="cover-glow2"></div>
+  <div class="cover-ring r1"></div>
+  <div class="cover-ring r2"></div>
+  <div class="cover-badge">▶ CampusX · MCP Trilogy · Video 2.2 of 3</div>
+  <h1>The MCP<br><span class="ac">Lifecycle</span></h1>
+  <p class="cover-desc">A complete study guide covering how an MCP session works from start to finish — Initialization handshake, Capability discovery, Normal Operation, and Shutdown — plus special cases: Pings, Error Handling, Timeouts, and Progress Notifications.</p>
+  <div class="cover-meta">
+    <div class="cm"><div class="cm-l">Presenter</div><div class="cm-v">Nitish · CampusX</div></div>
+    <div class="cm"><div class="cm-l">Topic</div><div class="cm-v">MCP Session Lifecycle</div></div>
+    <div class="cm"><div class="cm-l">3 Main Phases</div><div class="cm-v">Init → Operation → Shutdown</div></div>
+    <div class="cm"><div class="cm-l">Live Demo</div><div class="cm-v">Claude Desktop + Filesystem MCP</div></div>
+  </div>
+</div>
+
+<!-- TRILOGY BAR -->
+<div class="tbar">
+  <span class="tbar-l">MCP Trilogy</span>
+  <div class="tdots">
+    <div class="td done"></div>
+    <div class="td done"></div>
+    <div class="td active"></div>
+    <div class="td next"></div>
+  </div>
+  <span style="color:rgba(255,255,255,0.4);font-size:12px;">Why → Architecture → <strong style="color:#6ee7f7">Lifecycle</strong> → Advanced</span>
+</div>
+
+<!-- TOC -->
+<div class="toc-sec">
+  <div class="toc-grid">
+    <div class="toc-head">// Table of Contents</div>
+    <div class="te"><span class="tn">01</span> What is the MCP Lifecycle? What is a Session?</div>
+    <div class="te"><span class="tn">02</span> The Three Phases Overview</div>
+    <div class="te"><span class="tn">03</span> Phase 1 — Initialization (3 Steps + JSON-RPC messages)</div>
+    <div class="te"><span class="tn">04</span> Flowchart — Full Initialization Handshake</div>
+    <div class="te"><span class="tn">05</span> Two Critical Initialization Rules</div>
+    <div class="te"><span class="tn">06</span> Version Negotiation (with decision flowchart)</div>
+    <div class="te"><span class="tn">07</span> Capability Negotiation — Client Capabilities (3 types)</div>
+    <div class="te"><span class="tn">08</span> Capability Negotiation — Server Capabilities (4 types)</div>
+    <div class="te"><span class="tn">09</span> Phase 2 — Operation (Discovery + Tool Calls)</div>
+    <div class="te"><span class="tn">10</span> Flowchart — Complete MCP Lifecycle (all 3 phases)</div>
+    <div class="te"><span class="tn">11</span> Phase 3 — Shutdown (stdio & HTTP)</div>
+    <div class="te"><span class="tn">12</span> Special Case: Pings (Heartbeat Checks)</div>
+    <div class="te"><span class="tn">13</span> Special Case: Error Handling & Error Codes</div>
+    <div class="te"><span class="tn">14</span> Special Case: Timeouts & Cancellation</div>
+    <div class="te"><span class="tn">15</span> Special Case: Progress Notifications</div>
+    <div class="te"><span class="tn">16</span> Complete Message Exchange Reference</div>
+  </div>
+</div>
+
+<!-- SEC 1 -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 01</div>
+  <h2 class="st">What is the MCP Lifecycle?</h2>
+  <div class="note ni">
+    <strong>Definition:</strong> The MCP Lifecycle describes the complete sequence of steps that govern how a Host and a Server <em>establish, use, and end</em> a connection during a session. It is the rulebook that the entire MCP architecture follows during runtime.
+  </div>
+  <h3 class="sh">What is a Session?</h3>
+  <p class="bd">A <strong>session</strong> is one continuous, uninterrupted connection between a client and a server — from the moment the client connects to the moment the connection is terminated.</p>
+  <div class="g2">
+    <div class="card ci-t">
+      <div class="ci">🖥️</div>
+      <h4>Example: Claude Desktop + GitHub Server</h4>
+      <p>When you start Claude Desktop, it automatically connects to your configured GitHub MCP server behind the scenes. The connection persists until you close Claude Desktop. That entire duration — from launch to close — is one session.</p>
+    </div>
+    <div class="card cc-t">
+      <div class="ci">📋</div>
+      <h4>Why Does the Lifecycle Matter?</h4>
+      <p>The lifecycle defines the <em>order</em> in which things must happen. Do them in the wrong order and the system crashes. This video explains exactly what happens step by step in every session — knowledge essential for building your own MCP servers and clients.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 2 -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 02</div>
+  <h2 class="st">The Three Phases Overview</h2>
+  <div class="g3">
+    <div class="card ci-t" style="text-align:center;">
+      <div style="font-size:36px;margin-bottom:12px;">🤝</div>
+      <h4 style="color:var(--indigo);">Phase 1 — Initialization</h4>
+      <p>Client and server meet for the first time. They exchange capabilities, negotiate protocol versions, and confirm the connection is ready. Like a handshake before starting work.</p>
+    </div>
+    <div class="card cc-t" style="text-align:center;">
+      <div style="font-size:36px;margin-bottom:12px;">⚡</div>
+      <h4 style="color:var(--cyan);">Phase 2 — Operation</h4>
+      <p>The main working phase. Client discovers exact tools/resources, then sends task requests. Server executes and responds. All the actual work happens here.</p>
+    </div>
+    <div class="card ce-t" style="text-align:center;">
+      <div style="font-size:36px;margin-bottom:12px;">🔌</div>
+      <h4 style="color:var(--emerald);">Phase 3 — Shutdown</h4>
+      <p>The session is deliberately terminated. Typically initiated by the client. No JSON-RPC messages are exchanged — the transport layer handles it entirely.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 3 — INITIALIZATION -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 03</div>
+  <div class="pb">
+    <div class="ph ph-i"><div class="pn">1</div>Phase 1 — Initialization</div>
+    <div class="pb-body">
+      <p class="bd">The MCP spec explicitly states: <em>"The initialization phase MUST be the first interaction between client and server."</em> Two goals: (1) protocol version compatibility check, (2) capabilities exchange.</p>
+      <h3 class="sh">The 3 Steps of Initialization</h3>
+      <div class="sl">
+        <div class="si"><div class="sn">01</div><div class="sb">
+          <h5>Client → Server: "initialize" request</h5>
+          <p>Client fires a JSON-RPC request with method "initialize". Includes: (a) its MCP protocol version, (b) its capabilities (roots, sampling, elicitation), (c) its implementation info (name and version).</p>
+        </div></div>
+        <div class="si"><div class="sn">02</div><div class="sb">
+          <h5>Server → Client: initialize response</h5>
+          <p>Server replies with same three pieces from its side: (a) its MCP protocol version, (b) what it offers (tools, resources, prompts, logging), (c) its implementation info (server name and version).</p>
+        </div></div>
+        <div class="si"><div class="sn">03</div><div class="sb">
+          <h5>Client → Server: "initialized" notification — session confirmed</h5>
+          <p>Client sends a notification (no ID — fire and forget) called "notifications/initialized". No reply needed. Once server receives this, the session is LIVE and normal operations begin.</p>
+        </div></div>
+      </div>
+      <h3 class="sh">Actual JSON-RPC Messages (from Nitish's live demo)</h3>
+      <div class="g2">
+        <div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:6px;">→ STEP 1: Client initialize request</p>
+          <div class="code"><pre>{
+  <span class="key2">"jsonrpc"</span>: <span class="str">"2.0"</span>, <span class="key2">"id"</span>: <span class="num">0</span>,
+  <span class="key2">"method"</span>: <span class="str">"initialize"</span>,
+  <span class="key2">"params"</span>: {
+    <span class="key2">"protocolVersion"</span>: <span class="str">"2024-11-05"</span>,
+    <span class="key2">"capabilities"</span>: {
+      <span class="key2">"roots"</span>: { <span class="key2">"listChanged"</span>: <span class="kw">true</span> },
+      <span class="key2">"sampling"</span>: {}
+    },
+    <span class="key2">"clientInfo"</span>: {
+      <span class="key2">"name"</span>: <span class="str">"Claude AI"</span>,
+      <span class="key2">"version"</span>: <span class="str">"0.7.5"</span>
+    }
+  }
+}</pre></div>
+        </div>
+        <div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:6px;">← STEP 2: Server response</p>
+          <div class="code"><pre>{
+  <span class="key2">"jsonrpc"</span>: <span class="str">"2.0"</span>, <span class="key2">"id"</span>: <span class="num">0</span>,
+  <span class="key2">"result"</span>: {
+    <span class="key2">"protocolVersion"</span>: <span class="str">"2024-10-07"</span>,
+    <span class="key2">"capabilities"</span>: {
+      <span class="key2">"tools"</span>: { <span class="key2">"listChanged"</span>: <span class="kw">true</span> }
+    },
+    <span class="key2">"serverInfo"</span>: {
+      <span class="key2">"name"</span>: <span class="str">"Secure Filesystem Server"</span>,
+      <span class="key2">"version"</span>: <span class="str">"2.0.0"</span>
+    }
+  }
+}</pre></div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:6px;">→ STEP 3: Initialized notification (no id — no reply needed)</p>
+      <div class="code"><pre>{
+  <span class="key2">"jsonrpc"</span>: <span class="str">"2.0"</span>,
+  <span class="cm">// No "id" — this is a notification. Server does NOT reply.</span>
+  <span class="key2">"method"</span>: <span class="str">"notifications/initialized"</span>
+}
+<span class="cm">// Server receives this → session is LIVE → normal operations can begin</span></pre></div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 4 — INIT FLOWCHART -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 04</div>
+  <h2 class="st">Flowchart — The Full Initialization Handshake</h2>
+  <div class="dbox">
+    <div class="dbox-label">// Flowchart: Initialization — 3 steps with version check decision gate</div>
+    <svg width="100%" viewBox="0 0 680 580" role="img">
+      <title>Initialization flowchart</title>
+      <defs>
+        <marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <!-- CLIENT column -->
+      <rect x="16" y="16" width="190" height="548" rx="12" fill="rgba(79,53,232,0.04)" stroke="rgba(79,53,232,0.2)" stroke-width="1.5" stroke-dasharray="5 3"/>
+      <text x="111" y="42" text-anchor="middle" fill="#4f35e8" font-size="12" font-weight="700">MCP CLIENT</text>
+      <!-- SERVER column -->
+      <rect x="474" y="16" width="190" height="548" rx="12" fill="rgba(0,180,204,0.04)" stroke="rgba(0,180,204,0.2)" stroke-width="1.5" stroke-dasharray="5 3"/>
+      <text x="569" y="42" text-anchor="middle" fill="#00b4cc" font-size="12" font-weight="700">MCP SERVER</text>
+
+      <!-- Step 1 -->
+      <text x="340" y="80" text-anchor="middle" fill="#4f35e8" font-size="11" font-weight="700" font-family="IBM Plex Mono,monospace">STEP 1 — initialize REQUEST</text>
+      <rect x="28" y="90" width="166" height="72" rx="8" fill="rgba(79,53,232,0.1)" stroke="#4f35e8" stroke-width="1.5"/>
+      <text x="111" y="112" text-anchor="middle" fill="#1a1730" font-size="11" font-weight="700">Client sends</text>
+      <text x="111" y="128" text-anchor="middle" fill="rgba(79,53,232,0.7)" font-size="10">• protocolVersion</text>
+      <text x="111" y="143" text-anchor="middle" fill="rgba(79,53,232,0.7)" font-size="10">• capabilities (roots, sampling)</text>
+      <text x="111" y="156" text-anchor="middle" fill="rgba(79,53,232,0.7)" font-size="10">• clientInfo (name, version)</text>
+      <line x1="194" y1="126" x2="474" y2="126" stroke="#4f35e8" stroke-width="2" marker-end="url(#a1)"/>
+      <rect x="220" y="112" width="230" height="24" rx="4" fill="#fff" stroke="rgba(79,53,232,0.2)" stroke-width="1"/>
+      <text x="335" y="129" text-anchor="middle" fill="#4f35e8" font-size="10" font-family="IBM Plex Mono,monospace">{ method:"initialize", id:0 }</text>
+
+      <!-- Step 2 -->
+      <text x="340" y="198" text-anchor="middle" fill="#00b4cc" font-size="11" font-weight="700" font-family="IBM Plex Mono,monospace">STEP 2 — SERVER RESPONSE</text>
+      <rect x="486" y="208" width="166" height="72" rx="8" fill="rgba(0,180,204,0.1)" stroke="#00b4cc" stroke-width="1.5"/>
+      <text x="569" y="230" text-anchor="middle" fill="#1a1730" font-size="11" font-weight="700">Server responds</text>
+      <text x="569" y="246" text-anchor="middle" fill="rgba(0,180,204,0.7)" font-size="10">• its protocolVersion</text>
+      <text x="569" y="261" text-anchor="middle" fill="rgba(0,180,204,0.7)" font-size="10">• capabilities (tools, resources…)</text>
+      <text x="569" y="276" text-anchor="middle" fill="rgba(0,180,204,0.7)" font-size="10">• serverInfo (name, version)</text>
+      <line x1="486" y1="244" x2="206" y2="244" stroke="#00b4cc" stroke-width="2" marker-end="url(#a1)"/>
+      <rect x="220" y="230" width="242" height="24" rx="4" fill="#fff" stroke="rgba(0,180,204,0.2)" stroke-width="1"/>
+      <text x="341" y="247" text-anchor="middle" fill="#00b4cc" font-size="10" font-family="IBM Plex Mono,monospace">{ result:{capabilities…}, id:0 }</text>
+
+      <!-- Version check diamond -->
+      <polygon points="340,300 424,336 340,372 256,336" fill="rgba(245,158,11,0.12)" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="340" y="328" text-anchor="middle" fill="#78350f" font-size="11" font-weight="700">Versions</text>
+      <text x="340" y="346" text-anchor="middle" fill="#78350f" font-size="11" font-weight="700">compatible?</text>
+      <!-- YES -->
+      <text x="222" y="330" fill="#10b981" font-size="12" font-weight="700">YES ↓</text>
+      <line x1="340" y1="372" x2="340" y2="398" stroke="#10b981" stroke-width="2" marker-end="url(#a1)"/>
+      <!-- NO -->
+      <line x1="424" y1="336" x2="530" y2="336" stroke="#f43f5e" stroke-width="1.5" marker-end="url(#a1)"/>
+      <text x="462" y="328" fill="#f43f5e" font-size="11">NO →</text>
+      <rect x="530" y="318" width="124" height="38" rx="6" fill="rgba(244,63,94,0.1)" stroke="#f43f5e" stroke-width="1"/>
+      <text x="592" y="342" text-anchor="middle" fill="#881337" font-size="11" font-weight="700">DISCONNECT</text>
+
+      <!-- Step 3 -->
+      <text x="340" y="420" text-anchor="middle" fill="#10b981" font-size="11" font-weight="700" font-family="IBM Plex Mono,monospace">STEP 3 — "initialized" NOTIFICATION</text>
+      <rect x="28" y="430" width="166" height="72" rx="8" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1.5"/>
+      <text x="111" y="452" text-anchor="middle" fill="#1a1730" font-size="11" font-weight="700">Client sends notification</text>
+      <text x="111" y="468" text-anchor="middle" fill="rgba(16,185,129,0.7)" font-size="10">No ID (fire-and-forget)</text>
+      <text x="111" y="484" text-anchor="middle" fill="rgba(16,185,129,0.7)" font-size="10">No response expected</text>
+      <text x="111" y="499" text-anchor="middle" fill="#10b981" font-size="10" font-weight="700">✓ Session is now LIVE</text>
+      <line x1="194" y1="466" x2="474" y2="466" stroke="#10b981" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#a1)"/>
+      <rect x="220" y="452" width="230" height="24" rx="4" fill="#fff" stroke="rgba(16,185,129,0.2)" stroke-width="1"/>
+      <text x="335" y="469" text-anchor="middle" fill="#10b981" font-size="10" font-family="IBM Plex Mono,monospace">{ method:"notifications/initialized" }</text>
+      <rect x="486" y="444" width="166" height="44" rx="8" fill="rgba(16,185,129,0.08)" stroke="rgba(16,185,129,0.3)" stroke-width="1"/>
+      <text x="569" y="462" text-anchor="middle" fill="#065f46" font-size="11" font-weight="700">Server is ready</text>
+      <text x="569" y="478" text-anchor="middle" fill="rgba(6,95,70,0.7)" font-size="10">Can serve all requests</text>
+
+      <!-- Bottom -->
+      <text x="340" y="556" text-anchor="middle" fill="rgba(79,53,232,0.5)" font-size="11" font-family="IBM Plex Mono,monospace">→ Operation Phase begins automatically</text>
+    </svg>
+  </div>
+</div>
+
+<!-- SEC 5 — RULES -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 05</div>
+  <h2 class="st">Two Critical Initialization Rules</h2>
+  <div class="g2">
+    <div class="card cr-t">
+      <div style="font-size:28px;margin-bottom:10px;">🚫</div>
+      <h4>Rule 1 — Client Side</h4>
+      <p><strong>Client MUST NOT send any requests (other than pings) before the server has responded to the initialize request.</strong><br><br>No tool calls, no lists — nothing until Step 2 completes. Only ping is the exception.</p>
+    </div>
+    <div class="card cr-t">
+      <div style="font-size:28px;margin-bottom:10px;">🚫</div>
+      <h4>Rule 2 — Server Side</h4>
+      <p><strong>Server MUST NOT serve any requests (other than pings and logging) before receiving the "initialized" notification.</strong><br><br>Server stays silent until Step 3 is confirmed. Can send pings and log messages only.</p>
+    </div>
+  </div>
+  <div class="note ne"><strong>Summary:</strong> Until all 3 initialization steps complete, both parties are restricted to pings (and logging for server only). This protects system integrity — processing requests mid-handshake risks crashes and inconsistent state.</div>
+</div>
+
+<!-- SEC 6 — VERSION NEGOTIATION -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 06</div>
+  <h2 class="st">Version Negotiation</h2>
+  <p class="bd">MCP continuously evolves — different versions exist. During initialization, both parties share their protocol version. When they differ, the client checks compatibility.</p>
+  <div class="dbox">
+    <div class="dbox-label">// Version negotiation decision flowchart</div>
+    <svg width="100%" viewBox="0 0 680 280" role="img">
+      <title>Version negotiation</title>
+      <defs>
+        <marker id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <!-- Client box -->
+      <rect x="16" y="36" width="170" height="54" rx="8" fill="rgba(79,53,232,0.1)" stroke="#4f35e8" stroke-width="1.5"/>
+      <text x="101" y="60" text-anchor="middle" fill="#1a1730" font-size="12" font-weight="700">Client</text>
+      <text x="101" y="78" text-anchor="middle" fill="rgba(79,53,232,0.7)" font-size="11">sends: "2024-11-05"</text>
+      <line x1="186" y1="63" x2="244" y2="63" stroke="#4f35e8" stroke-width="1.5" marker-end="url(#a2)"/>
+      <!-- Server box -->
+      <rect x="494" y="36" width="170" height="54" rx="8" fill="rgba(0,180,204,0.1)" stroke="#00b4cc" stroke-width="1.5"/>
+      <text x="579" y="60" text-anchor="middle" fill="#1a1730" font-size="12" font-weight="700">Server</text>
+      <text x="579" y="78" text-anchor="middle" fill="rgba(0,180,204,0.7)" font-size="11">responds: "2024-10-07"</text>
+      <line x1="494" y1="63" x2="436" y2="63" stroke="#00b4cc" stroke-width="1.5" marker-end="url(#a2)"/>
+      <!-- Decision diamond -->
+      <polygon points="340,92 436,130 340,168 244,130" fill="rgba(245,158,11,0.12)" stroke="#f59e0b" stroke-width="2"/>
+      <text x="340" y="122" text-anchor="middle" fill="#78350f" font-size="12" font-weight="700">Server version in</text>
+      <text x="340" y="140" text-anchor="middle" fill="#78350f" font-size="12" font-weight="700">Client's supported list?</text>
+      <!-- YES -->
+      <line x1="244" y1="130" x2="140" y2="196" stroke="#10b981" stroke-width="2" marker-end="url(#a2)"/>
+      <text x="185" y="172" fill="#10b981" font-size="12" font-weight="700">YES</text>
+      <rect x="30" y="196" width="220" height="60" rx="10" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1.5"/>
+      <text x="140" y="220" text-anchor="middle" fill="#065f46" font-size="12" font-weight="700">✓ Send "initialized"</text>
+      <text x="140" y="240" text-anchor="middle" fill="#065f46" font-size="12" font-weight="700">Session established!</text>
+      <!-- NO -->
+      <line x1="436" y1="130" x2="530" y2="196" stroke="#f43f5e" stroke-width="2" marker-end="url(#a2)"/>
+      <text x="494" y="172" fill="#f43f5e" font-size="12" font-weight="700">NO</text>
+      <rect x="420" y="196" width="244" height="60" rx="10" fill="rgba(244,63,94,0.1)" stroke="#f43f5e" stroke-width="1.5"/>
+      <text x="542" y="220" text-anchor="middle" fill="#881337" font-size="12" font-weight="700">✗ Client disconnects</text>
+      <text x="542" y="240" text-anchor="middle" fill="rgba(136,19,55,0.7)" font-size="11">No further communication</text>
+    </svg>
+  </div>
+  <div class="note na"><strong>Real observation:</strong> Claude Desktop sent version "2024-11-05" and the Filesystem server responded "2024-10-07". Different versions — but Claude supports "2024-10-07" in its compatibility list, so the session proceeded. Version negotiation doesn't require exact match, just compatibility.</div>
+</div>
+
+<!-- SEC 7 — CLIENT CAPABILITIES -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 07</div>
+  <h2 class="st">Capability Negotiation — What Clients Offer</h2>
+  <p class="bd">The client declares what it can offer to the server. Three main client capabilities:</p>
+  <table class="cap-t">
+    <thead><tr><th>Capability</th><th>Name</th><th>What it Means</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>roots</td><td>Directory Access</td>
+        <td>Client grants server access to its base directory structure. Server can work with files in those folders.</td>
+        <td>Cursor IDE grants its project folder to a Filesystem server so the server can create/edit files in the project.</td>
+      </tr>
+      <tr>
+        <td>sampling</td><td>AI Sampling</td>
+        <td>If the server needs AI inference, it can ask the client to run it using the client's own LLM. Server delegates AI tasks back to the client.</td>
+        <td>Server asked to summarize 1000 docs. Instead of its own AI, it asks client: "Run your LLM on these docs and give me summaries."</td>
+      </tr>
+      <tr>
+        <td>elicitation</td><td>Incomplete Info Request</td>
+        <td>Server can ask the client for missing information it needs to complete a task mid-session.</td>
+        <td>Client asks server to fetch GitHub repos but forgot the API key. Server replies: "I also need your API key to connect."</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="note ni"><strong>Sub-capabilities:</strong> Capabilities have sub-capabilities too. <code>roots</code> has <code>listChanged</code> — when true, the server is notified if the client's root list changes. <code>tools</code> has <code>listChanged</code> to notify when tools are added/removed during the session.</div>
+</div>
+
+<!-- SEC 8 — SERVER CAPABILITIES -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 08</div>
+  <h2 class="st">Capability Negotiation — What Servers Offer</h2>
+  <div class="g4">
+    <div class="card ci-t">
+      <div class="ci">🔧</div>
+      <h4>tools</h4>
+      <p>Executable actions (functions) the client can call. Each tool has a name, description, and input schema. Example: create_issue, read_file.</p>
+    </div>
+    <div class="card cc-t">
+      <div class="ci">📄</div>
+      <h4>resources</h4>
+      <p>Static documents/data sources the client can read. Non-dynamic: README files, database schemas, config documents.</p>
+    </div>
+    <div class="card ce-t">
+      <div class="ci">📝</div>
+      <h4>prompts</h4>
+      <p>Pre-defined prompt templates that guide the AI on how to use the server correctly for specialised workflows.</p>
+    </div>
+    <div class="card ca-t">
+      <div class="ci">📋</div>
+      <h4>logging</h4>
+      <p>Server can emit structured log messages to the client. During long tasks, server sends progress logs so the user can track what's happening.</p>
+    </div>
+  </div>
+  <div class="note nc"><strong>Note:</strong> Announcing a capability is just step one — it tells the client WHAT TYPES of capabilities exist. The exact list of specific tools/resources/prompts is discovered in the next phase (Operation — Capability Discovery).</div>
+</div>
+
+<!-- SEC 9 — OPERATION -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 09</div>
+  <div class="pb">
+    <div class="ph ph-o"><div class="pn">2</div>Phase 2 — Operation</div>
+    <div class="pb-body">
+      <p class="bd">The main working phase. Two rules: (1) Respect the negotiated protocol version in all messages. (2) Only use capabilities that were successfully negotiated during initialization.</p>
+      <h3 class="sh">Part A: Capability Discovery (Automatic)</h3>
+      <p class="bd">Immediately after initialization, the client automatically sends batch requests to discover exact tools/resources/prompts available:</p>
+      <div class="code"><pre><span class="cm">// Three discovery requests sent automatically as a batch</span>
+[
+  { <span class="key2">"jsonrpc"</span>:<span class="str">"2.0"</span>, <span class="key2">"id"</span>:<span class="num">1</span>, <span class="key2">"method"</span>:<span class="str">"tools/list"</span> },
+  { <span class="key2">"jsonrpc"</span>:<span class="str">"2.0"</span>, <span class="key2">"id"</span>:<span class="num">2</span>, <span class="key2">"method"</span>:<span class="str">"prompts/list"</span> },
+  { <span class="key2">"jsonrpc"</span>:<span class="str">"2.0"</span>, <span class="key2">"id"</span>:<span class="num">3</span>, <span class="key2">"method"</span>:<span class="str">"resources/list"</span> }
+]
+<span class="cm">// Filesystem server responds with full tool list for id:1
+// Returns "Method not found" errors for id:2 and id:3 (server has no prompts/resources)
+// Host stores tool list → LLM uses it to route user queries to right tools</span></pre></div>
+
+      <h3 class="sh">Part B: Tool Calls (User-Driven)</h3>
+      <p class="bd">Once the client has the full tools list, for every user query the LLM identifies the needed tool and the client calls it:</p>
+      <div class="code"><pre><span class="cm">// User: "What's written in hello.py on my Desktop?"
+// LLM identifies: use read_file tool</span>
+{ <span class="key2">"jsonrpc"</span>:<span class="str">"2.0"</span>, <span class="key2">"id"</span>:<span class="num">5</span>, <span class="key2">"method"</span>:<span class="str">"tools/call"</span>,
+  <span class="key2">"params"</span>: { <span class="key2">"name"</span>:<span class="str">"read_file"</span>, <span class="key2">"arguments"</span>: { <span class="key2">"path"</span>:<span class="str">"/Desktop/hello.py"</span> } } }
+
+<span class="cm">// Server reads the file and responds:</span>
+{ <span class="key2">"jsonrpc"</span>:<span class="str">"2.0"</span>, <span class="key2">"id"</span>:<span class="num">5</span>, <span class="key2">"result"</span>: {
+    <span class="key2">"content"</span>: [{ <span class="key2">"type"</span>:<span class="str">"text"</span>, <span class="key2">"text"</span>:<span class="str">"name = input('Enter name:')\nprint(f'Hello {name}')"</span> }]
+} }</pre></div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 10 — COMPLETE LIFECYCLE FLOWCHART -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 10</div>
+  <h2 class="st">Flowchart — Complete MCP Lifecycle (All 3 Phases)</h2>
+  <div class="dbox">
+    <div class="dbox-label">// Master flowchart: Initialization → Operation → Shutdown</div>
+    <svg width="100%" viewBox="0 0 680 880" role="img">
+      <title>Complete MCP Lifecycle</title>
+      <defs>
+        <marker id="a3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- PHASE 1 -->
+      <rect x="10" y="10" width="660" height="34" rx="8" fill="#4f35e8"/>
+      <text x="340" y="33" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">PHASE 1 — INITIALIZATION</text>
+      <rect x="10" y="54" width="660" height="48" rx="8" fill="rgba(79,53,232,0.07)" stroke="rgba(79,53,232,0.25)" stroke-width="1.5"/>
+      <text x="40" y="72" fill="rgba(79,53,232,0.5)" font-size="9" font-family="IBM Plex Mono,monospace">STEP 1</text>
+      <text x="40" y="92" fill="#1a1730" font-size="12" font-weight="700">Client → Server: initialize { protocolVersion, capabilities, clientInfo }</text>
+      <line x1="340" y1="102" x2="340" y2="120" stroke="#4f35e8" stroke-width="1.5" marker-end="url(#a3)"/>
+      <rect x="10" y="120" width="660" height="48" rx="8" fill="rgba(79,53,232,0.07)" stroke="rgba(79,53,232,0.25)" stroke-width="1.5"/>
+      <text x="40" y="138" fill="rgba(79,53,232,0.5)" font-size="9" font-family="IBM Plex Mono,monospace">STEP 2</text>
+      <text x="40" y="158" fill="#1a1730" font-size="12" font-weight="700">Server → Client: { protocolVersion, capabilities, serverInfo }</text>
+      <line x1="340" y1="168" x2="340" y2="186" stroke="#4f35e8" stroke-width="1.5" marker-end="url(#a3)"/>
+      <polygon points="340,186 448,220 340,254 232,220" fill="rgba(245,158,11,0.12)" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="340" y="212" text-anchor="middle" fill="#78350f" font-size="11" font-weight="700">Versions</text>
+      <text x="340" y="230" text-anchor="middle" fill="#78350f" font-size="11" font-weight="700">compatible?</text>
+      <line x1="448" y1="220" x2="560" y2="220" stroke="#f43f5e" stroke-width="1.5" marker-end="url(#a3)"/>
+      <text x="490" y="212" fill="#f43f5e" font-size="11">NO →</text>
+      <rect x="560" y="204" width="110" height="34" rx="6" fill="rgba(244,63,94,0.1)" stroke="#f43f5e" stroke-width="1"/>
+      <text x="615" y="226" text-anchor="middle" fill="#881337" font-size="11" font-weight="600">DISCONNECT</text>
+      <text x="204" y="212" fill="#10b981" font-size="11">YES ↓</text>
+      <line x1="340" y1="254" x2="340" y2="272" stroke="#10b981" stroke-width="1.5" marker-end="url(#a3)"/>
+      <rect x="10" y="272" width="660" height="48" rx="8" fill="rgba(16,185,129,0.07)" stroke="rgba(16,185,129,0.25)" stroke-width="1.5"/>
+      <text x="40" y="290" fill="rgba(16,185,129,0.5)" font-size="9" font-family="IBM Plex Mono,monospace">STEP 3</text>
+      <text x="40" y="310" fill="#1a1730" font-size="12" font-weight="700">Client → Server: "notifications/initialized" (no id — fire and forget)</text>
+      <line x1="340" y1="320" x2="340" y2="338" stroke="#10b981" stroke-width="2" marker-end="url(#a3)"/>
+      <rect x="200" y="338" width="280" height="30" rx="15" fill="#10b981"/>
+      <text x="340" y="358" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">✓ SESSION IS NOW LIVE</text>
+      <line x1="340" y1="368" x2="340" y2="386" stroke="#00b4cc" stroke-width="2" marker-end="url(#a3)"/>
+
+      <!-- PHASE 2 -->
+      <rect x="10" y="386" width="660" height="34" rx="8" fill="#00b4cc"/>
+      <text x="340" y="409" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">PHASE 2 — OPERATION</text>
+      <rect x="10" y="430" width="660" height="48" rx="8" fill="rgba(0,180,204,0.07)" stroke="rgba(0,180,204,0.25)" stroke-width="1.5"/>
+      <text x="40" y="448" fill="rgba(0,180,204,0.5)" font-size="9" font-family="IBM Plex Mono,monospace">PART A — AUTO</text>
+      <text x="40" y="468" fill="#1a1730" font-size="12" font-weight="700">Batch: tools/list + prompts/list + resources/list → Host stores full capabilities</text>
+      <line x1="340" y1="478" x2="340" y2="496" stroke="#00b4cc" stroke-width="1.5" marker-end="url(#a3)"/>
+      <rect x="10" y="496" width="660" height="120" rx="8" fill="rgba(0,180,204,0.04)" stroke="rgba(0,180,204,0.2)" stroke-width="1.5" stroke-dasharray="5 3"/>
+      <text x="40" y="516" fill="rgba(0,180,204,0.5)" font-size="9" font-family="IBM Plex Mono,monospace">PART B — REPEATING FOR EACH USER QUERY</text>
+      <rect x="22" y="526" width="630" height="38" rx="6" fill="rgba(0,180,204,0.08)" stroke="rgba(0,180,204,0.2)" stroke-width="1"/>
+      <text x="340" y="550" text-anchor="middle" fill="#004a57" font-size="12" font-weight="600">User query → LLM picks tool → Client: tools/call { name, arguments }</text>
+      <line x1="340" y1="564" x2="340" y2="582" stroke="#00b4cc" stroke-width="1.5" marker-end="url(#a3)"/>
+      <rect x="22" y="582" width="630" height="22" rx="6" fill="rgba(16,185,129,0.08)" stroke="rgba(16,185,129,0.2)" stroke-width="1"/>
+      <text x="340" y="598" text-anchor="middle" fill="#065f46" font-size="12" font-weight="600">Server executes → result returned → LLM formats → User sees answer</text>
+      <line x1="340" y1="616" x2="340" y2="634" stroke="#10b981" stroke-width="2" marker-end="url(#a3)"/>
+
+      <!-- PHASE 3 -->
+      <rect x="10" y="634" width="660" height="34" rx="8" fill="#10b981"/>
+      <text x="340" y="657" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">PHASE 3 — SHUTDOWN</text>
+      <rect x="10" y="678" width="660" height="48" rx="8" fill="rgba(16,185,129,0.07)" stroke="rgba(16,185,129,0.25)" stroke-width="1.5"/>
+      <text x="40" y="696" fill="rgba(16,185,129,0.5)" font-size="9" font-family="IBM Plex Mono,monospace">TRIGGER</text>
+      <text x="40" y="716" fill="#1a1730" font-size="12" font-weight="700">Client closes (user closes Claude Desktop) OR Server shuts down unexpectedly</text>
+      <line x1="340" y1="726" x2="340" y2="744" stroke="#10b981" stroke-width="1.5" marker-end="url(#a3)"/>
+      <rect x="10" y="744" width="660" height="48" rx="8" fill="rgba(16,185,129,0.07)" stroke="rgba(16,185,129,0.25)" stroke-width="1.5"/>
+      <text x="40" y="762" fill="rgba(16,185,129,0.5)" font-size="9" font-family="IBM Plex Mono,monospace">TRANSPORT LAYER — NO JSON-RPC MESSAGES</text>
+      <text x="40" y="782" fill="#1a1730" font-size="12" font-weight="700">stdio: close stdin → wait → SIGTERM → SIGKILL | HTTP: close TCP connection</text>
+      <line x1="340" y1="792" x2="340" y2="812" stroke="#333" stroke-width="1.5" marker-end="url(#a3)"/>
+      <rect x="210" y="812" width="260" height="30" rx="15" fill="#12102a"/>
+      <text x="340" y="832" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="13" font-weight="700">Session Terminated</text>
+      <text x="340" y="860" text-anchor="middle" fill="rgba(79,53,232,0.4)" font-size="11" font-family="IBM Plex Mono,monospace">MCP Lifecycle Complete</text>
+    </svg>
+  </div>
+</div>
+
+<!-- SEC 11 — SHUTDOWN -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 11</div>
+  <div class="pb">
+    <div class="ph ph-s"><div class="pn">3</div>Phase 3 — Shutdown</div>
+    <div class="pb-body">
+      <p class="bd">The session is terminated. <strong>No JSON-RPC messages are exchanged</strong> — confirmed by Nitish's live demo which showed only "Server Transport Closed" in logs, with zero JSON-RPC messages. The transport layer handles everything.</p>
+      <h3 class="sh">Shutdown for Local Servers (stdio)</h3>
+      <div class="cmp">
+        <div class="cc ci"><h4>Client-Initiated (Most Common)</h4>
+          <div class="crow"><strong>Step 1:</strong>&nbsp;Client closes server's stdin stream</div>
+          <div class="crow"><strong>Step 2:</strong>&nbsp;Waits for server process to exit gracefully</div>
+          <div class="crow"><strong>Step 3:</strong>&nbsp;Sends SIGTERM if server doesn't exit ("please exit politely")</div>
+          <div class="crow"><strong>Step 4:</strong>&nbsp;Sends SIGKILL if still alive ("exit NOW — forced")</div>
+        </div>
+        <div class="cc chttp"><h4>Server-Initiated (Rare)</h4>
+          <div class="crow">Server closes its stdout stream</div>
+          <div class="crow">Server process exits on its own</div>
+          <div class="crow">Client detects disconnected pipe</div>
+          <div class="crow">Client cleans up pending requests</div>
+        </div>
+      </div>
+      <h3 class="sh">Shutdown for Remote Servers (HTTP)</h3>
+      <div class="g2">
+        <div class="card ce-t"><h4>Client-Initiated (Normal)</h4><p>Client closes the HTTP POST connection it had with the server. The TCP socket is released. Clean and simple.</p></div>
+        <div class="card ca-t"><h4>Server-Initiated (Unexpected)</h4><p>Server closes the HTTP connection from its end. Client must handle this gracefully — stop pending tasks, potentially retry, inform the user what happened.</p></div>
+      </div>
+      <div class="note ne"><strong>SIGTERM vs SIGKILL:</strong> SIGTERM = "Please finish up and leave" (server can clean up state). SIGKILL = "Exit immediately — forced by OS." Always try SIGTERM first; SIGKILL is the last resort.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 12 — PINGS -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 12 — Special Case</div>
+  <h2 class="st">Special Case: Pings (Heartbeat Checks)</h2>
+  <div class="sc">
+    <div class="sc-h" style="background:linear-gradient(135deg,#4f35e8,#8b5cf6);">
+      <span style="font-size:24px;">🏓</span>Pings — Checking if the Other Side is Alive
+    </div>
+    <div class="sc-b">
+      <p class="bd">A ping is a lightweight request-response method to check if the connection is still alive and responsive. Both client and server can send pings to each other.</p>
+      <div class="g2">
+        <div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:6px;">→ PING REQUEST</p>
+          <div class="code"><pre>{
+  <span class="key2">"jsonrpc"</span>: <span class="str">"2.0"</span>,
+  <span class="key2">"id"</span>: <span class="num">42</span>,       <span class="cm">// Has ID — expects reply</span>
+  <span class="key2">"method"</span>: <span class="str">"ping"</span>
+}</pre></div>
+        </div>
+        <div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:6px;">← PING RESPONSE</p>
+          <div class="code"><pre>{
+  <span class="key2">"jsonrpc"</span>: <span class="str">"2.0"</span>,
+  <span class="key2">"id"</span>: <span class="num">42</span>,       <span class="cm">// Same ID — confirmed alive</span>
+  <span class="key2">"result"</span>: {}   <span class="cm">// Empty — just "I'm here"</span>
+}</pre></div>
+        </div>
+      </div>
+      <h3 class="sh">When Are Pings Used?</h3>
+      <div class="g3">
+        <div class="card cv-t"><h4>During Initialization</h4><p>Pings are one of only two allowed messages during initialization before the handshake completes. Used to test if the connection path is open.</p></div>
+        <div class="card cv-t"><h4>Long-Running Tasks</h4><p>If no messages have been exchanged for a while, periodic pings keep the connection alive and prevent OS/firewall from silently closing the idle connection.</p></div>
+        <div class="card cv-t"><h4>Connection Keepalive</h4><p>Pings tell the OS/proxy: "This connection is still active." Without them, idle connections can be silently terminated by firewalls or proxy servers.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 13 — ERROR HANDLING -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 13 — Special Case</div>
+  <h2 class="st">Special Case: Error Handling</h2>
+  <div class="sc">
+    <div class="sc-h" style="background:linear-gradient(135deg,#f43f5e,#e11d48);">
+      <span style="font-size:24px;">⚠️</span>Error Handling — JSON-RPC Standard
+    </div>
+    <div class="sc-b">
+      <p class="bd">MCP directly inherits JSON-RPC 2.0's error handling standard. The error object structure is identical to any JSON-RPC distributed system.</p>
+      <h3 class="sh">Standard Error Object</h3>
+      <div class="code"><pre>{
+  <span class="key2">"jsonrpc"</span>: <span class="str">"2.0"</span>,
+  <span class="key2">"id"</span>: <span class="num">3</span>,              <span class="cm">// Matches the failed request</span>
+  <span class="key2">"error"</span>: {
+    <span class="key2">"code"</span>: <span class="ec">-32601</span>,    <span class="cm">// Standard error code</span>
+    <span class="key2">"message"</span>: <span class="str">"Method not found"</span>,
+    <span class="key2">"data"</span>: {          <span class="cm">// Optional debugging info</span>
+      <span class="key2">"details"</span>: <span class="str">"Server does not support prompts capability"</span>
+    }
+  }
+}</pre></div>
+      <h3 class="sh">Error Scenarios & Standard Error Codes</h3>
+      <table class="err-t">
+        <thead><tr><th>Code</th><th>Name</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>-32700</td><td>Parse Error</td><td>Invalid JSON received — message cannot be parsed at all.</td></tr>
+          <tr><td>-32600</td><td>Invalid Request</td><td>Valid JSON but doesn't conform to JSON-RPC 2.0 spec. Missing required fields.</td></tr>
+          <tr><td>-32601</td><td>Method Not Found</td><td>Called method (e.g., prompts/list) doesn't exist on server. Most common error!</td></tr>
+          <tr><td>-32602</td><td>Invalid Params</td><td>Tool called with wrong/missing/extra arguments.</td></tr>
+          <tr><td>-32603</td><td>Internal Error</td><td>Server crashed or hit unexpected state while processing the request.</td></tr>
+          <tr><td>-32000 to -32099</td><td>Server Error</td><td>Auth failures, rate limits, quota exceeded, timeout, etc.</td></tr>
+        </tbody>
+      </table>
+      <h3 class="sh">Common Error Scenarios</h3>
+      <div class="g3">
+        <div class="card cr-t"><h4>Version mismatch</h4><p>Protocol version incompatibility during initialization — connection immediately terminated.</p></div>
+        <div class="card cr-t"><h4>Unknown method called</h4><p>Client calls a method never negotiated (e.g., prompts/list from a tools-only server).</p></div>
+        <div class="card cr-t"><h4>Invalid arguments</h4><p>Tool called with wrong types, missing required fields, or extra unknown fields.</p></div>
+        <div class="card cr-t"><h4>Server crash</h4><p>Server encountered an unexpected error while processing — internal server failure.</p></div>
+        <div class="card cr-t"><h4>Timeout exceeded</h4><p>Client's configured wait time elapsed. Client cancels request, frees resources.</p></div>
+        <div class="card cr-t"><h4>Malformed JSON-RPC</h4><p>Syntax error in the message, missing required JSON-RPC fields, not valid JSON.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 14 — TIMEOUTS -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 14 — Special Case</div>
+  <h2 class="st">Special Case: Timeouts &amp; Request Cancellation</h2>
+  <div class="sc">
+    <div class="sc-h" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+      <span style="font-size:24px;">⏱️</span>Timeouts — Don't Wait Forever
+    </div>
+    <div class="sc-b">
+      <p class="bd">A timeout is a maximum wait duration set by the client per request. If the server doesn't respond within that time, the client cancels to avoid the user waiting indefinitely.</p>
+      <div class="g3">
+        <div class="card ca-t"><div class="ci">🚫</div><h4>Prevent Infinite Waiting</h4><p>Without timeouts, a user could wait hours for an overloaded/crashed server. Timeouts give timely feedback that something went wrong.</p></div>
+        <div class="card ca-t"><div class="ci">💾</div><h4>Free Resources</h4><p>Pending requests consume memory and CPU. Timeouts trigger resource cleanup, freeing the system for other tasks.</p></div>
+        <div class="card ca-t"><div class="ci">📢</div><h4>User Feedback</h4><p>User gets an explicit error message instead of seeing a spinner indefinitely. They can retry or check if server is down.</p></div>
+      </div>
+      <h3 class="sh">How Timeout Works — Step by Step</h3>
+      <div class="sl">
+        <div class="si"><div class="sn">01</div><div class="sb"><h5>Client configures a timeout per-request in MCP SDK</h5><p>Example: "Wait maximum 30 seconds for this request."</p></div></div>
+        <div class="si"><div class="sn">02</div><div class="sb"><h5>Client sends request and starts a countdown timer</h5><p>Request dispatched normally. If server responds within timeout, all is well.</p></div></div>
+        <div class="si"><div class="sn">03</div><div class="sb"><h5>Timer expires → Timeout triggered → Cancellation notification sent</h5><p>Client automatically fires a cancellation notification to the server.</p></div></div>
+        <div class="si"><div class="sn">04</div><div class="sb"><h5>Server stops processing, sends no response</h5><p>On receiving cancellation, server halts work on that request. Request abandoned on both sides.</p></div></div>
+      </div>
+      <h3 class="sh">Cancellation Notification Message</h3>
+      <div class="code"><pre><span class="cm">// Timer expired for request id:7 (scan entire codebase)
+// Client sends cancellation notification:</span>
+{
+  <span class="key2">"jsonrpc"</span>: <span class="str">"2.0"</span>,
+  <span class="cm">// No "id" — this is a notification</span>
+  <span class="key2">"method"</span>: <span class="str">"notifications/cancelled"</span>,
+  <span class="key2">"params"</span>: {
+    <span class="key2">"requestId"</span>: <span class="num">7</span>,
+    <span class="key2">"reason"</span>: <span class="str">"Timeout exceeded: 30 seconds"</span>
+  }
+}
+<span class="cm">// Server immediately stops processing request #7</span></pre></div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 15 — PROGRESS -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 15 — Special Case</div>
+  <h2 class="st">Special Case: Progress Notifications</h2>
+  <div class="sc">
+    <div class="sc-h" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);">
+      <span style="font-size:24px;">📊</span>Progress Notifications — Real-Time Updates
+    </div>
+    <div class="sc-b">
+      <p class="bd">For long-running tasks, servers can send periodic progress updates. This powers real-time progress bars — like ChatGPT's Deep Research progress indicator.</p>
+      <div class="note nv"><strong>Purpose:</strong> Let the client know a long-running request is still making progress — so the user doesn't assume the system is frozen and cancel prematurely.</div>
+      <h3 class="sh">How Progress Notifications Work</h3>
+      <div class="g2">
+        <div class="card cv-t"><h4>1. Client adds a progressToken</h4><p>When making a long-task request, the client adds a unique <code>progressToken</code> in the request's <code>_meta</code> field. This token links all progress updates to this specific request.</p></div>
+        <div class="card cv-t"><h4>2. Server sends periodic updates</h4><p>As it processes, the server sends <code>notifications/progress</code> notifications referencing the progress token — showing how much work is done out of total.</p></div>
+      </div>
+      <h3 class="sh">Full Progress Example — Scanning a Codebase for Vulnerabilities</h3>
+      <div class="code"><pre><span class="cm">// Step 1: Client request with progressToken</span>
+{
+  <span class="key2">"jsonrpc"</span>:<span class="str">"2.0"</span>, <span class="key2">"id"</span>:<span class="num">9</span>, <span class="key2">"method"</span>:<span class="str">"tools/call"</span>,
+  <span class="key2">"params"</span>: {
+    <span class="key2">"name"</span>:<span class="str">"search_code"</span>,
+    <span class="key2">"arguments"</span>: { <span class="key2">"repo"</span>:<span class="str">"my-app"</span>, <span class="key2">"pattern"</span>:<span class="str">"security_vulnerability"</span> },
+    <span class="key2">"_meta"</span>: { <span class="key2">"progressToken"</span>:<span class="str">"token-7"</span> }
+  }
+}
+
+<span class="cm">// Step 2: Server sends periodic progress notifications (no id — no reply needed)</span>
+{ <span class="key2">"method"</span>:<span class="str">"notifications/progress"</span>, <span class="key2">"params"</span>:{
+    <span class="key2">"progressToken"</span>:<span class="str">"token-7"</span>, <span class="key2">"progress"</span>:<span class="num">25</span>, <span class="key2">"total"</span>:<span class="num">100</span>,
+    <span class="key2">"message"</span>:<span class="str">"Scanning 250 of 1000 files..."</span>
+}}
+{ <span class="key2">"method"</span>:<span class="str">"notifications/progress"</span>, <span class="key2">"params"</span>:{
+    <span class="key2">"progressToken"</span>:<span class="str">"token-7"</span>, <span class="key2">"progress"</span>:<span class="num">60</span>, <span class="key2">"total"</span>:<span class="num">100</span>,
+    <span class="key2">"message"</span>:<span class="str">"Scanning 600 of 1000 files..."</span>
+}}
+{ <span class="key2">"method"</span>:<span class="str">"notifications/progress"</span>, <span class="key2">"params"</span>:{
+    <span class="key2">"progressToken"</span>:<span class="str">"token-7"</span>, <span class="key2">"progress"</span>:<span class="num">100</span>, <span class="key2">"total"</span>:<span class="num">100</span>,
+    <span class="key2">"message"</span>:<span class="str">"Scan complete!"</span>
+}}
+
+<span class="cm">// Step 3: Server sends the actual final result</span>
+{ <span class="key2">"jsonrpc"</span>:<span class="str">"2.0"</span>, <span class="key2">"id"</span>:<span class="num">9</span>, <span class="key2">"result"</span>:{ <span class="key2">"vulnerabilities"</span>:[<span class="str">"..."</span>] }}</pre></div>
+      <div class="note nc"><strong>Real-world analogy:</strong> ChatGPT's Deep Research shows a progress bar: "30% research complete... 60%... 90%... Done." That UX is powered by the same concept — underlying agent sends progress notifications rendered as a progress bar for the user.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 16 — REFERENCE -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 16</div>
+  <h2 class="st">Complete Message Exchange Reference</h2>
+  <div class="dbox">
+    <div class="dbox-label">// All messages in a full MCP session (timeline view)</div>
+    <svg width="100%" viewBox="0 0 680 720" role="img">
+      <title>Complete MCP message exchange timeline</title>
+      <defs>
+        <marker id="a4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <line x1="120" y1="20" x2="120" y2="700" stroke="rgba(79,53,232,0.25)" stroke-width="2" stroke-dasharray="4 2"/>
+      <line x1="560" y1="20" x2="560" y2="700" stroke="rgba(0,180,204,0.25)" stroke-width="2" stroke-dasharray="4 2"/>
+      <rect x="50" y="10" width="140" height="28" rx="6" fill="#4f35e8"/>
+      <text x="120" y="29" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">CLIENT</text>
+      <rect x="490" y="10" width="140" height="28" rx="6" fill="#00b4cc"/>
+      <text x="560" y="29" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">SERVER</text>
+
+      <!-- INIT label -->
+      <rect x="172" y="50" width="336" height="20" rx="4" fill="#4f35e8" opacity="0.9"/>
+      <text x="340" y="64" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">INITIALIZATION</text>
+
+      <!-- initialize → -->
+      <circle cx="120" cy="96" r="5" fill="#4f35e8"/>
+      <line x1="125" y1="96" x2="555" y2="96" stroke="#4f35e8" stroke-width="1.5" marker-end="url(#a4)"/>
+      <text x="340" y="89" text-anchor="middle" fill="#4f35e8" font-size="11" font-family="IBM Plex Mono,monospace">initialize</text>
+      <text x="340" y="107" text-anchor="middle" fill="rgba(79,53,232,0.5)" font-size="10">{ protocolVersion, capabilities, clientInfo }</text>
+
+      <!-- initialize response ← -->
+      <circle cx="560" cy="138" r="5" fill="#00b4cc"/>
+      <line x1="555" y1="138" x2="125" y2="138" stroke="#00b4cc" stroke-width="1.5" marker-end="url(#a4)"/>
+      <text x="340" y="131" text-anchor="middle" fill="#00b4cc" font-size="11" font-family="IBM Plex Mono,monospace">initialize (response)</text>
+      <text x="340" y="149" text-anchor="middle" fill="rgba(0,180,204,0.5)" font-size="10">{ protocolVersion, capabilities, serverInfo }</text>
+
+      <!-- initialized → -->
+      <circle cx="120" cy="180" r="5" fill="#10b981"/>
+      <line x1="125" y1="180" x2="555" y2="180" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#a4)"/>
+      <text x="340" y="173" text-anchor="middle" fill="#10b981" font-size="11" font-family="IBM Plex Mono,monospace">notifications/initialized ◆ no reply needed</text>
+
+      <!-- OPERATION label -->
+      <rect x="172" y="200" width="336" height="20" rx="4" fill="#00b4cc" opacity="0.9"/>
+      <text x="340" y="214" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">OPERATION — Part A (auto)</text>
+
+      <!-- Discovery batch → -->
+      <circle cx="120" cy="248" r="5" fill="#4f35e8"/>
+      <line x1="125" y1="248" x2="555" y2="248" stroke="#4f35e8" stroke-width="1.5" marker-end="url(#a4)"/>
+      <text x="340" y="241" text-anchor="middle" fill="#4f35e8" font-size="11" font-family="IBM Plex Mono,monospace">tools/list + resources/list + prompts/list (batch)</text>
+
+      <!-- Discovery response ← -->
+      <circle cx="560" cy="284" r="5" fill="#00b4cc"/>
+      <line x1="555" y1="284" x2="125" y2="284" stroke="#00b4cc" stroke-width="1.5" marker-end="url(#a4)"/>
+      <text x="340" y="277" text-anchor="middle" fill="#00b4cc" font-size="11" font-family="IBM Plex Mono,monospace">Full tool list returned (errors for unsupported primitives)</text>
+
+      <!-- OP PART B label -->
+      <rect x="172" y="302" width="336" height="20" rx="4" fill="#00b4cc" opacity="0.9"/>
+      <text x="340" y="316" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">OPERATION — Part B (repeating)</text>
+
+      <!-- tools/call → -->
+      <circle cx="120" cy="352" r="5" fill="#4f35e8"/>
+      <line x1="125" y1="352" x2="555" y2="352" stroke="#4f35e8" stroke-width="1.5" marker-end="url(#a4)"/>
+      <text x="340" y="345" text-anchor="middle" fill="#4f35e8" font-size="11" font-family="IBM Plex Mono,monospace">tools/call { name, arguments }</text>
+      <!-- result ← -->
+      <circle cx="560" cy="382" r="5" fill="#00b4cc"/>
+      <line x1="555" y1="382" x2="125" y2="382" stroke="#00b4cc" stroke-width="1.5" marker-end="url(#a4)"/>
+      <text x="340" y="375" text-anchor="middle" fill="#00b4cc" font-size="11" font-family="IBM Plex Mono,monospace">Tool result { content:[...] }</text>
+      <!-- repeat bracket -->
+      <rect x="160" y="336" width="6" height="64" rx="2" fill="rgba(79,53,232,0.25)"/>
+
+      <!-- SPECIAL CASES label -->
+      <rect x="172" y="410" width="336" height="20" rx="4" fill="#8b5cf6" opacity="0.9"/>
+      <text x="340" y="424" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">SPECIAL CASES (can occur anytime)</text>
+
+      <!-- ping → -->
+      <circle cx="120" cy="452" r="4" fill="#8b5cf6"/>
+      <line x1="124" y1="452" x2="556" y2="452" stroke="#8b5cf6" stroke-width="1" marker-end="url(#a4)"/>
+      <text x="340" y="446" text-anchor="middle" fill="#8b5cf6" font-size="11" font-family="IBM Plex Mono,monospace">ping { id }</text>
+      <!-- ping ← -->
+      <circle cx="560" cy="472" r="4" fill="#8b5cf6"/>
+      <line x1="556" y1="472" x2="124" y2="472" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="3 2" marker-end="url(#a4)"/>
+      <text x="340" y="466" text-anchor="middle" fill="rgba(139,92,246,0.7)" font-size="11" font-family="IBM Plex Mono,monospace">ping response { result:{} }</text>
+      <!-- progress ← -->
+      <circle cx="560" cy="506" r="4" fill="#f59e0b"/>
+      <line x1="556" y1="506" x2="124" y2="506" stroke="#f59e0b" stroke-width="1" stroke-dasharray="5 3" marker-end="url(#a4)"/>
+      <text x="340" y="500" text-anchor="middle" fill="#f59e0b" font-size="11" font-family="IBM Plex Mono,monospace">notifications/progress { progress, total } ◆ no reply</text>
+      <!-- error ← -->
+      <circle cx="560" cy="536" r="4" fill="#f43f5e"/>
+      <line x1="556" y1="536" x2="124" y2="536" stroke="#f43f5e" stroke-width="1" marker-end="url(#a4)"/>
+      <text x="340" y="530" text-anchor="middle" fill="#f43f5e" font-size="11" font-family="IBM Plex Mono,monospace">error { code, message, data }</text>
+      <!-- cancelled → -->
+      <circle cx="120" cy="566" r="4" fill="#f59e0b"/>
+      <line x1="124" y1="566" x2="556" y2="566" stroke="#f59e0b" stroke-width="1" stroke-dasharray="5 3" marker-end="url(#a4)"/>
+      <text x="340" y="560" text-anchor="middle" fill="#f59e0b" font-size="11" font-family="IBM Plex Mono,monospace">notifications/cancelled { requestId } ◆ no reply</text>
+
+      <!-- SHUTDOWN label -->
+      <rect x="172" y="590" width="336" height="20" rx="4" fill="#10b981" opacity="0.9"/>
+      <text x="340" y="604" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">SHUTDOWN (transport only — no JSON-RPC)</text>
+
+      <rect x="50" y="624" width="580" height="44" rx="8" fill="rgba(16,185,129,0.07)" stroke="rgba(16,185,129,0.25)" stroke-width="1.5"/>
+      <text x="340" y="643" text-anchor="middle" fill="#065f46" font-size="12" font-weight="700">stdio: close stdin → SIGTERM → SIGKILL</text>
+      <text x="340" y="659" text-anchor="middle" fill="rgba(6,95,70,0.7)" font-size="11">HTTP: close TCP connection</text>
+
+      <rect x="210" y="688" width="260" height="24" rx="12" fill="#12102a"/>
+      <text x="340" y="705" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="12" font-weight="700">Session Terminated</text>
+    </svg>
+  </div>
+
+  <h3 class="sh">Final Summary</h3>
+  <div class="g4">
+    <div class="card ci-t"><h4>🤝 Initialization</h4><p>3 steps: request → response → notification. Version check in middle. No other messages allowed until all 3 complete. Capabilities exchanged.</p></div>
+    <div class="card cc-t"><h4>⚡ Operation</h4><p>Auto-discovery first (tools/list batch). Then user-driven tool calls (tools/call). Uses only negotiated capabilities. Core work happens here.</p></div>
+    <div class="card ce-t"><h4>🔌 Shutdown</h4><p>Transport layer only — NO JSON-RPC. stdio: close stdin → SIGTERM → SIGKILL. HTTP: close TCP. Client typically initiates shutdown.</p></div>
+    <div class="card cv-t"><h4>🎯 Special Cases</h4><p>Pings (keepalive), Errors (JSON-RPC codes), Timeouts (cancellation notifications), Progress (streaming updates for long tasks).</p></div>
+  </div>
+  <div class="note ni" style="margin-top:28px;"><strong>What's Next:</strong> Having covered Why → Architecture → Lifecycle, the next videos will be fully practical — building real MCP servers and clients from scratch using the MCP SDK. Everything covered in this lifecycle video will be implemented in code.</div>
+</div>
+
+<footer>
+  <p>Study guide from <span>CampusX · MCP Trilogy · "The MCP Lifecycle"</span></p>
+  <p style="margin-top:8px;color:rgba(255,255,255,0.2);">youtube.com/watch?v=sBHeMcxupmE · Presenter: Nitish · CampusX</p>
+</footer>
+</body>
+</html>

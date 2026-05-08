@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Model Context Protocol — AI Newsletter Automation (CampusX)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; background: #f5f5f0; color: #1a1a18; line-height: 1.7; }
+
+  .cover {
+    background: linear-gradient(135deg, #1a1040 0%, #2d1b6e 50%, #1a3a5c 100%);
+    color: #fff;
+    padding: 80px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at 80% 30%, rgba(100,80,200,0.3) 0%, transparent 60%);
+  }
+  .cover-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #cfc9f8;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 28px;
+  }
+  .cover h1 { font-size: 44px; font-weight: 800; line-height: 1.2; margin-bottom: 16px; position: relative; }
+  .cover h1 span { color: #a896f8; }
+  .cover .subtitle { font-size: 18px; color: #c0b8f0; margin-bottom: 40px; max-width: 600px; position: relative; }
+  .cover-meta { display: flex; gap: 40px; position: relative; }
+  .cover-meta-item { display: flex; flex-direction: column; }
+  .cover-meta-item .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+  .cover-meta-item .value { font-size: 16px; color: #e0d8ff; font-weight: 600; }
+
+  .toc {
+    background: #fff;
+    border-left: 5px solid #534AB7;
+    margin: 40px 60px;
+    padding: 32px 36px;
+    border-radius: 0 12px 12px 0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .toc h2 { font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #534AB7; margin-bottom: 20px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { padding: 5px 0; font-size: 15px; color: #3a3a38; }
+  .toc li strong { color: #1a1a18; }
+
+  .section { padding: 50px 60px; border-bottom: 1px solid #e8e6e0; }
+  .section:last-child { border-bottom: none; }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    color: #7F77DD; margin-bottom: 12px;
+  }
+  .section-label .num {
+    width: 22px; height: 22px;
+    background: #534AB7; color: #fff;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+  }
+  h2.section-title { font-size: 30px; font-weight: 800; color: #1a1a18; margin-bottom: 16px; }
+  h3.subsection { font-size: 20px; font-weight: 700; color: #2d1b6e; margin: 32px 0 12px; }
+  p { font-size: 15px; color: #3d3d3a; margin-bottom: 14px; }
+
+  .highlight-box {
+    background: #eeedfe;
+    border-left: 4px solid #534AB7;
+    padding: 18px 22px;
+    border-radius: 0 8px 8px 0;
+    margin: 22px 0;
+  }
+  .highlight-box strong { color: #26215C; }
+
+  .info-box {
+    background: #e1f5ee;
+    border-left: 4px solid #0F6E56;
+    padding: 18px 22px;
+    border-radius: 0 8px 8px 0;
+    margin: 22px 0;
+    font-size: 14px;
+    color: #085041;
+  }
+
+  /* Cards Grid */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 28px 0; }
+  .cards.two-col { grid-template-columns: repeat(2, 1fr); }
+  .card {
+    background: #fff;
+    border: 1px solid #e0ddd6;
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+  }
+  .card-icon { font-size: 28px; margin-bottom: 10px; }
+  .card h4 { font-size: 15px; font-weight: 700; color: #1a1a18; margin-bottom: 6px; }
+  .card p { font-size: 13px; color: #5f5e5a; margin: 0; line-height: 1.6; }
+  .card.purple { border-top: 3px solid #534AB7; }
+  .card.teal { border-top: 3px solid #0F6E56; }
+  .card.amber { border-top: 3px solid #854F0B; }
+  .card.coral { border-top: 3px solid #993C1D; }
+  .card.pink { border-top: 3px solid #993556; }
+  .card.blue { border-top: 3px solid #185FA5; }
+
+  /* Newsletter structure table */
+  .newsletter-table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 14px; }
+  .newsletter-table thead th {
+    background: #2d1b6e; color: #fff;
+    padding: 12px 16px; text-align: left; font-weight: 600;
+  }
+  .newsletter-table tbody tr:nth-child(even) { background: #f8f7fd; }
+  .newsletter-table tbody tr:hover { background: #eeedfe; }
+  .newsletter-table td { padding: 12px 16px; border-bottom: 1px solid #e8e6e0; color: #3d3d3a; }
+  .newsletter-table td:first-child { font-weight: 600; color: #534AB7; white-space: nowrap; }
+
+  /* Tools grid */
+  .tools-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 24px 0; }
+  .tool-chip {
+    background: #fff;
+    border: 1.5px solid #d3d1c7;
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #3d3d3a;
+    transition: all 0.2s;
+  }
+  .tool-chip .tool-icon { font-size: 22px; display: block; margin-bottom: 6px; }
+  .tool-chip.active { border-color: #534AB7; color: #26215C; background: #eeedfe; }
+
+  /* Phase steps */
+  .phase-block {
+    border: 1px solid #e0ddd6;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 24px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .phase-header {
+    padding: 18px 24px;
+    display: flex; align-items: center; gap: 14px;
+    font-weight: 700; font-size: 17px;
+  }
+  .phase-header.research { background: #534AB7; color: #fff; }
+  .phase-header.editing  { background: #0F6E56; color: #fff; }
+  .phase-header.design   { background: #854F0B; color: #fff; }
+  .phase-num {
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+  }
+  .phase-body { padding: 20px 24px; background: #fff; }
+  .phase-step {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid #f1efe8;
+  }
+  .phase-step:last-child { border-bottom: none; }
+  .phase-step-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    margin-top: 5px; flex-shrink: 0;
+  }
+  .phase-step-dot.research { background: #534AB7; }
+  .phase-step-dot.editing  { background: #0F6E56; }
+  .phase-step-dot.design   { background: #854F0B; }
+  .phase-step p { margin: 0; font-size: 14px; color: #3d3d3a; }
+  .phase-step strong { color: #1a1a18; }
+
+  /* Output files */
+  .files-list { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+  .file-item {
+    display: flex; align-items: center; gap: 14px;
+    background: #fff; border: 1px solid #e0ddd6;
+    border-radius: 8px; padding: 14px 18px;
+  }
+  .file-icon {
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .file-icon.md { background: #eeedfe; }
+  .file-icon.html { background: #e1f5ee; }
+  .file-name { font-weight: 600; font-size: 14px; color: #1a1a18; }
+  .file-desc { font-size: 12px; color: #888780; margin-top: 2px; }
+
+  /* Config snippet */
+  .code-block {
+    background: #1a1a18;
+    border-radius: 10px;
+    padding: 22px 24px;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+  .code-block pre {
+    color: #c2f0d4;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .code-block .key { color: #a896f8; }
+  .code-block .str { color: #79d4a5; }
+  .code-block .comment { color: #666; }
+
+  /* Key takeaways */
+  .takeaways { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 28px 0; }
+  .takeaway {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid #e0ddd6;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .takeaway-icon {
+    width: 36px; height: 36px;
+    background: #eeedfe; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .takeaway h4 { font-size: 14px; font-weight: 700; color: #1a1a18; margin-bottom: 4px; }
+  .takeaway p { font-size: 13px; color: #5f5e5a; margin: 0; }
+
+  /* Flowchart SVG container */
+  .diagram-wrapper {
+    background: #fff;
+    border: 1px solid #e0ddd6;
+    border-radius: 12px;
+    padding: 28px;
+    margin: 28px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .diagram-title {
+    font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    color: #888780; margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1efe8;
+  }
+
+  /* Playlist section */
+  .trilogy-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 28px 0; }
+  .trilogy-card {
+    border-radius: 12px; padding: 24px;
+    position: relative; overflow: hidden;
+  }
+  .trilogy-card.vid1 { background: #eeedfe; border: 1.5px solid #AFA9EC; }
+  .trilogy-card.vid2 { background: #e1f5ee; border: 1.5px solid #5DCAA5; }
+  .trilogy-card.vid3 { background: #faeeda; border: 1.5px solid #EF9F27; }
+  .trilogy-card .vid-num { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7; margin-bottom: 8px; }
+  .trilogy-card h4 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+  .trilogy-card p { font-size: 13px; margin: 0; opacity: 0.85; }
+  .trilogy-card.vid1 h4 { color: #26215C; }
+  .trilogy-card.vid2 h4 { color: #04342C; }
+  .trilogy-card.vid3 h4 { color: #412402; }
+
+  footer {
+    background: #1a1a18;
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    padding: 28px;
+    font-size: 13px;
+  }
+  footer span { color: #7F77DD; }
+</style>
+</head>
+<body>
+
+<!-- ═══ COVER ═══ -->
+<div class="cover">
+  <div class="cover-badge">CampusX · MCP Trilogy · Trailer Video</div>
+  <h1>Model Context Protocol<br><span>AI Newsletter Automation</span></h1>
+  <p class="subtitle">A complete guide to building an end-to-end AI-powered newsletter using Claude + MCP — from research to design in 3 prompts.</p>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <span class="label">Channel</span>
+      <span class="value">CampusX</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="label">Series</span>
+      <span class="value">MCP Trilogy</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="label">Topic</span>
+      <span class="value">Model Context Protocol</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="label">Tools Used</span>
+      <span class="value">Claude Desktop + 8 MCP Servers</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TABLE OF CONTENTS ═══ -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ol>
+    <li><strong>The MCP Trilogy</strong> — Overview of the 3-video series</li>
+    <li><strong>Problem Statement</strong> — Why AI newsletter automation?</li>
+    <li><strong>Newsletter Structure</strong> — 9-section layout design</li>
+    <li><strong>Tools & Integrations</strong> — Claude + 8 MCP tools</li>
+    <li><strong>The 3-Phase Workflow</strong> — Research → Editing → Design</li>
+    <li><strong>Flowchart: Full System Architecture</strong></li>
+    <li><strong>Flowchart: Research Phase in Detail</strong></li>
+    <li><strong>Flowchart: Editing & Design Phases</strong></li>
+    <li><strong>MCP Configuration (Zero Code)</strong> — JSON config approach</li>
+    <li><strong>Key Takeaways</strong> — What MCP enables</li>
+  </ol>
+</div>
+
+<!-- ═══ SECTION 1: TRILOGY ═══ -->
+<div class="section" style="background:#fff;">
+  <div class="section-label"><span class="num">1</span> Series Overview</div>
+  <h2 class="section-title">The MCP Trilogy</h2>
+  <p>This video is the <strong>Trailer</strong> — a demonstration video released before the main 3-part series — where Nitish from CampusX showcases a real-world project built with MCP to inspire students before diving into theory.</p>
+
+  <div class="trilogy-cards">
+    <div class="trilogy-card vid1">
+      <div class="vid-num">Video 1</div>
+      <h4>"The Why"</h4>
+      <p>Why does MCP exist? What exact problem does it solve? Historical context and motivation behind the protocol.</p>
+    </div>
+    <div class="trilogy-card vid2">
+      <div class="vid-num">Video 2</div>
+      <h4>"The What"</h4>
+      <p>Architecture deep-dive: MCP Servers, Clients, Hosts — what they are and how they interact with each other.</p>
+    </div>
+    <div class="trilogy-card vid3">
+      <div class="vid-num">Video 3</div>
+      <h4>"The How"</h4>
+      <p>Practical coding: Build your own MCP servers and clients. Solve real use cases end-to-end in code.</p>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <strong>Why a Trailer first?</strong> Nitish's teaching philosophy — a teacher's job is not just to teach, but to <em>inspire</em>. By showing a working project first, students are intrinsically motivated to study the 3 theory videos that follow.
+  </div>
+</div>
+
+<!-- ═══ SECTION 2: PROBLEM ═══ -->
+<div class="section">
+  <div class="section-label"><span class="num">2</span> Problem Statement</div>
+  <h2 class="section-title">Why AI Newsletter Automation?</h2>
+  <p>The AI field is evolving at an unprecedented pace — new products, papers, and libraries emerge daily. Keeping up is a major challenge for both learners and educators.</p>
+
+  <div class="cards two-col">
+    <div class="card purple">
+      <div class="card-icon">😰</div>
+      <h4>The Student's Problem</h4>
+      <p>A 6-month AI roadmap can become outdated within 1–2 months. Topics that were relevant become obsolete; new topics emerge. It's nearly impossible to stay current.</p>
+    </div>
+    <div class="card teal">
+      <div class="card-icon">👨‍🏫</div>
+      <h4>The Educator's Problem</h4>
+      <p>Even experienced instructors struggle. Nitish has 6+ years in the domain but still finds it "incredibly difficult to keep up with the pace of AI."</p>
+    </div>
+    <div class="card amber">
+      <div class="card-icon">📰</div>
+      <h4>The Current Solution</h4>
+      <p>Subscribe to AI newsletters like <em>The Neuron</em>. Nitish reads at least one newsletter each night. This works — but requires manual curation, writing, and design effort.</p>
+    </div>
+    <div class="card coral">
+      <div class="card-icon">🤖</div>
+      <h4>The MCP Solution</h4>
+      <p>Automate the entire newsletter creation pipeline — research, writing, and design — using Claude + MCP tools. Publish a high-quality newsletter weekly with just 3 prompts.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SECTION 3: NEWSLETTER STRUCTURE ═══ -->
+<div class="section" style="background:#fff;">
+  <div class="section-label"><span class="num">3</span> Newsletter Design</div>
+  <h2 class="section-title">Newsletter Structure — 9 Sections</h2>
+  <p>Before writing a single line of code, Nitish studied multiple existing AI newsletters and designed a 9-section structure for the CampusX AI Newsletter.</p>
+
+  <table class="newsletter-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Section Name</th>
+        <th>Purpose</th>
+        <th>Data Source</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Introduction</td>
+        <td>Short paragraph teasing the week's content; builds curiosity</td>
+        <td>AI-generated from content summary</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Big Story of the Week</td>
+        <td>One major AI news item that shook the industry</td>
+        <td>Web Search (news scraping)</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Quick Updates (3–5)</td>
+        <td>Bite-sized news items worth knowing but not headlining</td>
+        <td>Web Search</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>Top Research Papers</td>
+        <td>This week's must-read research with summaries + download links</td>
+        <td>arXiv MCP Server</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Top GitHub Repos</td>
+        <td>Trending open-source AI repositories with star counts</td>
+        <td>GitHub MCP Server</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>Learning Corner</td>
+        <td>5-minute mini-tutorial readers can immediately apply</td>
+        <td>AI-generated from research</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>Top AI Products</td>
+        <td>New AI products launched this week with brief descriptions</td>
+        <td>Product Hunt MCP Server</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>Top Tweets of the Week</td>
+        <td>What leading AI personalities are discussing on X/Twitter</td>
+        <td>Twitter/X MCP Server</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>Closing Notes</td>
+        <td>Summary + teaser for next week's newsletter</td>
+        <td>AI-generated</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══ SECTION 4: TOOLS ═══ -->
+<div class="section">
+  <div class="section-label"><span class="num">4</span> Tools & Integrations</div>
+  <h2 class="section-title">Claude + 8 MCP Tool Integrations</h2>
+  <p>The core AI engine is <strong>Claude Desktop</strong> by Anthropic. MCP (Model Context Protocol) was developed by Anthropic, making Claude the most natively capable AI for MCP integrations. 8 external tools are connected via MCP.</p>
+
+  <div class="tools-grid">
+    <div class="tool-chip active">
+      <span class="tool-icon">🤖</span>
+      Claude Desktop
+      <br><small style="color:#534AB7;font-weight:400">Core AI Engine</small>
+    </div>
+    <div class="tool-chip active">
+      <span class="tool-icon">🔍</span>
+      Web Search
+      <br><small style="color:#534AB7;font-weight:400">News scraping</small>
+    </div>
+    <div class="tool-chip active">
+      <span class="tool-icon">📁</span>
+      Google Drive
+      <br><small style="color:#534AB7;font-weight:400">Templates & data</small>
+    </div>
+    <div class="tool-chip active">
+      <span class="tool-icon">📧</span>
+      Gmail
+      <br><small style="color:#534AB7;font-weight:400">Feedback emails</small>
+    </div>
+    <div class="tool-chip active">
+      <span class="tool-icon">📅</span>
+      Google Calendar
+      <br><small style="color:#534AB7;font-weight:400">Scheduling</small>
+    </div>
+    <div class="tool-chip active">
+      <span class="tool-icon">📄</span>
+      arXiv
+      <br><small style="color:#534AB7;font-weight:400">Research papers</small>
+    </div>
+    <div class="tool-chip active">
+      <span class="tool-icon">🐙</span>
+      GitHub
+      <br><small style="color:#534AB7;font-weight:400">Trending repos</small>
+    </div>
+    <div class="tool-chip active">
+      <span class="tool-icon">🚀</span>
+      Product Hunt
+      <br><small style="color:#534AB7;font-weight:400">New AI products</small>
+    </div>
+    <div class="tool-chip active">
+      <span class="tool-icon">🐦</span>
+      Twitter / X
+      <br><small style="color:#534AB7;font-weight:400">Trending opinions</small>
+    </div>
+    <div class="tool-chip active">
+      <span class="tool-icon">💻</span>
+      Local File System
+      <br><small style="color:#534AB7;font-weight:400">Save outputs</small>
+    </div>
+    <div class="tool-chip active">
+      <span class="tool-icon">🎨</span>
+      Canva (tested)
+      <br><small style="color:#888;font-weight:400">Not preferred</small>
+    </div>
+    <div class="tool-chip active">
+      <span class="tool-icon">📓</span>
+      Notion
+      <br><small style="color:#534AB7;font-weight:400">Available</small>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <strong>Why Claude over ChatGPT?</strong> MCP was created by Anthropic. Claude Desktop has native, deep MCP support. ChatGPT has limited MCP integrations. Claude performed best in end-to-end multi-tool workflows.
+  </div>
+</div>
+
+<!-- ═══ SECTION 5: WORKFLOW ═══ -->
+<div class="section" style="background:#fff;">
+  <div class="section-label"><span class="num">5</span> 3-Phase Workflow</div>
+  <h2 class="section-title">The 3-Phase Newsletter Creation Process</h2>
+  <p>The entire newsletter creation is broken into 3 distinct phases, each triggered by a single detailed prompt given to Claude. The AI handles all tool calls autonomously.</p>
+
+  <!-- PHASE 1 -->
+  <div class="phase-block">
+    <div class="phase-header research">
+      <div class="phase-num">1</div>
+      Phase 1 — Research
+    </div>
+    <div class="phase-body">
+      <div class="phase-step">
+        <div class="phase-step-dot research"></div>
+        <p><strong>Read Google Drive:</strong> Fetch "Content Ideas" file (list of potential newsletter topics) and "Performance Data" file (past newsletter open rates, click rates, read times).</p>
+      </div>
+      <div class="phase-step">
+        <div class="phase-step-dot research"></div>
+        <p><strong>Read Gmail Feedback:</strong> Scan inbox for subscriber feedback emails to understand audience preferences for this edition.</p>
+      </div>
+      <div class="phase-step">
+        <div class="phase-step-dot research"></div>
+        <p><strong>Decide Research Topics:</strong> Based on all 3 inputs (content ideas + performance data + feedback), Claude decides what to research for this week.</p>
+      </div>
+      <div class="phase-step">
+        <div class="phase-step-dot research"></div>
+        <p><strong>Web Search:</strong> Find the week's biggest AI news story and 3–5 quick updates. Saves as <code>web_research.md</code></p>
+      </div>
+      <div class="phase-step">
+        <div class="phase-step-dot research"></div>
+        <p><strong>arXiv Search:</strong> Find trending research papers with summaries and download links. Saves as <code>arxiv_research.md</code></p>
+      </div>
+      <div class="phase-step">
+        <div class="phase-step-dot research"></div>
+        <p><strong>GitHub Search:</strong> Find top trending AI repositories with star counts and descriptions. Saves as <code>github_research.md</code></p>
+      </div>
+      <div class="phase-step">
+        <div class="phase-step-dot research"></div>
+        <p><strong>Product Hunt Search:</strong> Find top AI products launched this week. Saves as <code>producthunt_research.md</code></p>
+      </div>
+      <div class="phase-step">
+        <div class="phase-step-dot research"></div>
+        <p><strong>Twitter/X Search:</strong> Fetch top tweets from leading AI personalities. Saves as <code>twitter_research.md</code></p>
+      </div>
+      <div class="phase-step">
+        <div class="phase-step-dot research"></div>
+        <p><strong>Output:</strong> 5 markdown files saved to a local folder on desktop — one per source.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase-block">
+    <div class="phase-header editing">
+      <div class="phase-num">2</div>
+      Phase 2 — Editing (Draft Assembly)
+    </div>
+    <div class="phase-body">
+      <div class="phase-step">
+        <div class="phase-step-dot editing"></div>
+        <p><strong>Read all 5 research files</strong> from the local desktop folder created in Phase 1.</p>
+      </div>
+      <div class="phase-step">
+        <div class="phase-step-dot editing"></div>
+        <p><strong>Read Sample Newsletter Template</strong> from Google Drive — a pre-built document showing the exact 9-section structure and writing style expected.</p>
+      </div>
+      <div class="phase-step">
+        <div class="phase-step-dot editing"></div>
+        <p><strong>Assemble Final Draft:</strong> Populate each of the 9 sections with the relevant research data. Ensure smooth transitions, clear section headers, and an engaging editorial tone.</p>
+      </div>
+      <div class="phase-step">
+        <div class="phase-step-dot editing"></div>
+        <p><strong>Output:</strong> A single <code>final_draft.md</code> saved to the same local folder.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="phase-block">
+    <div class="phase-header design">
+      <div class="phase-num">3</div>
+      Phase 3 — Design (HTML Generation)
+    </div>
+    <div class="phase-body">
+      <div class="phase-step">
+        <div class="phase-step-dot design"></div>
+        <p><strong>Read Final Draft:</strong> Fetch the <code>final_draft.md</code> from local storage.</p>
+      </div>
+      <div class="phase-step">
+        <div class="phase-step-dot design"></div>
+        <p><strong>Apply Design Spec:</strong> Claude receives layout specifications — visual structure, typography, color scheme, responsive behaviour — as part of the prompt.</p>
+      </div>
+      <div class="phase-step">
+        <div class="phase-step-dot design"></div>
+        <p><strong>Generate HTML Email:</strong> Produces a production-ready HTML email compatible across major email clients (Gmail, Outlook, Apple Mail).</p>
+      </div>
+      <div class="phase-step">
+        <div class="phase-step-dot design"></div>
+        <p><strong>Generate Plain Text Fallback:</strong> Also produces a plain text version for email clients that block HTML or mark HTML emails as spam.</p>
+      </div>
+      <div class="phase-step">
+        <div class="phase-step-dot design"></div>
+        <p><strong>Output:</strong> <code>newsletter.html</code> + <code>newsletter.txt</code> saved to output folder. Ready to paste into Mailchimp or any email sending tool.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SECTION 6: MAIN FLOWCHART ═══ -->
+<div class="section">
+  <div class="section-label"><span class="num">6</span> System Architecture</div>
+  <h2 class="section-title">Flowchart — Full System Architecture</h2>
+  <p>The following diagram shows the complete end-to-end flow from problem statement to final deliverable, including all MCP tool integrations.</p>
+
+  <div class="diagram-wrapper">
+    <div class="diagram-title">End-to-End MCP Newsletter Automation System</div>
+    <svg width="100%" viewBox="0 0 680 700" role="img">
+      <title>End-to-End MCP Newsletter Automation System</title>
+      <desc>Flowchart showing 3 phases: Research, Editing, and Design, connected through Claude AI with MCP tools</desc>
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- Start -->
+      <rect x="240" y="20" width="200" height="44" rx="22" fill="#2d1b6e" stroke="#534AB7" stroke-width="1.5"/>
+      <text x="340" y="47" text-anchor="middle" dominant-baseline="central" fill="#fff" font-family="Arial" font-size="14" font-weight="700">User sends 3 prompts</text>
+
+      <line x1="340" y1="64" x2="340" y2="100" stroke="#534AB7" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- Claude -->
+      <rect x="200" y="100" width="280" height="56" rx="12" fill="#eeedfe" stroke="#534AB7" stroke-width="2"/>
+      <text x="340" y="122" text-anchor="middle" dominant-baseline="central" fill="#26215C" font-family="Arial" font-size="15" font-weight="800">Claude Desktop (AI Engine)</text>
+      <text x="340" y="142" text-anchor="middle" dominant-baseline="central" fill="#534AB7" font-family="Arial" font-size="12">Orchestrates all tools via MCP</text>
+
+      <!-- Connector to 3 phases -->
+      <line x1="340" y1="156" x2="340" y2="190" stroke="#444" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- Phase 1 box -->
+      <rect x="20" y="190" width="640" height="150" rx="10" fill="#f8f7fd" stroke="#AFA9EC" stroke-width="1.5"/>
+      <rect x="20" y="190" width="640" height="32" rx="10" fill="#534AB7"/>
+      <rect x="20" y="210" width="640" height="12" fill="#534AB7"/>
+      <text x="340" y="209" text-anchor="middle" dominant-baseline="central" fill="#fff" font-family="Arial" font-size="13" font-weight="700">PHASE 1 — RESEARCH</text>
+
+      <!-- Research sub-boxes -->
+      <rect x="35" y="232" width="96" height="40" rx="6" fill="#fff" stroke="#AFA9EC" stroke-width="1"/>
+      <text x="83" y="252" text-anchor="middle" dominant-baseline="central" fill="#26215C" font-family="Arial" font-size="11" font-weight="700">Google Drive</text>
+      <text x="83" y="264" text-anchor="middle" dominant-baseline="central" fill="#534AB7" font-family="Arial" font-size="10">Content + Data</text>
+
+      <rect x="143" y="232" width="90" height="40" rx="6" fill="#fff" stroke="#AFA9EC" stroke-width="1"/>
+      <text x="188" y="252" text-anchor="middle" dominant-baseline="central" fill="#26215C" font-family="Arial" font-size="11" font-weight="700">Gmail</text>
+      <text x="188" y="264" text-anchor="middle" dominant-baseline="central" fill="#534AB7" font-family="Arial" font-size="10">User feedback</text>
+
+      <rect x="245" y="232" width="88" height="40" rx="6" fill="#fff" stroke="#AFA9EC" stroke-width="1"/>
+      <text x="289" y="252" text-anchor="middle" dominant-baseline="central" fill="#26215C" font-family="Arial" font-size="11" font-weight="700">Web Search</text>
+      <text x="289" y="264" text-anchor="middle" dominant-baseline="central" fill="#534AB7" font-family="Arial" font-size="10">News & updates</text>
+
+      <rect x="345" y="232" width="80" height="40" rx="6" fill="#fff" stroke="#AFA9EC" stroke-width="1"/>
+      <text x="385" y="252" text-anchor="middle" dominant-baseline="central" fill="#26215C" font-family="Arial" font-size="11" font-weight="700">arXiv</text>
+      <text x="385" y="264" text-anchor="middle" dominant-baseline="central" fill="#534AB7" font-family="Arial" font-size="10">Research papers</text>
+
+      <rect x="437" y="232" width="80" height="40" rx="6" fill="#fff" stroke="#AFA9EC" stroke-width="1"/>
+      <text x="477" y="252" text-anchor="middle" dominant-baseline="central" fill="#26215C" font-family="Arial" font-size="11" font-weight="700">GitHub</text>
+      <text x="477" y="264" text-anchor="middle" dominant-baseline="central" fill="#534AB7" font-family="Arial" font-size="10">Trending repos</text>
+
+      <rect x="529" y="232" width="116" height="40" rx="6" fill="#fff" stroke="#AFA9EC" stroke-width="1"/>
+      <text x="587" y="252" text-anchor="middle" dominant-baseline="central" fill="#26215C" font-family="Arial" font-size="11" font-weight="700">Product Hunt + X</text>
+      <text x="587" y="264" text-anchor="middle" dominant-baseline="central" fill="#534AB7" font-family="Arial" font-size="10">Products & tweets</text>
+
+      <!-- Output label -->
+      <rect x="35" y="285" width="610" height="42" rx="6" fill="#eeedfe" stroke="#AFA9EC" stroke-width="1"/>
+      <text x="340" y="307" text-anchor="middle" dominant-baseline="central" fill="#26215C" font-family="Arial" font-size="12" font-weight="700">Output: 5 Markdown Files saved to Desktop</text>
+
+      <!-- Arrow to Phase 2 -->
+      <line x1="340" y1="340" x2="340" y2="374" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- Phase 2 box -->
+      <rect x="20" y="374" width="640" height="110" rx="10" fill="#f0faf5" stroke="#5DCAA5" stroke-width="1.5"/>
+      <rect x="20" y="374" width="640" height="32" rx="10" fill="#0F6E56"/>
+      <rect x="20" y="394" width="640" height="12" fill="#0F6E56"/>
+      <text x="340" y="393" text-anchor="middle" dominant-baseline="central" fill="#fff" font-family="Arial" font-size="13" font-weight="700">PHASE 2 — EDITING (Draft Assembly)</text>
+
+      <rect x="35" y="416" width="180" height="40" rx="6" fill="#fff" stroke="#5DCAA5" stroke-width="1"/>
+      <text x="125" y="436" text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="Arial" font-size="11" font-weight="700">Read 5 Research Files</text>
+
+      <rect x="250" y="416" width="180" height="40" rx="6" fill="#fff" stroke="#5DCAA5" stroke-width="1"/>
+      <text x="340" y="436" text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="Arial" font-size="11" font-weight="700">Read Newsletter Template</text>
+
+      <rect x="465" y="416" width="180" height="40" rx="6" fill="#e1f5ee" stroke="#5DCAA5" stroke-width="1"/>
+      <text x="555" y="434" text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="Arial" font-size="11" font-weight="700">Save final_draft.md</text>
+      <text x="555" y="448" text-anchor="middle" dominant-baseline="central" fill="#0F6E56" font-family="Arial" font-size="10">to desktop folder</text>
+
+      <!-- Arrow to Phase 3 -->
+      <line x1="340" y1="484" x2="340" y2="518" stroke="#854F0B" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- Phase 3 box -->
+      <rect x="20" y="518" width="640" height="110" rx="10" fill="#fffaf2" stroke="#EF9F27" stroke-width="1.5"/>
+      <rect x="20" y="518" width="640" height="32" rx="10" fill="#854F0B"/>
+      <rect x="20" y="538" width="640" height="12" fill="#854F0B"/>
+      <text x="340" y="537" text-anchor="middle" dominant-baseline="central" fill="#fff" font-family="Arial" font-size="13" font-weight="700">PHASE 3 — DESIGN (HTML Generation)</text>
+
+      <rect x="35" y="560" width="180" height="40" rx="6" fill="#fff" stroke="#EF9F27" stroke-width="1"/>
+      <text x="125" y="580" text-anchor="middle" dominant-baseline="central" fill="#412402" font-family="Arial" font-size="11" font-weight="700">Read Final Draft</text>
+
+      <rect x="250" y="560" width="180" height="40" rx="6" fill="#fff" stroke="#EF9F27" stroke-width="1"/>
+      <text x="340" y="580" text-anchor="middle" dominant-baseline="central" fill="#412402" font-family="Arial" font-size="11" font-weight="700">Apply Design Spec from Prompt</text>
+
+      <rect x="465" y="560" width="180" height="40" rx="6" fill="#faeeda" stroke="#EF9F27" stroke-width="1"/>
+      <text x="555" y="578" text-anchor="middle" dominant-baseline="central" fill="#412402" font-family="Arial" font-size="11" font-weight="700">Generate HTML + TXT</text>
+      <text x="555" y="592" text-anchor="middle" dominant-baseline="central" fill="#854F0B" font-family="Arial" font-size="10">production-ready email</text>
+
+      <!-- Final output -->
+      <line x1="340" y1="628" x2="340" y2="658" stroke="#444" stroke-width="1.5" marker-end="url(#arr)"/>
+      <rect x="180" y="658" width="320" height="44" rx="22" fill="#1a1a18" stroke="#444" stroke-width="1"/>
+      <text x="340" y="680" text-anchor="middle" dominant-baseline="central" fill="#fff" font-family="Arial" font-size="13" font-weight="700">Send via Mailchimp ✓</text>
+    </svg>
+  </div>
+</div>
+
+<!-- ═══ SECTION 7: RESEARCH FLOWCHART ═══ -->
+<div class="section" style="background:#fff;">
+  <div class="section-label"><span class="num">7</span> Research Phase Detail</div>
+  <h2 class="section-title">Flowchart — Research Phase Deep Dive</h2>
+  <p>The Research Phase is the most complex phase with multiple parallel operations. Claude intelligently conducts research across 5 different sources simultaneously.</p>
+
+  <div class="diagram-wrapper">
+    <div class="diagram-title">Research Phase — Decision Logic & Parallel Data Collection</div>
+    <svg width="100%" viewBox="0 0 680 560" role="img">
+      <title>Research Phase Detailed Flowchart</title>
+      <desc>Shows how Claude decides research topics based on 3 inputs then runs 5 parallel research streams</desc>
+      <defs>
+        <marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- Prompt trigger -->
+      <rect x="230" y="20" width="220" height="44" rx="8" fill="#534AB7" stroke="#3C3489" stroke-width="1.5"/>
+      <text x="340" y="42" text-anchor="middle" dominant-baseline="central" fill="#fff" font-family="Arial" font-size="13" font-weight="700">Research Prompt #1 sent</text>
+
+      <!-- 3 inputs -->
+      <line x1="340" y1="64" x2="340" y2="95" stroke="#534AB7" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <text x="340" y="92" text-anchor="middle" fill="#534AB7" font-family="Arial" font-size="11">Claude reads 3 inputs to decide topics</text>
+
+      <rect x="20" y="100" width="186" height="52" rx="8" fill="#eeedfe" stroke="#AFA9EC" stroke-width="1"/>
+      <text x="113" y="120" text-anchor="middle" dominant-baseline="central" fill="#26215C" font-family="Arial" font-size="12" font-weight="700">Content Ideas File</text>
+      <text x="113" y="136" text-anchor="middle" dominant-baseline="central" fill="#534AB7" font-family="Arial" font-size="11">Google Drive → List of topics</text>
+
+      <rect x="247" y="100" width="186" height="52" rx="8" fill="#eeedfe" stroke="#AFA9EC" stroke-width="1"/>
+      <text x="340" y="120" text-anchor="middle" dominant-baseline="central" fill="#26215C" font-family="Arial" font-size="12" font-weight="700">Performance Data File</text>
+      <text x="340" y="136" text-anchor="middle" dominant-baseline="central" fill="#534AB7" font-family="Arial" font-size="11">Google Drive → Open/click rates</text>
+
+      <rect x="474" y="100" width="186" height="52" rx="8" fill="#eeedfe" stroke="#AFA9EC" stroke-width="1"/>
+      <text x="567" y="120" text-anchor="middle" dominant-baseline="central" fill="#26215C" font-family="Arial" font-size="12" font-weight="700">Feedback Emails</text>
+      <text x="567" y="136" text-anchor="middle" dominant-baseline="central" fill="#534AB7" font-family="Arial" font-size="11">Gmail → Subscriber feedback</text>
+
+      <!-- Decision box -->
+      <line x1="113" y1="152" x2="340" y2="200" stroke="#534AB7" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr2)"/>
+      <line x1="340" y1="152" x2="340" y2="200" stroke="#534AB7" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr2)"/>
+      <line x1="567" y1="152" x2="340" y2="200" stroke="#534AB7" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr2)"/>
+
+      <rect x="210" y="200" width="260" height="54" rx="8" fill="#2d1b6e" stroke="#534AB7" stroke-width="1.5"/>
+      <text x="340" y="220" text-anchor="middle" dominant-baseline="central" fill="#fff" font-family="Arial" font-size="13" font-weight="700">Claude decides focus areas</text>
+      <text x="340" y="238" text-anchor="middle" dominant-baseline="central" fill="#cfc9f8" font-family="Arial" font-size="11">e.g. "AI in healthcare, open-source LLMs"</text>
+
+      <!-- 5 parallel streams -->
+      <text x="340" y="278" text-anchor="middle" fill="#888780" font-family="Arial" font-size="11">5 parallel research streams (MCP tool calls)</text>
+      <line x1="340" y1="254" x2="340" y2="280" stroke="#444" stroke-width="1" marker-end="url(#arr2)"/>
+
+      <!-- Stream 1 -->
+      <line x1="340" y1="280" x2="60" y2="320" stroke="#185FA5" stroke-width="1" marker-end="url(#arr2)"/>
+      <rect x="20" y="320" width="80" height="52" rx="6" fill="#E6F1FB" stroke="#378ADD" stroke-width="1"/>
+      <text x="60" y="340" text-anchor="middle" dominant-baseline="central" fill="#0C447C" font-family="Arial" font-size="11" font-weight="700">Web</text>
+      <text x="60" y="354" text-anchor="middle" dominant-baseline="central" fill="#185FA5" font-family="Arial" font-size="10">Search</text>
+      <text x="60" y="367" text-anchor="middle" dominant-baseline="central" fill="#185FA5" font-family="Arial" font-size="9">news.md</text>
+
+      <!-- Stream 2 -->
+      <line x1="340" y1="280" x2="168" y2="320" stroke="#185FA5" stroke-width="1" marker-end="url(#arr2)"/>
+      <rect x="128" y="320" width="80" height="52" rx="6" fill="#E6F1FB" stroke="#378ADD" stroke-width="1"/>
+      <text x="168" y="340" text-anchor="middle" dominant-baseline="central" fill="#0C447C" font-family="Arial" font-size="11" font-weight="700">arXiv</text>
+      <text x="168" y="354" text-anchor="middle" dominant-baseline="central" fill="#185FA5" font-family="Arial" font-size="10">Papers</text>
+      <text x="168" y="367" text-anchor="middle" dominant-baseline="central" fill="#185FA5" font-family="Arial" font-size="9">arxiv.md</text>
+
+      <!-- Stream 3 -->
+      <line x1="340" y1="280" x2="340" y2="320" stroke="#185FA5" stroke-width="1" marker-end="url(#arr2)"/>
+      <rect x="300" y="320" width="80" height="52" rx="6" fill="#E6F1FB" stroke="#378ADD" stroke-width="1"/>
+      <text x="340" y="340" text-anchor="middle" dominant-baseline="central" fill="#0C447C" font-family="Arial" font-size="11" font-weight="700">GitHub</text>
+      <text x="340" y="354" text-anchor="middle" dominant-baseline="central" fill="#185FA5" font-family="Arial" font-size="10">Repos</text>
+      <text x="340" y="367" text-anchor="middle" dominant-baseline="central" fill="#185FA5" font-family="Arial" font-size="9">github.md</text>
+
+      <!-- Stream 4 -->
+      <line x1="340" y1="280" x2="512" y2="320" stroke="#185FA5" stroke-width="1" marker-end="url(#arr2)"/>
+      <rect x="472" y="320" width="80" height="52" rx="6" fill="#E6F1FB" stroke="#378ADD" stroke-width="1"/>
+      <text x="512" y="340" text-anchor="middle" dominant-baseline="central" fill="#0C447C" font-family="Arial" font-size="11" font-weight="700">Product</text>
+      <text x="512" y="354" text-anchor="middle" dominant-baseline="central" fill="#185FA5" font-family="Arial" font-size="10">Hunt</text>
+      <text x="512" y="367" text-anchor="middle" dominant-baseline="central" fill="#185FA5" font-family="Arial" font-size="9">products.md</text>
+
+      <!-- Stream 5 -->
+      <line x1="340" y1="280" x2="620" y2="320" stroke="#185FA5" stroke-width="1" marker-end="url(#arr2)"/>
+      <rect x="580" y="320" width="80" height="52" rx="6" fill="#E6F1FB" stroke="#378ADD" stroke-width="1"/>
+      <text x="620" y="340" text-anchor="middle" dominant-baseline="central" fill="#0C447C" font-family="Arial" font-size="11" font-weight="700">Twitter</text>
+      <text x="620" y="354" text-anchor="middle" dominant-baseline="central" fill="#185FA5" font-family="Arial" font-size="10">/X</text>
+      <text x="620" y="367" text-anchor="middle" dominant-baseline="central" fill="#185FA5" font-family="Arial" font-size="9">tweets.md</text>
+
+      <!-- All converge to output -->
+      <line x1="60" y1="372" x2="340" y2="440" stroke="#0F6E56" stroke-width="1" marker-end="url(#arr2)"/>
+      <line x1="168" y1="372" x2="340" y2="440" stroke="#0F6E56" stroke-width="1" marker-end="url(#arr2)"/>
+      <line x1="340" y1="372" x2="340" y2="440" stroke="#0F6E56" stroke-width="1" marker-end="url(#arr2)"/>
+      <line x1="512" y1="372" x2="340" y2="440" stroke="#0F6E56" stroke-width="1" marker-end="url(#arr2)"/>
+      <line x1="620" y1="372" x2="340" y2="440" stroke="#0F6E56" stroke-width="1" marker-end="url(#arr2)"/>
+
+      <rect x="120" y="440" width="440" height="52" rx="10" fill="#e1f5ee" stroke="#0F6E56" stroke-width="1.5"/>
+      <text x="340" y="460" text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="Arial" font-size="13" font-weight="700">5 Markdown files saved to Desktop folder</text>
+      <text x="340" y="478" text-anchor="middle" dominant-baseline="central" fill="#0F6E56" font-family="Arial" font-size="11">Research Phase Complete — Ready for Editing</text>
+
+      <line x1="340" y1="492" x2="340" y2="520" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <rect x="230" y="520" width="220" height="34" rx="8" fill="#0F6E56" stroke="#085041" stroke-width="1"/>
+      <text x="340" y="537" text-anchor="middle" dominant-baseline="central" fill="#fff" font-family="Arial" font-size="13" font-weight="700">Proceed to Phase 2 ▶</text>
+    </svg>
+  </div>
+
+  <div class="info-box">
+    <strong>Parallel Execution:</strong> Nitish observed that Claude intelligently runs multiple research streams in parallel — not sequentially. While one research branch is saving its results, Claude simultaneously starts the next branch. This significantly reduces total time.
+  </div>
+</div>
+
+<!-- ═══ SECTION 8: EDITING+DESIGN FLOWCHART ═══ -->
+<div class="section">
+  <div class="section-label"><span class="num">8</span> Editing & Design Phases</div>
+  <h2 class="section-title">Flowchart — Editing & Design Phases</h2>
+
+  <div class="diagram-wrapper">
+    <div class="diagram-title">Phase 2 (Editing) + Phase 3 (Design) — Draft to Deliverable</div>
+    <svg width="100%" viewBox="0 0 680 520" role="img">
+      <title>Editing and Design phases flowchart</title>
+      <desc>Shows how 5 research files plus a template combine to create the final newsletter HTML</desc>
+      <defs>
+        <marker id="arr3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- 5 research files input -->
+      <text x="140" y="26" text-anchor="middle" fill="#0F6E56" font-family="Arial" font-size="12" font-weight="700">5 Research Files (Desktop)</text>
+
+      <rect x="25" y="36" width="90" height="36" rx="6" fill="#e1f5ee" stroke="#5DCAA5" stroke-width="1"/>
+      <text x="70" y="54" text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="Arial" font-size="11">web_research</text>
+
+      <rect x="125" y="36" width="84" height="36" rx="6" fill="#e1f5ee" stroke="#5DCAA5" stroke-width="1"/>
+      <text x="167" y="54" text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="Arial" font-size="11">arxiv_research</text>
+
+      <!-- Google drive template -->
+      <text x="540" y="26" text-anchor="middle" fill="#534AB7" font-family="Arial" font-size="12" font-weight="700">Google Drive</text>
+      <rect x="470" y="36" width="180" height="36" rx="6" fill="#eeedfe" stroke="#AFA9EC" stroke-width="1"/>
+      <text x="560" y="54" text-anchor="middle" dominant-baseline="central" fill="#26215C" font-family="Arial" font-size="11">Sample Newsletter Template</text>
+
+      <!-- Claude editing -->
+      <line x1="70" y1="72" x2="300" y2="120" stroke="#0F6E56" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr3)"/>
+      <line x1="167" y1="72" x2="300" y2="120" stroke="#0F6E56" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr3)"/>
+      <line x1="340" y1="72" x2="340" y2="120" stroke="#0F6E56" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr3)"/>
+      <line x1="560" y1="72" x2="380" y2="120" stroke="#534AB7" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr3)"/>
+
+      <rect x="230" y="36" width="90" height="36" rx="6" fill="#e1f5ee" stroke="#5DCAA5" stroke-width="1"/>
+      <text x="275" y="54" text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="Arial" font-size="11">github_research</text>
+      <rect x="330" y="36" width="90" height="36" rx="6" fill="#e1f5ee" stroke="#5DCAA5" stroke-width="1"/>
+      <text x="375" y="54" text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="Arial" font-size="11">product_research</text>
+
+      <rect x="185" y="120" width="310" height="60" rx="10" fill="#0F6E56"/>
+      <text x="340" y="143" text-anchor="middle" dominant-baseline="central" fill="#fff" font-family="Arial" font-size="13" font-weight="700">Claude — Editing Agent (Prompt 2)</text>
+      <text x="340" y="163" text-anchor="middle" dominant-baseline="central" fill="#9FE1CB" font-family="Arial" font-size="11">Combines all data into newsletter draft</text>
+
+      <line x1="340" y1="180" x2="340" y2="216" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+      <!-- Intermediate: 9 sections assembled -->
+      <rect x="100" y="216" width="480" height="70" rx="8" fill="#fff" stroke="#5DCAA5" stroke-width="1.5"/>
+      <text x="340" y="238" text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="Arial" font-size="12" font-weight="700">9-Section Final Draft assembled in Markdown</text>
+      <text x="340" y="256" text-anchor="middle" dominant-baseline="central" fill="#0F6E56" font-family="Arial" font-size="11">Intro · Big Story · Updates · Papers · Repos · Tutorial · Products · Tweets · Close</text>
+      <text x="340" y="274" text-anchor="middle" dominant-baseline="central" fill="#888780" font-family="Arial" font-size="10">Saved as final_draft.md to Desktop folder</text>
+
+      <line x1="340" y1="286" x2="340" y2="320" stroke="#854F0B" stroke-width="1.5" marker-end="url(#arr3)"/>
+      <text x="380" y="306" fill="#854F0B" font-family="Arial" font-size="11">+ Design spec in prompt</text>
+
+      <!-- Design agent -->
+      <rect x="185" y="320" width="310" height="60" rx="10" fill="#854F0B"/>
+      <text x="340" y="343" text-anchor="middle" dominant-baseline="central" fill="#fff" font-family="Arial" font-size="13" font-weight="700">Claude — Design Agent (Prompt 3)</text>
+      <text x="340" y="363" text-anchor="middle" dominant-baseline="central" fill="#FAC775" font-family="Arial" font-size="11">Converts draft → HTML email</text>
+
+      <line x1="260" y1="380" x2="200" y2="420" stroke="#854F0B" stroke-width="1.5" marker-end="url(#arr3)"/>
+      <line x1="420" y1="380" x2="480" y2="420" stroke="#854F0B" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+      <rect x="100" y="420" width="180" height="52" rx="8" fill="#faeeda" stroke="#EF9F27" stroke-width="1.5"/>
+      <text x="190" y="440" text-anchor="middle" dominant-baseline="central" fill="#412402" font-family="Arial" font-size="12" font-weight="700">newsletter.html</text>
+      <text x="190" y="458" text-anchor="middle" dominant-baseline="central" fill="#854F0B" font-family="Arial" font-size="11">Production HTML email</text>
+
+      <rect x="400" y="420" width="180" height="52" rx="8" fill="#f1efe8" stroke="#B4B2A9" stroke-width="1.5"/>
+      <text x="490" y="440" text-anchor="middle" dominant-baseline="central" fill="#2C2C2A" font-family="Arial" font-size="12" font-weight="700">newsletter.txt</text>
+      <text x="490" y="458" text-anchor="middle" dominant-baseline="central" fill="#5F5E5A" font-family="Arial" font-size="11">Plain text fallback</text>
+
+      <!-- Final arrows to Mailchimp -->
+      <line x1="190" y1="472" x2="340" y2="500" stroke="#444" stroke-width="1" marker-end="url(#arr3)"/>
+      <line x1="490" y1="472" x2="340" y2="500" stroke="#444" stroke-width="1" marker-end="url(#arr3)"/>
+      <rect x="220" y="500" width="240" height="14" rx="7" fill="#1a1a18"/>
+      <text x="340" y="507" text-anchor="middle" dominant-baseline="central" fill="#fff" font-family="Arial" font-size="10" font-weight="700">Upload to Mailchimp → Send ✓</text>
+    </svg>
+  </div>
+
+  <!-- Output files list -->
+  <h3 class="subsection">Output Files Generated</h3>
+  <div class="files-list">
+    <div class="file-item">
+      <div class="file-icon md">📝</div>
+      <div>
+        <div class="file-name">web_research.md</div>
+        <div class="file-desc">Big Story of the Week + 3–5 Quick Updates from web search</div>
+      </div>
+    </div>
+    <div class="file-item">
+      <div class="file-icon md">📝</div>
+      <div>
+        <div class="file-name">arxiv_research.md</div>
+        <div class="file-desc">Top research papers with titles, summaries, download links</div>
+      </div>
+    </div>
+    <div class="file-item">
+      <div class="file-icon md">📝</div>
+      <div>
+        <div class="file-name">github_research.md</div>
+        <div class="file-desc">Top trending GitHub repositories with star counts and descriptions</div>
+      </div>
+    </div>
+    <div class="file-item">
+      <div class="file-icon md">📝</div>
+      <div>
+        <div class="file-name">producthunt_research.md</div>
+        <div class="file-desc">Top new AI products launched this week</div>
+      </div>
+    </div>
+    <div class="file-item">
+      <div class="file-icon md">📝</div>
+      <div>
+        <div class="file-name">twitter_research.md</div>
+        <div class="file-desc">Top tweets from leading AI personalities</div>
+      </div>
+    </div>
+    <div class="file-item">
+      <div class="file-icon md">📝</div>
+      <div>
+        <div class="file-name">final_draft.md</div>
+        <div class="file-desc">Assembled 9-section newsletter draft in markdown format</div>
+      </div>
+    </div>
+    <div class="file-item">
+      <div class="file-icon html">🌐</div>
+      <div>
+        <div class="file-name">newsletter.html</div>
+        <div class="file-desc">Production-ready HTML email — compatible with Gmail, Outlook, Apple Mail</div>
+      </div>
+    </div>
+    <div class="file-item">
+      <div class="file-icon html">📃</div>
+      <div>
+        <div class="file-name">newsletter.txt</div>
+        <div class="file-desc">Plain-text fallback for clients that block HTML email rendering</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SECTION 9: MCP CONFIG ═══ -->
+<div class="section" style="background:#fff;">
+  <div class="section-label"><span class="num">9</span> MCP Configuration</div>
+  <h2 class="section-title">Zero Custom Code — Just JSON Configuration</h2>
+  <p>One of the most powerful demonstrations in the video: despite integrating 8+ external tools, <strong>Nitish wrote zero custom function calls or API wrappers</strong>. All integration is handled through a single JSON config file.</p>
+
+  <div class="code-block">
+    <pre><span class="comment">// claude_desktop_config.json — MCP Server Configuration</span>
+{
+  <span class="key">"mcpServers"</span>: {
+    <span class="key">"web-search"</span>: {
+      <span class="key">"command"</span>: <span class="str">"npx"</span>,
+      <span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-brave-search"</span>],
+      <span class="key">"env"</span>: { <span class="key">"BRAVE_API_KEY"</span>: <span class="str">"your_key_here"</span> }
+    },
+    <span class="key">"github"</span>: {
+      <span class="key">"command"</span>: <span class="str">"npx"</span>,
+      <span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-github"</span>],
+      <span class="key">"env"</span>: { <span class="key">"GITHUB_TOKEN"</span>: <span class="str">"your_token_here"</span> }
+    },
+    <span class="key">"arxiv"</span>: {
+      <span class="key">"command"</span>: <span class="str">"npx"</span>,
+      <span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-arxiv"</span>]
+    },
+    <span class="key">"google-drive"</span>: {
+      <span class="key">"command"</span>: <span class="str">"npx"</span>,
+      <span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-gdrive"</span>]
+    },
+    <span class="key">"filesystem"</span>: {
+      <span class="key">"command"</span>: <span class="str">"npx"</span>,
+      <span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-filesystem"</span>,
+               <span class="str">"/Users/your-name/Desktop"</span>]
+    }
+    <span class="comment">// ... more servers for Gmail, Twitter, Product Hunt, Notion</span>
+  }
+}</pre>
+  </div>
+
+  <div class="highlight-box">
+    <strong>Key Insight:</strong> You only provide the configuration. You never write the tool's internal logic. If the GitHub MCP server is updated with new features or bug fixes, you don't need to change a single line of your config — the server handles itself. This is the power of the MCP protocol.
+  </div>
+
+  <div class="cards">
+    <div class="card purple">
+      <h4>Add the Config</h4>
+      <p>Write a JSON entry in <code>claude_desktop_config.json</code> for each MCP server you want to add. Typically 4–8 lines per tool.</p>
+    </div>
+    <div class="card teal">
+      <h4>Claude Handles the Rest</h4>
+      <p>Claude automatically discovers the tool's capabilities, makes the appropriate API calls, and returns structured results — no glue code needed.</p>
+    </div>
+    <div class="card amber">
+      <h4>Updates Are Seamless</h4>
+      <p>When an MCP server releases updates, your config stays the same. The server-side handles all changes. Zero maintenance burden on your side.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SECTION 10: KEY TAKEAWAYS ═══ -->
+<div class="section">
+  <div class="section-label"><span class="num">10</span> Key Takeaways</div>
+  <h2 class="section-title">What MCP Enables</h2>
+  <p>The core lesson from the trailer video, summarised as actionable insights:</p>
+
+  <div class="takeaways">
+    <div class="takeaway">
+      <div class="takeaway-icon">⚡</div>
+      <div>
+        <h4>AI + Tools = Exponential Capability</h4>
+        <p>A standalone LLM is powerful but limited to its training data. Connect it to real-time tools via MCP and it becomes an autonomous agent capable of executing complex multi-step workflows.</p>
+      </div>
+    </div>
+    <div class="takeaway">
+      <div class="takeaway-icon">🔧</div>
+      <div>
+        <h4>3 Prompts to a Finished Product</h4>
+        <p>The entire newsletter — research, writing, and HTML design — is completed with just 3 carefully crafted prompts. Prompt engineering replaces traditional coding for many tasks.</p>
+      </div>
+    </div>
+    <div class="takeaway">
+      <div class="takeaway-icon">🔌</div>
+      <div>
+        <h4>Standardised Integration Protocol</h4>
+        <p>MCP provides a universal standard for AI-tool communication. Any MCP-compatible tool can be plugged in to any MCP-compatible AI — similar to how USB standardised device connections.</p>
+      </div>
+    </div>
+    <div class="takeaway">
+      <div class="takeaway-icon">📈</div>
+      <div>
+        <h4>Feedback Loop for Improvement</h4>
+        <p>By incorporating Gmail feedback and performance data, the system learns from every edition. Over time, the newsletter auto-optimises for what the audience actually reads.</p>
+      </div>
+    </div>
+    <div class="takeaway">
+      <div class="takeaway-icon">🧩</div>
+      <div>
+        <h4>Composable Architecture</h4>
+        <p>Each phase (Research, Editing, Design) is independent and swappable. You can replace any phase's tools, swap the AI model, or change the output format without rebuilding everything.</p>
+      </div>
+    </div>
+    <div class="takeaway">
+      <div class="takeaway-icon">⏱️</div>
+      <div>
+        <h4>Time Investment: Config Only</h4>
+        <p>Total custom code written by Nitish: one JSON configuration file. All business logic is handled by Claude's intelligence and the MCP servers. Build once, run indefinitely.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Document generated from <span>CampusX · MCP Trilogy Trailer Video</span> · youtube.com/watch?v=3_TN1i3MTEU</p>
+  <p style="margin-top:6px;">Series by Nitish · Topics covered: Model Context Protocol, Claude Desktop, AI Automation</p>
+</footer>
+
+</body>
+</html>

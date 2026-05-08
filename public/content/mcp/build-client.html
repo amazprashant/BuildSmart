@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Build MCP Clients | CampusX</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0eeff;--surface:#fff;--border:#dbd5ff;--border2:#c5bbff;
+  --text:#0e0828;--text2:#2e2458;--muted:#6a62a0;--dim:#afa8cc;
+  --p:#4c1fe8;--pl:#7752f0;--pp:#ede9ff;--pm:rgba(76,31,232,.1);
+  --teal:#00b8a0;--tealp:#e0faf6;--tealm:rgba(0,184,160,.1);
+  --or:#e87a00;--orp:#fff3e0;
+  --red:#dc2626;--redp:#fff1f1;
+  --bl:#1d6ef5;--blp:#eaf1ff;
+  --gr:#16a34a;--grp:#ecfdf5;
+  --pk:#db2777;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);line-height:1.75;}
+.hero{min-height:100vh;background:linear-gradient(155deg,#070218 0%,#0f0535 40%,#060e28 75%,#040b1a 100%);
+  display:flex;flex-direction:column;justify-content:flex-end;padding:80px 72px;position:relative;overflow:hidden;}
+.hg1{position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(76,31,232,.32) 0%,transparent 60%);top:-250px;right:-200px;}
+.hg2{position:absolute;width:450px;height:450px;border-radius:50%;background:radial-gradient(circle,rgba(0,184,160,.2) 0%,transparent 65%);bottom:-100px;left:100px;}
+.hg3{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(232,122,0,.12) 0%,transparent 65%);top:80px;left:50px;}
+.hgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(76,31,232,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(76,31,232,.05) 1px,transparent 1px);background-size:50px 50px;}
+.hbadge{position:relative;display:inline-flex;align-items:center;gap:10px;background:rgba(76,31,232,.2);border:1px solid rgba(76,31,232,.4);color:#c0acff;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:8px 20px;border-radius:4px;width:fit-content;margin-bottom:28px;}
+.hero h1{font-size:clamp(36px,5vw,62px);font-weight:900;line-height:1.1;color:#fff;margin-bottom:20px;position:relative;letter-spacing:-1px;}
+.hero h1 span{color:#5ef5dc;}
+.hdesc{font-size:16.5px;color:rgba(255,255,255,.48);max-width:700px;margin-bottom:52px;line-height:1.85;position:relative;}
+.hmeta{display:flex;border-top:1px solid rgba(255,255,255,.08);padding-top:26px;position:relative;}
+.hm{flex:1;padding-right:24px;border-right:1px solid rgba(255,255,255,.06);margin-right:24px;}
+.hm:last-child{border-right:none;margin-right:0;padding-right:0;}
+.hml{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.28);margin-bottom:4px;font-family:'IBM Plex Mono',monospace;}
+.hmv{font-size:14px;font-weight:600;color:rgba(255,255,255,.72);}
+.trilogy{background:var(--p);padding:0 72px;display:flex;overflow:hidden;}
+.ti{flex:1;padding:14px 16px;border-right:1px solid rgba(255,255,255,.14);display:flex;align-items:center;gap:10px;}
+.ti:last-child{border-right:none;}
+.ti.act{background:rgba(255,255,255,.14);}
+.tno{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.ti.act .tno{background:#5ef5dc;color:#070218;}
+.ttx{font-size:12px;font-weight:600;color:rgba(255,255,255,.68);}
+.ti.act .ttx{color:#fff;}
+.tsub{font-size:10px;color:rgba(255,255,255,.38);}
+.toc-w{padding:48px 72px;background:var(--surface);border-bottom:1px solid var(--border);}
+.toc-g{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border2);border-radius:14px;overflow:hidden;}
+.toc-h{grid-column:1/-1;background:var(--p);padding:15px 24px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.9);font-weight:600;}
+.te{display:flex;align-items:center;gap:14px;padding:11px 24px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);font-size:13.5px;color:var(--text2);}
+.te:nth-child(even){border-right:none;}
+.te:last-child,.te:nth-last-child(2){border-bottom:none;}
+.tnm{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--p);font-weight:600;min-width:28px;}
+.sec{padding:60px 72px;border-bottom:1px solid var(--border);}
+.sec.alt{background:var(--surface);}
+.eye{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--p);margin-bottom:12px;}
+.ed{width:5px;height:5px;background:var(--p);border-radius:50%;}
+h2.sh{font-size:31px;font-weight:800;color:var(--text);margin-bottom:14px;line-height:1.2;letter-spacing:-.5px;}
+h3.ss{font-size:19px;font-weight:700;color:var(--text);margin:30px 0 12px;}
+p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
+.note{border-radius:10px;padding:16px 20px;margin:20px 0;font-size:14.5px;line-height:1.75;border-left:3px solid;}
+.np{background:var(--pp);border-color:var(--p);color:#180870;}
+.nt{background:var(--tealp);border-color:var(--teal);color:#004d40;}
+.no{background:var(--orp);border-color:var(--or);color:#7a3500;}
+.nr{background:var(--redp);border-color:var(--red);color:#7f0000;}
+.nb{background:var(--blp);border-color:var(--bl);color:#0a3a80;}
+.ng{background:var(--grp);border-color:var(--gr);color:#144d24;}
+.note strong{font-weight:700;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:24px 0;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:24px 0;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;box-shadow:0 1px 5px rgba(76,31,232,.04);}
+.cp{border-top:2.5px solid var(--p);}
+.ct{border-top:2.5px solid var(--teal);}
+.co{border-top:2.5px solid var(--or);}
+.cr{border-top:2.5px solid var(--red);}
+.cb{border-top:2.5px solid var(--bl);}
+.cg{border-top:2.5px solid var(--gr);}
+.card h4{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.card p{font-size:13.5px;color:var(--muted);line-height:1.65;margin:0;}
+.emo{font-size:26px;margin-bottom:10px;}
+.dbox{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:28px;margin:28px 0;box-shadow:0 2px 14px rgba(76,31,232,.05);}
+.dlbl{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--dim);margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.code{background:#080520;border-radius:10px;padding:20px 24px;margin:16px 0;overflow-x:auto;border:1px solid rgba(76,31,232,.22);}
+.code pre{font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.85;color:#ddd8ff;}
+.kw{color:#c792ea;}.str{color:#a5e27a;}.num{color:#f78c6c;}.cm{color:#3e3870;}
+.k2{color:#82aaff;}.vl{color:#ffcb6b;}.pt{color:#5ef5dc;}.dc{color:#f5a623;}.fn{color:#5ef5dc;}
+.steps{display:flex;flex-direction:column;}
+.stp{display:grid;grid-template-columns:56px 1fr;border-bottom:1px solid var(--border);}
+.stp:last-child{border-bottom:none;}
+.sn{display:flex;align-items:flex-start;justify-content:center;padding-top:18px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--p);}
+.sb{padding:16px 6px 16px 0;}
+.sb h5{font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px;}
+.sb p{font-size:13.5px;color:var(--muted);margin:0;line-height:1.65;}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-radius:14px;overflow:hidden;margin:24px 0;}
+.cl{background:var(--surface);padding:26px;}
+.cl h4{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.cl.c1 h4{color:var(--p);}
+.cl.c2 h4{color:var(--teal);}
+.cr2{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--muted);}
+.cr2:last-child{border-bottom:none;}
+.cr2 strong{color:var(--text);}
+.sblock{border:1px solid var(--border2);border-radius:16px;overflow:hidden;margin:28px 0;}
+.sbh{padding:20px 26px;display:flex;align-items:center;gap:14px;color:#fff;font-weight:700;font-size:17px;}
+.sbico{width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.sbd{background:var(--surface);padding:24px 26px;}
+.tbl{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px;}
+.tbl thead th{background:var(--p);color:#fff;padding:12px 16px;text-align:left;font-weight:600;font-size:13px;}
+.tbl tbody tr{border-bottom:1px solid var(--border);}
+.tbl tbody tr:hover{background:var(--pp);}
+.tbl td{padding:12px 16px;color:var(--text2);vertical-align:top;}
+.tbl td:first-child{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--p);font-weight:600;}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.bl2{background:var(--pp);color:var(--p);}
+.bt2{background:var(--tealp);color:var(--teal);}
+.bo2{background:var(--orp);color:var(--or);}
+.bg2{background:var(--grp);color:var(--gr);}
+footer{background:#080520;color:rgba(255,255,255,.32);text-align:center;padding:36px 72px;font-size:13px;}
+footer span{color:#c0acff;}
+svg text{font-family:'Manrope',sans-serif;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hg1"></div><div class="hg2"></div><div class="hg3"></div><div class="hgrid"></div>
+  <div class="hbadge">▶ CampusX · MCP Trilogy · How to Build MCP Clients</div>
+  <h1>Build Your Own<br><span>MCP Client</span></h1>
+  <p class="hdesc">A complete practical guide to building a custom MCP client using <code>langchain-mcp-adapters</code> — connecting to local and remote servers simultaneously, executing the full 6-step tool call flow, and packaging everything as a Streamlit GUI chatbot with three MCP servers attached.</p>
+  <div class="hmeta">
+    <div class="hm"><div class="hml">Presenter</div><div class="hmv">Nitish · CampusX</div></div>
+    <div class="hm"><div class="hml">Library</div><div class="hmv">langchain-mcp-adapters</div></div>
+    <div class="hm"><div class="hml">Servers</div><div class="hmv">Math · Expense Tracker · Manim</div></div>
+    <div class="hm"><div class="hml">UI</div><div class="hmv">Streamlit</div></div>
+    <div class="hm"><div class="hml">LLM</div><div class="hmv">OpenAI GPT-4</div></div>
+  </div>
+</div>
+
+<div class="trilogy">
+  <div class="ti"><div class="tno">✓</div><div><div class="ttx">The Why</div><div class="tsub">Why MCP exists</div></div></div>
+  <div class="ti"><div class="tno">✓</div><div><div class="ttx">The What</div><div class="tsub">Architecture + Lifecycle</div></div></div>
+  <div class="ti"><div class="tno">✓</div><div><div class="ttx">How 1</div><div class="tsub">Existing servers</div></div></div>
+  <div class="ti"><div class="tno">✓</div><div><div class="ttx">How 2</div><div class="tsub">Local server</div></div></div>
+  <div class="ti"><div class="tno">✓</div><div><div class="ttx">How 3</div><div class="tsub">Remote server</div></div></div>
+  <div class="ti act"><div class="tno">→</div><div><div class="ttx">How 4 — This Video</div><div class="tsub">Build your own client</div></div></div>
+</div>
+
+<div class="toc-w">
+  <div class="toc-g">
+    <div class="toc-h">// Table of Contents</div>
+    <div class="te"><span class="tnm">01</span> Why Build a Custom MCP Client?</div>
+    <div class="te"><span class="tnm">02</span> Library Choice — langchain-mcp-adapters</div>
+    <div class="te"><span class="tnm">03</span> What We're Building — Goal & Architecture</div>
+    <div class="te"><span class="tnm">04</span> Project Setup: uv + All Dependencies</div>
+    <div class="te"><span class="tnm">05</span> The Math Server (Local) — Preview & Code</div>
+    <div class="te"><span class="tnm">06</span> Client 1 — Connect + Fetch Tools</div>
+    <div class="te"><span class="tnm">07</span> The Full 6-Step Tool Call Flow</div>
+    <div class="te"><span class="tnm">08</span> Handling Tool vs Non-Tool Queries</div>
+    <div class="te"><span class="tnm">09</span> Multi-Tool Loop Enhancement</div>
+    <div class="te"><span class="tnm">10</span> Adding the Remote Expense Tracker</div>
+    <div class="te"><span class="tnm">11</span> Adding Manim (Third-Party Server)</div>
+    <div class="te"><span class="tnm">12</span> Client 2 — Streamlit GUI Chatbot</div>
+    <div class="te"><span class="tnm">13</span> Complete Architecture Diagram</div>
+    <div class="te"><span class="tnm">14</span> Key Takeaways & What's Next</div>
+  </div>
+</div>
+
+<!-- SEC 1 -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 01</div>
+  <h2 class="sh">Why Build a Custom MCP Client?</h2>
+  <p class="bd">All previous videos used Claude Desktop as the ready-made client. But real-world AI applications need their own clients. If you're building a chatbot, a web app, or an automation agent, you need to programmatically connect to MCP servers.</p>
+  <div class="cmp">
+    <div class="cl c1">
+      <h4>Claude Desktop (Used So Far)</h4>
+      <div class="cr2"><strong>Type:</strong>&nbsp;Ready-made host + client by Anthropic</div>
+      <div class="cr2"><strong>LLM:</strong>&nbsp;Only Claude — no GPT-4, Gemini, Llama</div>
+      <div class="cr2"><strong>UI:</strong>&nbsp;Fixed Anthropic-provided chat interface</div>
+      <div class="cr2"><strong>Control:</strong>&nbsp;Limited — configure servers only</div>
+      <div class="cr2"><strong>Embedding:</strong>&nbsp;Cannot embed in your own app</div>
+      <div class="cr2"><strong>Deployment:</strong>&nbsp;Desktop app only</div>
+    </div>
+    <div class="cl c2">
+      <h4>Custom Client (This Video)</h4>
+      <div class="cr2"><strong>Type:</strong>&nbsp;Your own Python code using a library</div>
+      <div class="cr2"><strong>LLM:</strong>&nbsp;Any — GPT-4, Claude API, Gemini, local</div>
+      <div class="cr2"><strong>UI:</strong>&nbsp;Any UI: Streamlit, React, FastAPI, mobile</div>
+      <div class="cr2"><strong>Control:</strong>&nbsp;Full — you own the entire flow</div>
+      <div class="cr2"><strong>Embedding:</strong>&nbsp;Embed in any product or service</div>
+      <div class="cr2"><strong>Deployment:</strong>&nbsp;Web, cloud, Dockerized, serverless</div>
+    </div>
+  </div>
+  <div class="note np"><strong>The key shift:</strong> Building your own client means any chatbot you create can talk to any MCP server in the world. Your personal assistant becomes truly universal — add math tools, expense tracking, code execution, 3D animation, web search — all from one chat interface you control.</div>
+</div>
+
+<!-- SEC 2 -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 02</div>
+  <h2 class="sh">Library Choice — langchain-mcp-adapters</h2>
+  <p class="bd">Three options exist for building MCP clients in Python. Nitish evaluated all three and chose <code>langchain-mcp-adapters</code> for the simplest and most practical path.</p>
+  <div class="g3">
+    <div class="card cp">
+      <div class="emo">📘</div>
+      <h4>Option A — Official MCP SDK</h4>
+      <p>Anthropic's own Python <code>mcp</code> library. Lowest level — maximum protocol control. More boilerplate needed to wire an LLM to the tools.</p>
+    </div>
+    <div class="card cp">
+      <div class="emo">⚡</div>
+      <h4>Option B — fastmcp Client</h4>
+      <p>fastmcp also has client capabilities. Consistent with server-side fastmcp code. Good choice if already deep in fastmcp ecosystem.</p>
+    </div>
+    <div class="card cg">
+      <div class="emo">✅</div>
+      <h4>Option C — langchain-mcp-adapters ← Chosen</h4>
+      <p><strong>Why:</strong> Simplest approach — minimal code. Plus: integrates natively with LangChain/LangGraph, auto-converts MCP tools into LangChain StructuredTool objects that work with <code>llm.bind_tools()</code>.</p>
+    </div>
+  </div>
+  <div class="note nt"><strong>What it does under the hood:</strong> <code>langchain-mcp-adapters</code> is described as "a lightweight wrapper that makes MCP tools compatible with LangChain and LangGraph." It handles all MCP protocol communication and schema conversion — you just call <code>get_tools()</code> and get standard LangChain tools back.</div>
+</div>
+
+<!-- SEC 3 -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 03</div>
+  <h2 class="sh">What We're Building — Goal & Architecture</h2>
+  <p class="bd">The final product: a Streamlit chatbot connected to three MCP servers — intentionally chosen to cover every possible combination (local/remote, your own/third-party).</p>
+  <div class="g3">
+    <div class="card ct">
+      <div class="emo">🔢</div>
+      <h4>Server 1 — Math MCP</h4>
+      <p><span class="badge bl2">Local</span> <span class="badge bl2">stdio</span><br>Built by Nitish. 6 arithmetic tools: add, subtract, multiply, divide, power, modulo. Runs as a subprocess on your machine.</p>
+    </div>
+    <div class="card cp">
+      <div class="emo">💸</div>
+      <h4>Server 2 — Expense Tracker MCP</h4>
+      <p><span class="badge bt2">Remote</span> <span class="badge bt2">HTTP</span><br>Built + deployed in the previous video on fastmcp Cloud. Connect via HTTPS URL. add_expense, list_expenses, summarize.</p>
+    </div>
+    <div class="card co">
+      <div class="emo">🎬</div>
+      <h4>Server 3 — Manim MCP</h4>
+      <p><span class="badge bl2">Local</span> <span class="badge bo2">3rd-party</span><br>Community-built GitHub server. Generates 3Blue1Brown-style math animations. Demonstrates: any server works with this pattern.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 4 -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 04</div>
+  <h2 class="sh">Project Setup: uv + All Dependencies</h2>
+  <div class="code"><pre><span class="cm"># Step 1: Install uv (fast Python package manager)</span>
+<span class="vl">$</span> pip install uv
+
+<span class="cm"># Step 2: Create project folder and open in VS Code</span>
+<span class="cm"># e.g., ~/Desktop/mcp-client/</span>
+
+<span class="cm"># Step 3: Initialize uv in the folder</span>
+<span class="vl">$</span> uv init .
+
+<span class="cm"># Step 4: Install all dependencies</span>
+<span class="vl">$</span> uv add langchain langchain-openai langchain-mcp-adapters streamlit
+
+<span class="cm"># Packages:
+# langchain               → Core LangChain framework
+# langchain-openai        → ChatOpenAI (GPT-4) integration
+# langchain-mcp-adapters  → MultiServerMCPClient — the key library!
+# streamlit               → Chat GUI</span>
+
+<span class="cm"># Step 5: Create .env with OpenAI API key</span>
+<span class="cm"># .env</span>
+OPENAI_API_KEY=<span class="str">"sk-your-key-here"</span></pre></div>
+</div>
+
+<!-- SEC 5 -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 05</div>
+  <h2 class="sh">The Math Server (Local) — Preview & Code</h2>
+  <p class="bd">Before building the client, Nitish tests the Math server in MCP Inspector to confirm it runs properly. The server has 6 tools built with fastmcp.</p>
+  <div class="code"><pre><span class="cm"># mcp-math-server/main.py</span>
+<span class="kw">from</span> fastmcp <span class="kw">import</span> FastMCP
+
+mcp = FastMCP(<span class="str">"math-server"</span>)
+
+<span class="dc">@mcp.tool()</span>
+<span class="kw">def</span> <span class="fn">add</span>(a: <span class="kw">float</span>, b: <span class="kw">float</span>) -> <span class="kw">float</span>:
+    <span class="str">"""Add two numbers."""</span>
+    <span class="kw">return</span> a + b
+
+<span class="dc">@mcp.tool()</span>
+<span class="kw">def</span> <span class="fn">subtract</span>(a: <span class="kw">float</span>, b: <span class="kw">float</span>) -> <span class="kw">float</span>:
+    <span class="str">"""Subtract b from a."""</span>
+    <span class="kw">return</span> a - b
+
+<span class="dc">@mcp.tool()</span>
+<span class="kw">def</span> <span class="fn">multiply</span>(a: <span class="kw">float</span>, b: <span class="kw">float</span>) -> <span class="kw">float</span>:
+    <span class="str">"""Multiply two numbers."""</span>
+    <span class="kw">return</span> a * b
+
+<span class="dc">@mcp.tool()</span>
+<span class="kw">def</span> <span class="fn">divide</span>(a: <span class="kw">float</span>, b: <span class="kw">float</span>) -> <span class="kw">float</span>:
+    <span class="str">"""Divide a by b."""</span>
+    <span class="kw">return</span> a / b
+
+<span class="dc">@mcp.tool()</span>
+<span class="kw">def</span> <span class="fn">power</span>(base: <span class="kw">float</span>, exp: <span class="kw">float</span>) -> <span class="kw">float</span>:
+    <span class="str">"""Raise base to exp."""</span>
+    <span class="kw">return</span> base ** exp
+
+<span class="dc">@mcp.tool()</span>
+<span class="kw">def</span> <span class="fn">modulo</span>(a: <span class="kw">int</span>, b: <span class="kw">int</span>) -> <span class="kw">int</span>:
+    <span class="str">"""Return remainder of a / b."""</span>
+    <span class="kw">return</span> a % b
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    mcp.run()  <span class="cm"># stdio transport — local server</span></pre></div>
+  <div class="note np"><strong>MCP Inspector test:</strong> <code>uv run fastmcp dev main.py</code> → Connect → Tools → List Tools shows 6 tools. Test: modulo(21, 7) → 0. Server confirmed working.</div>
+</div>
+
+<!-- SEC 6 -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 06</div>
+  <h2 class="sh">Client 1 — Connect + Fetch Tools</h2>
+  <p class="bd">The client is built incrementally. Step one: connect to the Math server, discover its tools, and store them in a usable dictionary format.</p>
+  <div class="code"><pre><span class="cm"># client1.py — Stage 1: Connect and fetch tools</span>
+<span class="kw">import</span> asyncio
+<span class="kw">from</span> langchain_mcp_adapters.client <span class="kw">import</span> MultiServerMCPClient
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> ChatOpenAI
+<span class="kw">from</span> langchain_core.messages <span class="kw">import</span> ToolMessage
+load_dotenv()
+
+<span class="cm"># ── Server Configuration ─────────────────────────────────────────────
+# Same format as Claude Desktop's claude_desktop_config.json!
+# "math"      = name we assign to this server
+# transport   = "stdio" because it runs locally on this machine</span>
+servers = {
+    <span class="str">"math"</span>: {
+        <span class="str">"transport"</span>: <span class="str">"stdio"</span>,
+        <span class="str">"command"</span>: <span class="str">"/Users/nitish/.local/bin/uv"</span>,  <span class="cm"># abs path (which uv)</span>
+        <span class="str">"args"</span>: [
+            <span class="str">"run"</span>, <span class="str">"fastmcp"</span>, <span class="str">"run"</span>,
+            <span class="str">"/Users/nitish/Desktop/mcp-math-server/main.py"</span>
+        ]
+    }
+}
+
+<span class="kw">async def</span> <span class="fn">main</span>():
+    <span class="cm"># Step 1: Create the multi-server client</span>
+    client = MultiServerMCPClient(servers=servers)
+
+    <span class="cm"># Step 2: Fetch all tools — returns List[StructuredTool]
+    # Client automatically starts the Math server as a subprocess</span>
+    tools = <span class="kw">await</span> client.get_tools()
+
+    <span class="cm"># Step 3: Build named_tools dict for easy lookup
+    # Format: { "add": <tool_obj>, "multiply": <tool_obj>, ... }</span>
+    named_tools = {tool.name: tool <span class="kw">for</span> tool <span class="kw">in</span> tools}
+    <span class="kw">print</span>(list(named_tools.keys()))
+    <span class="cm"># Output: ['add', 'subtract', 'multiply', 'divide', 'power', 'modulo']</span>
+
+asyncio.run(main())</pre></div>
+
+  <div class="note no"><strong>Important — Use absolute paths:</strong> The client spawns the server as a child process. Use <code>which uv</code> (Mac/Linux) to get uv's absolute path. Use the full path to <code>main.py</code>. Relative paths will fail if the working directory differs.</div>
+</div>
+
+<!-- SEC 7 -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 07</div>
+  <h2 class="sh">The Full 6-Step Tool Call Flow</h2>
+  <p class="bd">This is the core of the MCP client. When a user asks a question that needs a tool, the flow follows exactly 6 steps. Every step maps to a specific piece of code.</p>
+
+  <div class="dbox">
+    <div class="dlbl">// The 6-step MCP tool call cycle</div>
+    <svg width="100%" viewBox="0 0 680 190" role="img">
+      <title>Six-step MCP tool call flow</title>
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <rect x="10" y="28" width="94" height="74" rx="10" fill="rgba(76,31,232,.1)" stroke="#4c1fe8" stroke-width="1.5"/>
+      <text x="57" y="58" text-anchor="middle" fill="#4c1fe8" font-size="18">①</text>
+      <text x="57" y="76" text-anchor="middle" fill="#180870" font-size="11" font-weight="700">Prompt</text>
+      <text x="57" y="92" text-anchor="middle" fill="rgba(76,31,232,.6)" font-size="10">User sends query</text>
+      <line x1="104" y1="65" x2="120" y2="65" stroke="#4c1fe8" stroke-width="1.5" marker-end="url(#ar)"/>
+
+      <rect x="120" y="28" width="94" height="74" rx="10" fill="rgba(22,163,74,.1)" stroke="#16a34a" stroke-width="1.5"/>
+      <text x="167" y="58" text-anchor="middle" fill="#16a34a" font-size="18">②</text>
+      <text x="167" y="76" text-anchor="middle" fill="#144d24" font-size="11" font-weight="700">LLM Decides</text>
+      <text x="167" y="92" text-anchor="middle" fill="rgba(22,163,74,.6)" font-size="10">tool_calls filled</text>
+      <line x1="214" y1="65" x2="230" y2="65" stroke="#16a34a" stroke-width="1.5" marker-end="url(#ar)"/>
+
+      <rect x="230" y="28" width="94" height="74" rx="10" fill="rgba(29,110,245,.1)" stroke="#1d6ef5" stroke-width="1.5"/>
+      <text x="277" y="58" text-anchor="middle" fill="#1d6ef5" font-size="18">③</text>
+      <text x="277" y="76" text-anchor="middle" fill="#0a3a80" font-size="11" font-weight="700">Extract Info</text>
+      <text x="277" y="92" text-anchor="middle" fill="rgba(29,110,245,.6)" font-size="10">name, args, id</text>
+      <line x1="324" y1="65" x2="340" y2="65" stroke="#1d6ef5" stroke-width="1.5" marker-end="url(#ar)"/>
+
+      <rect x="340" y="28" width="94" height="74" rx="10" fill="rgba(232,122,0,.1)" stroke="#e87a00" stroke-width="1.5"/>
+      <text x="387" y="58" text-anchor="middle" fill="#e87a00" font-size="18">④</text>
+      <text x="387" y="76" text-anchor="middle" fill="#7a3500" font-size="11" font-weight="700">Execute Tool</text>
+      <text x="387" y="92" text-anchor="middle" fill="rgba(232,122,0,.6)" font-size="10">tool.ainvoke(args)</text>
+      <line x1="434" y1="65" x2="450" y2="65" stroke="#e87a00" stroke-width="1.5" marker-end="url(#ar)"/>
+
+      <rect x="450" y="28" width="94" height="74" rx="10" fill="rgba(219,39,119,.1)" stroke="#db2777" stroke-width="1.5"/>
+      <text x="497" y="58" text-anchor="middle" fill="#db2777" font-size="18">⑤</text>
+      <text x="497" y="76" text-anchor="middle" fill="rgba(90,0,50,.8)" font-size="11" font-weight="700">ToolMessage</text>
+      <text x="497" y="92" text-anchor="middle" fill="rgba(219,39,119,.6)" font-size="10">result + call_id</text>
+      <line x1="544" y1="65" x2="560" y2="65" stroke="#db2777" stroke-width="1.5" marker-end="url(#ar)"/>
+
+      <rect x="560" y="28" width="110" height="74" rx="10" fill="rgba(0,184,160,.15)" stroke="#00b8a0" stroke-width="2"/>
+      <text x="615" y="58" text-anchor="middle" fill="#00b8a0" font-size="18">⑥</text>
+      <text x="615" y="76" text-anchor="middle" fill="#004d40" font-size="11" font-weight="700">Final Answer</text>
+      <text x="615" y="92" text-anchor="middle" fill="rgba(0,184,160,.6)" font-size="10">LLM → user ✓</text>
+
+      <text x="57" y="128" text-anchor="middle" fill="rgba(76,31,232,.5)" font-size="10">"12 × 15?"</text>
+      <text x="167" y="128" text-anchor="middle" fill="rgba(22,163,74,.5)" font-size="10">→ multiply</text>
+      <text x="277" y="128" text-anchor="middle" fill="rgba(29,110,245,.5)" font-size="10">a=12, b=15</text>
+      <text x="387" y="128" text-anchor="middle" fill="rgba(232,122,0,.5)" font-size="10">→ 180</text>
+      <text x="497" y="128" text-anchor="middle" fill="rgba(219,39,119,.5)" font-size="10">content="180"</text>
+      <text x="615" y="128" text-anchor="middle" fill="rgba(0,184,160,.5)" font-size="10">"Answer: 180"</text>
+
+      <text x="340" y="165" text-anchor="middle" fill="var(--dim)" font-size="11">Pass full history to LLM in step ⑥: [prompt, response, tool_message]</text>
+    </svg>
+  </div>
+
+  <div class="code"><pre><span class="cm"># client1.py — Full 6-step tool call flow</span>
+<span class="kw">async def</span> <span class="fn">main</span>():
+    client = MultiServerMCPClient(servers=servers)
+    tools = <span class="kw">await</span> client.get_tools()
+    named_tools = {t.name: t <span class="kw">for</span> t <span class="kw">in</span> tools}
+
+    <span class="cm"># ── ①② LLM with tools ────────────────────────────────────────────────</span>
+    llm = ChatOpenAI(model=<span class="str">"gpt-4"</span>)
+    llm_with_tools = llm.bind_tools(tools)  <span class="cm"># pass the LIST, not dict</span>
+
+    <span class="cm"># ── ① Send prompt ────────────────────────────────────────────────────</span>
+    prompt = <span class="str">"Using the math tool, what is the product of 12 and 15?"</span>
+    response = <span class="kw">await</span> llm_with_tools.ainvoke(prompt)
+    <span class="cm"># response.content = ""  (empty = tool call needed)
+    # response.tool_calls = [{"name":"multiply","args":{"a":12,"b":15},"id":"..."}]</span>
+
+    <span class="cm"># ── ② Check if tool needed ───────────────────────────────────────────</span>
+    <span class="kw">if not</span> response.tool_calls:
+        <span class="kw">print</span>(response.content)  <span class="cm"># direct answer (no tool)</span>
+        <span class="kw">return</span>
+
+    <span class="cm"># ── ③ Extract tool name, args, ID ────────────────────────────────────</span>
+    tool_call = response.tool_calls[<span class="num">0</span>]           <span class="cm"># first tool call</span>
+    selected_tool      = tool_call[<span class="str">"name"</span>]      <span class="cm"># "multiply"</span>
+    selected_tool_args = tool_call[<span class="str">"args"</span>]      <span class="cm"># {"a": 12, "b": 15}</span>
+    selected_tool_id   = tool_call[<span class="str">"id"</span>]       <span class="cm"># "call_abc123"</span>
+
+    <span class="cm"># ── ④ Execute the tool via MCP ───────────────────────────────────────</span>
+    tool_result = <span class="kw">await</span> named_tools[selected_tool].ainvoke(selected_tool_args)
+    <span class="cm"># tool_result = 180</span>
+
+    <span class="cm"># ── ⑤ Wrap result in ToolMessage ─────────────────────────────────────</span>
+    tool_message = ToolMessage(
+        content=str(tool_result),
+        tool_call_id=selected_tool_id  <span class="cm"># must match ③'s id</span>
+    )
+
+    <span class="cm"># ── ⑥ Send full history back → get final answer ──────────────────────</span>
+    final_response = <span class="kw">await</span> llm_with_tools.ainvoke(
+        [prompt, response, tool_message]  <span class="cm"># full conversation history</span>
+    )
+    <span class="kw">print</span>(final_response.content)
+    <span class="cm"># "The product of 12 and 15 is 180."</span>
+
+asyncio.run(main())</pre></div>
+
+  <table class="tbl">
+    <thead><tr><th>Step</th><th>Variable</th><th>Type</th><th>Example value</th></tr></thead>
+    <tbody>
+      <tr><td>① prompt</td><td>prompt</td><td>str</td><td>"What is 12 × 15?"</td></tr>
+      <tr><td>② response</td><td>response</td><td>AIMessage</td><td>tool_calls=[{name:"multiply", args:{a:12,b:15}, id:"call_abc"}]</td></tr>
+      <tr><td>③ extracted</td><td>selected_tool, args, id</td><td>str, dict, str</td><td>"multiply", {a:12,b:15}, "call_abc"</td></tr>
+      <tr><td>④ result</td><td>tool_result</td><td>any</td><td>180</td></tr>
+      <tr><td>⑤ message</td><td>tool_message</td><td>ToolMessage</td><td>ToolMessage(content="180", tool_call_id="call_abc")</td></tr>
+      <tr><td>⑥ final</td><td>final_response</td><td>AIMessage</td><td>"The product of 12 and 15 is 180."</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- SEC 8 -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 08</div>
+  <h2 class="sh">Handling Tool vs Non-Tool Queries</h2>
+  <p class="bd">When the user asks a general question ("What is the capital of India?"), no MCP tool is needed. Without the guard clause, the code crashes because <code>response.tool_calls</code> is empty.</p>
+  <div class="g2">
+    <div class="card cg">
+      <h4>✅ Non-Tool Query</h4>
+      <p><strong>Prompt:</strong> "What is the capital of India?"<br><br><code>response.tool_calls</code> is empty → print <code>response.content</code> ("New Delhi") → return immediately. No MCP server involved at all.</p>
+    </div>
+    <div class="card ct">
+      <h4>🔧 Tool Query</h4>
+      <p><strong>Prompt:</strong> "What is the remainder of 2314 ÷ 7?"<br><br><code>response.tool_calls</code> has an entry → execute 6-step flow → modulo(2314, 7) = 2 → "The remainder is 2."</p>
+    </div>
+  </div>
+  <div class="code"><pre><span class="cm"># The guard clause that makes both cases work</span>
+response = <span class="kw">await</span> llm_with_tools.ainvoke(prompt)
+
+<span class="kw">if not</span> response.tool_calls:
+    <span class="cm"># ─ No tool needed: LLM answered directly ─</span>
+    <span class="kw">print</span>(response.content)
+    <span class="kw">return</span>           <span class="cm"># ← exit here, skip all tool-call code</span>
+
+<span class="cm"># ─ Tool needed: continue with steps ③-⑥ ─
+# ... rest of tool call code ...</span></pre></div>
+</div>
+
+<!-- SEC 9 -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 09</div>
+  <h2 class="sh">Multi-Tool Loop Enhancement</h2>
+  <p class="bd">The LLM may suggest calling multiple tools simultaneously. For example: "What is 3×4 AND 8+9?" could trigger two tool calls at once. Without a loop, only the first call would execute.</p>
+  <div class="code"><pre><span class="cm"># Enhanced: loop over ALL tool calls from the LLM response</span>
+
+<span class="kw">if not</span> response.tool_calls:
+    <span class="kw">print</span>(response.content)
+    <span class="kw">return</span>
+
+tool_messages = []  <span class="cm"># collect results from all tool calls</span>
+
+<span class="kw">for</span> tool_call <span class="kw">in</span> response.tool_calls:  <span class="cm"># ← loop (was: [0] only)</span>
+    selected_tool      = tool_call[<span class="str">"name"</span>]
+    selected_tool_args = tool_call[<span class="str">"args"</span>]
+    selected_tool_id   = tool_call[<span class="str">"id"</span>]
+
+    tool_result = <span class="kw">await</span> named_tools[selected_tool].ainvoke(selected_tool_args)
+
+    tool_messages.append(
+        ToolMessage(content=str(tool_result), tool_call_id=selected_tool_id)
+    )
+
+<span class="cm"># Pass ALL tool results back to LLM at once</span>
+final_response = <span class="kw">await</span> llm_with_tools.ainvoke(
+    [prompt, response, *tool_messages]  <span class="cm"># unpack all tool messages</span>
+)
+<span class="kw">print</span>(final_response.content)</pre></div>
+</div>
+
+<!-- SEC 10 -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 10</div>
+  <h2 class="sh">Adding the Remote Expense Tracker Server</h2>
+  <p class="bd">Adding a second server requires ONE change: add an entry to the <code>servers</code> dict. <code>get_tools()</code> automatically aggregates tools from all servers.</p>
+
+  <div class="sblock">
+    <div class="sbh" style="background:linear-gradient(135deg,#4c1fe8,#7752f0);">
+      <div class="sbico">💸</div>
+      <div>
+        <div>Expense Tracker — Remote Server Addition</div>
+        <div style="font-size:12px;font-weight:400;opacity:.8;margin-top:3px;">streamable_http · fastmcp Cloud · from previous video</div>
+      </div>
+      <span class="badge bt2" style="margin-left:auto;">Remote</span>
+    </div>
+    <div class="sbd">
+      <div class="code"><pre><span class="cm"># Add one entry — that's all!</span>
+servers = {
+    <span class="str">"math"</span>: {
+        <span class="str">"transport"</span>: <span class="str">"stdio"</span>,
+        <span class="str">"command"</span>: <span class="str">"/path/to/uv"</span>,
+        <span class="str">"args"</span>: [<span class="str">"run"</span>, <span class="str">"fastmcp"</span>, <span class="str">"run"</span>, <span class="str">"/path/to/math/main.py"</span>]
+    },
+    <span class="str">"expense"</span>: {                               <span class="cm"># ← NEW</span>
+        <span class="str">"transport"</span>: <span class="str">"streamable_http"</span>,       <span class="cm"># remote = HTTP</span>
+        <span class="str">"url"</span>: <span class="str">"https://your-slug.fastmcp.cloud/"</span>
+    }
+}
+
+<span class="cm"># Result: get_tools() now returns 9 tools:
+# From math server:    add, subtract, multiply, divide, power, modulo
+# From expense server: add_expense, list_expenses, summarize
+#
+# Demo prompt:
+# "Add an expense ₹800 for groceries on 4th November"
+# → LLM routes to add_expense on remote server
+# → Response: "Your expense has been added. Date: Nov 4, Category: Food, Amount: ₹800"</span></pre></div>
+      <div class="note nt"><strong>MultiServerMCPClient magic:</strong> The client maintains connections to ALL servers simultaneously. When a query arrives, the LLM sees all 9 tools and automatically routes to the right one based on the tool descriptions. No manual routing needed.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 11 -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 11</div>
+  <h2 class="sh">Adding Manim (Third-Party Community Server)</h2>
+  <p class="bd">Nitish adds the Manim server specifically to prove a point: <em>any</em> community MCP server — one you've never written — works with the exact same pattern.</p>
+
+  <div class="sblock">
+    <div class="sbh" style="background:linear-gradient(135deg,#e87a00,#f59e0b);">
+      <div class="sbico">🎬</div>
+      <div>
+        <div>Manim — Third-Party Community Server</div>
+        <div style="font-size:12px;font-weight:400;opacity:.8;margin-top:3px;">stdio · Cloned from GitHub · Generates 3Blue1Brown-style animations</div>
+      </div>
+      <span class="badge bo2" style="margin-left:auto;">3rd-party</span>
+    </div>
+    <div class="sbd">
+      <div class="code"><pre>servers = {
+    <span class="str">"math"</span>:    { <span class="str">"transport"</span>: <span class="str">"stdio"</span>, ... },
+    <span class="str">"expense"</span>: { <span class="str">"transport"</span>: <span class="str">"streamable_http"</span>, ... },
+
+    <span class="str">"manim"</span>: {                            <span class="cm"># ← 3rd-party server</span>
+        <span class="str">"transport"</span>: <span class="str">"stdio"</span>,
+        <span class="str">"command"</span>: <span class="str">"/abs/path/to/python3"</span>,
+        <span class="str">"args"</span>: [<span class="str">"/abs/path/to/manim-mcp-server/src/server.py"</span>],
+        <span class="str">"env"</span>: { <span class="str">"MANIM_PATH"</span>: <span class="str">"/abs/path/to/manim"</span> }
+    }
+}
+
+<span class="cm"># New tools added: execute_manim_code, cleanup_manim_temp_dir
+# Total tools now: 6 (math) + 3 (expense) + 2 (manim) = 11
+#
+# Demo prompt:
+# "Draw a triangle rotating in place using the Manim tool"
+# → LLM calls execute_manim_code with generated Manim Python code
+# → Manim renders the animation video file
+# → Streamlit displays the video inline in the chat ✓</span></pre></div>
+      <div class="note no"><strong>Key insight:</strong> The Manim server was someone else's GitHub project. To use it with your client: (1) clone the repo, (2) find the server.py path, (3) paste the config block. Zero new code needed. This works for any community MCP server found on GitHub or awesome-mcp-servers.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 12 -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 12</div>
+  <h2 class="sh">Client 2 — Streamlit GUI Chatbot</h2>
+  <p class="bd">The final version wraps all logic in a Streamlit GUI. The MCP core logic is identical to client1.py — only the input/output changes from terminal to a browser chat interface.</p>
+  <div class="code"><pre><span class="cm"># client2.py — Streamlit chatbot (key structure)</span>
+<span class="kw">import</span> asyncio, streamlit <span class="kw">as</span> st
+<span class="kw">from</span> langchain_mcp_adapters.client <span class="kw">import</span> MultiServerMCPClient
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> ChatOpenAI
+<span class="kw">from</span> langchain_core.messages <span class="kw">import</span> ToolMessage
+
+<span class="cm"># ── Same servers dict ─────────────────────────────────────────────────</span>
+servers = { <span class="str">"math"</span>: {...}, <span class="str">"expense"</span>: {...}, <span class="str">"manim"</span>: {...} }
+
+<span class="kw">async def</span> <span class="fn">get_tools_and_llm</span>():
+    client = MultiServerMCPClient(servers=servers)
+    tools = <span class="kw">await</span> client.get_tools()
+    named_tools = {t.name: t <span class="kw">for</span> t <span class="kw">in</span> tools}
+    llm_with_tools = ChatOpenAI(model=<span class="str">"gpt-4"</span>).bind_tools(tools)
+    <span class="kw">return</span> named_tools, llm_with_tools
+
+<span class="kw">async def</span> <span class="fn">chat</span>(prompt, named_tools, llm_with_tools):
+    response = <span class="kw">await</span> llm_with_tools.ainvoke(prompt)
+    <span class="kw">if not</span> response.tool_calls:
+        <span class="kw">return</span> response.content
+    tool_messages = []
+    <span class="kw">for</span> tc <span class="kw">in</span> response.tool_calls:
+        result = <span class="kw">await</span> named_tools[tc[<span class="str">"name"</span>]].ainvoke(tc[<span class="str">"args"</span>])
+        tool_messages.append(ToolMessage(str(result), tool_call_id=tc[<span class="str">"id"</span>]))
+    final = <span class="kw">await</span> llm_with_tools.ainvoke([prompt, response, *tool_messages])
+    <span class="kw">return</span> final.content
+
+<span class="cm"># ── Streamlit UI ──────────────────────────────────────────────────────</span>
+st.title(<span class="str">"🤖 MCP Chatbot"</span>)
+<span class="kw">if</span> <span class="str">"msgs"</span> <span class="kw">not in</span> st.session_state: st.session_state.msgs = []
+<span class="kw">for</span> m <span class="kw">in</span> st.session_state.msgs:
+    st.chat_message(m[<span class="str">"role"</span>]).write(m[<span class="str">"content"</span>])
+<span class="kw">if</span> user_in := st.chat_input(<span class="str">"Ask anything..."</span>):
+    st.session_state.msgs.append({<span class="str">"role"</span>:<span class="str">"user"</span>,<span class="str">"content"</span>:user_in})
+    st.chat_message(<span class="str">"user"</span>).write(user_in)
+    nt, llm = asyncio.run(get_tools_and_llm())
+    answer = asyncio.run(chat(user_in, nt, llm))
+    st.session_state.msgs.append({<span class="str">"role"</span>:<span class="str">"assistant"</span>,<span class="str">"content"</span>:answer})
+    st.chat_message(<span class="str">"assistant"</span>).write(answer)</pre></div>
+
+  <div class="code"><pre><span class="cm"># Run the chatbot</span>
+<span class="vl">$</span> streamlit run client2.py
+<span class="cm"># Opens at http://localhost:8501</span>
+
+<span class="cm"># Three live demos from the video:
+# 1. "Show me all expenses from last 2 weeks"
+#    → list_expenses (remote Expense Tracker) → "1 expense: Groceries ₹800 on Nov 4" ✓
+#
+# 2. "What is the remainder of 2314 divided by 23?"
+#    → modulo (local Math server) → 13 ✓
+#
+# 3. "Make an animation video of a circle using the Manim tool"
+#    → execute_manim_code (local Manim server)
+#    → Animation rendered → Video displayed inline in Streamlit ✓</span></pre></div>
+
+  <div class="g3">
+    <div class="card cg">
+      <div class="emo">💬</div>
+      <h4>General Chat</h4>
+      <p>Any factual question → LLM answers directly without tools. Full conversational capability alongside MCP tools.</p>
+    </div>
+    <div class="card ct">
+      <div class="emo">📊</div>
+      <h4>MCP Tool Queries</h4>
+      <p>Expense tracking, math calculations → LLM routes to the right MCP server automatically based on tool descriptions.</p>
+    </div>
+    <div class="card co">
+      <div class="emo">🎥</div>
+      <h4>Video Generation</h4>
+      <p>Animation requests → Manim server renders → Video file displayed inline in the Streamlit chat. Rich media output!</p>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 13 -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 13</div>
+  <h2 class="sh">Complete Architecture Diagram</h2>
+
+  <div class="dbox">
+    <div class="dlbl">// Full system: Streamlit → MCP Client Core → 3 Servers</div>
+    <svg width="100%" viewBox="0 0 680 420" role="img">
+      <title>Complete MCP client system architecture</title>
+      <defs>
+        <marker id="a5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- User -->
+      <rect x="10" y="170" width="100" height="80" rx="12" fill="rgba(76,31,232,.1)" stroke="#4c1fe8" stroke-width="1.5"/>
+      <text x="60" y="202" text-anchor="middle" fill="#4c1fe8" font-size="18">👤</text>
+      <text x="60" y="222" text-anchor="middle" fill="#180870" font-size="12" font-weight="700">User</text>
+      <text x="60" y="240" text-anchor="middle" fill="rgba(76,31,232,.6)" font-size="10">Streamlit UI</text>
+      <line x1="110" y1="210" x2="144" y2="210" stroke="#4c1fe8" stroke-width="1.5" marker-end="url(#a5)"/>
+
+      <!-- MCP Client Core -->
+      <rect x="144" y="80" width="220" height="260" rx="14" fill="rgba(29,110,245,.05)" stroke="#1d6ef5" stroke-width="1.5" stroke-dasharray="6 3"/>
+      <text x="254" y="104" text-anchor="middle" fill="rgba(29,110,245,.7)" font-size="11" font-weight="700">MCP CLIENT CORE</text>
+
+      <rect x="156" y="114" width="196" height="44" rx="8" fill="rgba(22,163,74,.12)" stroke="rgba(22,163,74,.35)" stroke-width="1.5"/>
+      <text x="254" y="132" text-anchor="middle" fill="#144d24" font-size="12" font-weight="700">GPT-4 + bind_tools()</text>
+      <text x="254" y="149" text-anchor="middle" fill="rgba(22,163,74,.7)" font-size="10">Sees all 11 tools. Routes intelligently.</text>
+
+      <rect x="156" y="168" width="196" height="44" rx="8" fill="rgba(76,31,232,.12)" stroke="rgba(76,31,232,.35)" stroke-width="1.5"/>
+      <text x="254" y="186" text-anchor="middle" fill="#180870" font-size="12" font-weight="700">MultiServerMCPClient</text>
+      <text x="254" y="203" text-anchor="middle" fill="rgba(76,31,232,.7)" font-size="10">langchain-mcp-adapters</text>
+
+      <rect x="156" y="222" width="196" height="44" rx="8" fill="rgba(232,122,0,.12)" stroke="rgba(232,122,0,.35)" stroke-width="1.5"/>
+      <text x="254" y="240" text-anchor="middle" fill="#7a3500" font-size="12" font-weight="700">named_tools dict</text>
+      <text x="254" y="257" text-anchor="middle" fill="rgba(232,122,0,.7)" font-size="10">11 tools from 3 servers combined</text>
+
+      <rect x="156" y="276" width="196" height="36" rx="8" fill="rgba(219,39,119,.1)" stroke="rgba(219,39,119,.3)" stroke-width="1"/>
+      <text x="254" y="296" text-anchor="middle" fill="rgba(90,0,50,.8)" font-size="11" font-weight="600">ToolMessage → LLM → Answer</text>
+
+      <!-- Lines to servers -->
+      <line x1="364" y1="150" x2="410" y2="80" stroke="#00b8a0" stroke-width="1.5" marker-end="url(#a5)"/>
+      <line x1="364" y1="210" x2="410" y2="210" stroke="#4c1fe8" stroke-width="1.5" marker-end="url(#a5)"/>
+      <line x1="364" y1="270" x2="410" y2="340" stroke="#e87a00" stroke-width="1.5" marker-end="url(#a5)"/>
+
+      <!-- Math server -->
+      <rect x="410" y="20" width="260" height="120" rx="12" fill="rgba(0,184,160,.08)" stroke="#00b8a0" stroke-width="1.5"/>
+      <text x="540" y="48" text-anchor="middle" fill="#00b8a0" font-size="12" font-weight="700">Math MCP Server</text>
+      <text x="540" y="66" text-anchor="middle" fill="rgba(0,77,64,.7)" font-size="11">LOCAL · stdio · fastmcp</text>
+      <text x="540" y="84" text-anchor="middle" fill="rgba(0,77,64,.6)" font-size="10">Tools: add · subtract · multiply</text>
+      <text x="540" y="100" text-anchor="middle" fill="rgba(0,77,64,.6)" font-size="10">divide · power · modulo (6 tools)</text>
+      <text x="540" y="118" text-anchor="middle" fill="rgba(0,184,160,.5)" font-size="10">Client spawns as subprocess</text>
+
+      <!-- Expense server -->
+      <rect x="410" y="155" width="260" height="110" rx="12" fill="rgba(76,31,232,.08)" stroke="#4c1fe8" stroke-width="1.5"/>
+      <text x="540" y="183" text-anchor="middle" fill="#4c1fe8" font-size="12" font-weight="700">Expense Tracker MCP</text>
+      <text x="540" y="201" text-anchor="middle" fill="rgba(76,31,232,.7)" font-size="11">REMOTE · streamable_http</text>
+      <text x="540" y="219" text-anchor="middle" fill="rgba(76,31,232,.6)" font-size="10">add_expense · list_expenses · summarize</text>
+      <text x="540" y="237" text-anchor="middle" fill="rgba(76,31,232,.5)" font-size="10">fastmcp Cloud (HTTPS) · prev. video</text>
+      <text x="540" y="254" text-anchor="middle" fill="rgba(76,31,232,.5)" font-size="10">Connected with URL only</text>
+
+      <!-- Manim server -->
+      <rect x="410" y="280" width="260" height="120" rx="12" fill="rgba(232,122,0,.08)" stroke="#e87a00" stroke-width="1.5"/>
+      <text x="540" y="308" text-anchor="middle" fill="#e87a00" font-size="12" font-weight="700">Manim MCP Server</text>
+      <text x="540" y="326" text-anchor="middle" fill="rgba(122,53,0,.7)" font-size="11">LOCAL · stdio · 3rd-party GitHub</text>
+      <text x="540" y="344" text-anchor="middle" fill="rgba(122,53,0,.6)" font-size="10">execute_manim_code</text>
+      <text x="540" y="362" text-anchor="middle" fill="rgba(122,53,0,.6)" font-size="10">cleanup_manim_temp_dir (2 tools)</text>
+      <text x="540" y="380" text-anchor="middle" fill="rgba(232,122,0,.5)" font-size="10">Generates 3B1B-style animations</text>
+    </svg>
+  </div>
+</div>
+
+<!-- SEC 14 -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 14</div>
+  <h2 class="sh">Key Takeaways & What's Next</h2>
+
+  <h3 class="ss">The MCP Client Pattern — Universal Template</h3>
+  <div class="code"><pre><span class="cm"># Universal MCP client template — works for any server combination</span>
+
+servers = {
+    <span class="str">"any_local_server"</span>: {
+        <span class="str">"transport"</span>: <span class="str">"stdio"</span>,
+        <span class="str">"command"</span>: <span class="str">"/abs/path/to/uv"</span>,
+        <span class="str">"args"</span>: [<span class="str">"run"</span>, <span class="str">"fastmcp"</span>, <span class="str">"run"</span>, <span class="str">"/abs/path/to/server.py"</span>]
+    },
+    <span class="str">"any_remote_server"</span>: {
+        <span class="str">"transport"</span>: <span class="str">"streamable_http"</span>,
+        <span class="str">"url"</span>: <span class="str">"https://your-remote-mcp-server.com/"</span>
+    }
+    <span class="cm"># Add as many as you want!</span>
+}
+
+client = MultiServerMCPClient(servers=servers)
+tools  = <span class="kw">await</span> client.get_tools()           <span class="cm"># discovers all tools</span>
+nt     = {t.name: t <span class="kw">for</span> t <span class="kw">in</span> tools}         <span class="cm"># name → tool lookup</span>
+llm    = ChatOpenAI().bind_tools(tools)      <span class="cm"># LLM sees all tools</span></pre></div>
+
+  <h3 class="ss">What You Can Build With This</h3>
+  <div class="g4">
+    <div class="card cp">
+      <div class="emo">🤖</div>
+      <h4>Personal AI Assistant</h4>
+      <p>Files, calendar, expenses, notes, web search — all in one chatbot you own and control.</p>
+    </div>
+    <div class="card ct">
+      <div class="emo">🏢</div>
+      <h4>Enterprise Chatbot</h4>
+      <p>Connect company Jira, Slack, Google Drive, databases via MCP servers. One interface for all company tools.</p>
+    </div>
+    <div class="card co">
+      <div class="emo">🎓</div>
+      <h4>AI Tutor</h4>
+      <p>Manim for visuals, Wolfram for math, code execution, PDF reader — a specialized learning assistant.</p>
+    </div>
+    <div class="card cg">
+      <div class="emo">⚙️</div>
+      <h4>DevOps Bot</h4>
+      <p>GitHub, CI/CD, cloud infrastructure MCP servers. A bot that deploys, monitors, and fixes issues.</p>
+    </div>
+  </div>
+
+  <h3 class="ss">MCP Series — Completion Map</h3>
+  <table class="tbl">
+    <thead><tr><th>#</th><th>Topic</th><th>Key Skill Gained</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>The Why</td><td>Why MCP over direct function calling</td><td><span class="badge bg2">✓ Done</span></td></tr>
+      <tr><td>2-3</td><td>The What</td><td>Architecture (Host/Client/Server) + Lifecycle phases</td><td><span class="badge bg2">✓ Done</span></td></tr>
+      <tr><td>4</td><td>How 1 — Use Existing Servers</td><td>Connect Claude Desktop to real servers</td><td><span class="badge bg2">✓ Done</span></td></tr>
+      <tr><td>5</td><td>How 2 — Build Local Server</td><td>fastmcp + SQLite Expense Tracker server</td><td><span class="badge bg2">✓ Done</span></td></tr>
+      <tr><td>6</td><td>How 3 — Deploy Remote Server</td><td>fastmcp Cloud, async, proxy workaround</td><td><span class="badge bg2">✓ Done</span></td></tr>
+      <tr><td>7</td><td>How 4 — Build MCP Client</td><td>langchain-mcp-adapters, Streamlit chatbot</td><td><span class="badge bg2">✓ Done</span></td></tr>
+      <tr><td>8+</td><td>Advanced — Auth, Sessions, Sampling</td><td>OAuth, multi-user, elicitation patterns</td><td><span class="badge bo2">🔜 Future</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note nt" style="margin-top:24px;"><strong>What Nitish is doing next:</strong> Returning to the LangGraph playlist (which has been pending even longer than this video delay). The MCP advanced topics (Authentication, Sessions, Sampling, Elicitation) will be covered later. The Auth video is especially important — it solves the multi-user data isolation flaw identified in the remote server video. Nitish started MCP specifically because LangGraph needed it as a foundation.</div>
+</div>
+
+<footer>
+  <p>Study guide from <span>CampusX · MCP Series · "How to Build MCP Clients"</span></p>
+  <p style="margin-top:8px;color:rgba(255,255,255,.2);">youtube.com/watch?v=o4ajsc-tSBc · Presenter: Nitish · CampusX</p>
+</footer>
+</body>
+</html>

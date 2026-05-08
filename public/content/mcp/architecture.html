@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP Architecture | Model Context Protocol | CampusX</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a12;
+    --surface: #10101c;
+    --card: #15152a;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #e8e6f5;
+    --muted: #8a88aa;
+    --dim: #5a5880;
+
+    --violet: #7c5cf7;
+    --violet-light: #a48dff;
+    --violet-dim: rgba(124,92,247,0.15);
+    --teal: #0ecfb0;
+    --teal-dim: rgba(14,207,176,0.12);
+    --amber: #f0a030;
+    --amber-dim: rgba(240,160,48,0.12);
+    --coral: #f05060;
+    --coral-dim: rgba(240,80,96,0.12);
+    --green: #30d080;
+    --green-dim: rgba(48,208,128,0.12);
+    --blue: #40a0ff;
+    --blue-dim: rgba(64,160,255,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #080814 0%, #0e0e24 40%, #0a1428 100%);
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 80px 72px;
+  }
+  .cover-dots {
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle, rgba(124,92,247,0.18) 1px, transparent 1px);
+    background-size: 36px 36px;
+    opacity: 0.6;
+  }
+  .cover-blob1 {
+    position: absolute; width: 700px; height: 700px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,92,247,0.22) 0%, transparent 65%);
+    top: -200px; right: -150px;
+  }
+  .cover-blob2 {
+    position: absolute; width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(14,207,176,0.15) 0%, transparent 65%);
+    bottom: -100px; left: 50px;
+  }
+  .cover-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(124,92,247,0.18); border: 1px solid rgba(124,92,247,0.4);
+    color: var(--violet-light); font-family: 'Fira Code', monospace;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    padding: 7px 18px; border-radius: 4px; width: fit-content;
+    margin-bottom: 32px; position: relative;
+  }
+  .cover h1 {
+    font-size: clamp(38px, 5.5vw, 64px); font-weight: 800;
+    line-height: 1.08; margin-bottom: 22px; position: relative;
+    color: #fff;
+  }
+  .cover h1 .hl { color: var(--violet-light); }
+  .cover-sub {
+    font-size: 17px; color: rgba(255,255,255,0.5);
+    max-width: 640px; margin-bottom: 56px;
+    line-height: 1.8; position: relative;
+  }
+  .cover-row {
+    display: flex; gap: 0; border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 32px; position: relative;
+  }
+  .cover-stat { flex: 1; padding-right: 32px; border-right: 1px solid rgba(255,255,255,0.08); margin-right: 32px; }
+  .cover-stat:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+  .cs-label { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.3); margin-bottom: 4px; font-family: 'Fira Code', monospace; }
+  .cs-val { font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.75); }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 0 72px;
+  }
+  .toc-inner {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 0; border: 1px solid var(--border); border-radius: 16px;
+    overflow: hidden; margin: 48px 0;
+  }
+  .toc-head {
+    grid-column: 1/-1;
+    background: var(--violet); padding: 16px 24px;
+    font-family: 'Fira Code', monospace; font-size: 12px;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(255,255,255,0.9); font-weight: 600;
+  }
+  .toc-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 13px 24px; border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    font-size: 13.5px; color: var(--muted); transition: background 0.2s;
+  }
+  .toc-item:nth-child(even) { border-right: none; }
+  .toc-item:last-child, .toc-item:nth-last-child(2) { border-bottom: none; }
+  .toc-n { font-family: 'Fira Code', monospace; font-size: 11px; color: var(--violet); font-weight: 600; min-width: 28px; }
+
+  /* ── SECTIONS ── */
+  .sec { padding: 64px 72px; border-bottom: 1px solid var(--border); }
+  .sec:nth-child(even) { background: var(--surface); }
+
+  .eye { display: inline-flex; align-items: center; gap: 8px; font-family: 'Fira Code', monospace; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--violet); margin-bottom: 14px; }
+  .eye-dot { width: 5px; height: 5px; background: var(--violet); border-radius: 50%; }
+  h2.st { font-size: 34px; font-weight: 800; color: #fff; margin-bottom: 18px; line-height: 1.2; }
+  h3.sh { font-size: 20px; font-weight: 700; color: #e0dff5; margin: 36px 0 14px; }
+  p.bd { font-size: 15px; color: #aba9c8; line-height: 1.85; margin-bottom: 14px; }
+
+  /* ── CALLOUTS ── */
+  .note {
+    border-radius: 10px; padding: 16px 20px; margin: 22px 0;
+    font-size: 14px; line-height: 1.75; border-left: 3px solid;
+  }
+  .note.v { background: var(--violet-dim); border-color: var(--violet); color: #c4b8ff; }
+  .note.t { background: var(--teal-dim); border-color: var(--teal); color: #a0f5e8; }
+  .note.a { background: var(--amber-dim); border-color: var(--amber); color: #f5d090; }
+  .note.r { background: var(--coral-dim); border-color: var(--coral); color: #f5b0b8; }
+  .note.g { background: var(--green-dim); border-color: var(--green); color: #a0f5c8; }
+  .note strong { font-weight: 700; color: #fff; }
+
+  /* ── GRID CARDS ── */
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 24px 0; }
+  .g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 24px 0; }
+  .g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 24px 0; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px;
+  }
+  .card.v-t { border-top: 2px solid var(--violet); }
+  .card.t-t { border-top: 2px solid var(--teal); }
+  .card.a-t { border-top: 2px solid var(--amber); }
+  .card.r-t { border-top: 2px solid var(--coral); }
+  .card.g-t { border-top: 2px solid var(--green); }
+  .card.b-t { border-top: 2px solid var(--blue); }
+  .card h4 { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .card p { font-size: 13px; color: var(--muted); line-height: 1.65; margin: 0; }
+  .ci { font-size: 26px; margin-bottom: 10px; }
+  .cn { font-family: 'Fira Code', monospace; font-size: 30px; font-weight: 600; color: var(--violet); margin-bottom: 4px; }
+
+  /* ── DIAGRAM BOX ── */
+  .dbox {
+    background: var(--card); border: 1px solid var(--border2);
+    border-radius: 16px; padding: 32px 28px; margin: 28px 0;
+    box-shadow: 0 0 40px rgba(124,92,247,0.06);
+  }
+  .dbox-label {
+    font-family: 'Fira Code', monospace; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 2px; color: var(--dim);
+    margin-bottom: 20px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── PRIMITIVES TABLE ── */
+  .prim-table {
+    width: 100%; border-collapse: collapse; margin: 24px 0;
+    font-size: 14px;
+  }
+  .prim-table thead th {
+    background: var(--violet); color: #fff; padding: 12px 16px;
+    text-align: left; font-weight: 600; font-size: 13px;
+  }
+  .prim-table tbody tr { border-bottom: 1px solid var(--border); }
+  .prim-table tbody tr:hover { background: rgba(124,92,247,0.05); }
+  .prim-table td { padding: 12px 16px; color: var(--muted); vertical-align: top; }
+  .prim-table td:first-child { color: var(--violet-light); font-weight: 700; font-family: 'Fira Code', monospace; font-size: 13px; }
+  .prim-table td:nth-child(2) { color: #e0dff5; font-weight: 600; }
+
+  /* ── METHODS TABLE ── */
+  .mtable { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 13.5px; }
+  .mtable thead th { background: rgba(14,207,176,0.2); color: var(--teal); padding: 11px 14px; text-align: left; font-weight: 600; border-bottom: 1px solid rgba(14,207,176,0.3); }
+  .mtable tbody tr { border-bottom: 1px solid var(--border); }
+  .mtable td { padding: 11px 14px; color: var(--muted); }
+  .mtable td:first-child { font-family: 'Fira Code', monospace; font-size: 12px; color: var(--teal); font-weight: 500; }
+  .mtable td:nth-child(2) { color: #e0dff5; }
+
+  /* ── CODE ── */
+  .code {
+    background: #080812; border: 1px solid var(--border2);
+    border-radius: 10px; padding: 20px 22px; margin: 18px 0;
+    overflow-x: auto;
+  }
+  .code pre { font-family: 'Fira Code', monospace; font-size: 13px; line-height: 1.8; }
+  .kw { color: #c792ea; }
+  .str { color: #a5e279; }
+  .num { color: #f78c6c; }
+  .cm { color: #4a4870; }
+  .key2 { color: #82aaff; }
+  .val { color: #ffcb6b; }
+
+  /* ── TRANSPORT COMPARISON ── */
+  .trans-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+    background: var(--border); border-radius: 14px; overflow: hidden;
+    margin: 28px 0;
+  }
+  .trans-col { background: var(--card); padding: 28px; }
+  .trans-col h4 {
+    font-family: 'Fira Code', monospace; font-size: 12px;
+    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 18px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--border);
+  }
+  .trans-col.local h4 { color: var(--violet); }
+  .trans-col.remote h4 { color: var(--teal); }
+  .trans-row {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 13.5px; color: var(--muted);
+  }
+  .trans-row:last-child { border-bottom: none; }
+  .trans-row .icon { flex-shrink: 0; margin-top: 2px; }
+
+  /* ── ANALOGY BOX ── */
+  .analogy {
+    background: linear-gradient(135deg, rgba(124,92,247,0.1), rgba(14,207,176,0.06));
+    border: 1px solid rgba(124,92,247,0.3);
+    border-radius: 14px; padding: 28px; margin: 28px 0;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .analogy h4 { font-size: 13px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; font-family: 'Fira Code', monospace; }
+  .analogy-mcp h4 { color: var(--violet-light); }
+  .analogy-phone h4 { color: var(--teal); }
+  .analogy ul { list-style: none; }
+  .analogy ul li {
+    display: flex; gap: 8px; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 13.5px; color: var(--muted);
+  }
+  .analogy ul li::before { content: '→'; color: var(--violet); font-size: 12px; flex-shrink: 0; }
+  .analogy-phone ul li::before { content: '→'; color: var(--teal); }
+  .a-label { font-weight: 600; color: #e0dff5; }
+
+  /* ── JSON RPC REASONS ── */
+  .reasons { display: flex; flex-direction: column; gap: 0; margin: 24px 0; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .reason-row {
+    display: grid; grid-template-columns: 48px 1fr;
+    border-bottom: 1px solid var(--border);
+    background: var(--card);
+  }
+  .reason-row:last-child { border-bottom: none; }
+  .reason-num { display: flex; align-items: center; justify-content: center; background: rgba(124,92,247,0.12); font-family: 'Fira Code', monospace; font-size: 14px; font-weight: 600; color: var(--violet); border-right: 1px solid var(--border); }
+  .reason-body { padding: 16px 20px; }
+  .reason-body h5 { font-size: 14px; font-weight: 700; color: #e0dff5; margin-bottom: 4px; }
+  .reason-body p { font-size: 13px; color: var(--muted); margin: 0; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--surface); border-top: 1px solid var(--border);
+    text-align: center; padding: 36px 72px;
+    color: var(--dim); font-size: 13px;
+  }
+  footer span { color: var(--violet-light); }
+
+  svg text { font-family: 'Plus Jakarta Sans', sans-serif; }
+</style>
+</head>
+<body>
+
+<!-- ═══ COVER ═══ -->
+<div class="cover">
+  <div class="cover-dots"></div>
+  <div class="cover-blob1"></div>
+  <div class="cover-blob2"></div>
+  <div class="cover-chip">▶ CampusX · MCP Trilogy · Video 2 of 3</div>
+  <h1>MCP <span class="hl">Architecture</span><br>Deep Dive</h1>
+  <p class="cover-sub">A complete technical study guide covering the full MCP architecture — from Host/Client/Server relationships through Primitives, JSON-RPC 2.0 Data Layer, and dual Transport mechanisms (stdio & HTTP+SSE).</p>
+  <div class="cover-row">
+    <div class="cover-stat"><div class="cs-label">Presenter</div><div class="cs-val">Nitish · CampusX</div></div>
+    <div class="cover-stat"><div class="cs-label">Video</div><div class="cs-val">The What — Architecture (2.1/3)</div></div>
+    <div class="cover-stat"><div class="cs-label">Key Concepts</div><div class="cs-val">Host · Client · Server · Primitives</div></div>
+    <div class="cover-stat"><div class="cs-label">Technical Layer</div><div class="cs-val">JSON-RPC 2.0 · stdio · HTTP+SSE</div></div>
+  </div>
+</div>
+
+<!-- ═══ TOC ═══ -->
+<div class="toc">
+  <div class="toc-inner">
+    <div class="toc-head">// Table of Contents</div>
+    <div class="toc-item"><span class="toc-n">01</span> The Simplest MCP Architecture — Host & Server</div>
+    <div class="toc-item"><span class="toc-n">02</span> Introducing the MCP Client</div>
+    <div class="toc-item"><span class="toc-n">03</span> Flowchart — Full Request-Response Lifecycle</div>
+    <div class="toc-item"><span class="toc-n">04</span> One-on-One Relationship & SIM Card Analogy</div>
+    <div class="toc-item"><span class="toc-n">05</span> Architecture Benefits — Decoupling & Scalability</div>
+    <div class="toc-item"><span class="toc-n">06</span> MCP Primitives — Tools, Resources, Prompts</div>
+    <div class="toc-item"><span class="toc-n">07</span> Standard Operations for Each Primitive</div>
+    <div class="toc-item"><span class="toc-n">08</span> Data Layer — JSON-RPC 2.0 Explained</div>
+    <div class="toc-item"><span class="toc-n">09</span> JSON-RPC Message Examples (Request/Response/Error)</div>
+    <div class="toc-item"><span class="toc-n">10</span> Notifications & Batching in JSON-RPC</div>
+    <div class="toc-item"><span class="toc-n">11</span> Why JSON-RPC over REST API? (5 Reasons)</div>
+    <div class="toc-item"><span class="toc-n">12</span> Transport Layer — Local vs Remote Servers</div>
+    <div class="toc-item"><span class="toc-n">13</span> stdio Transport — How It Works</div>
+    <div class="toc-item"><span class="toc-n">14</span> HTTP + SSE Transport — Remote Servers</div>
+    <div class="toc-item"><span class="toc-n">15</span> Complete Architecture Diagram</div>
+    <div class="toc-item"><span class="toc-n">16</span> Key Takeaways</div>
+  </div>
+</div>
+
+<!-- ═══ SEC 1 — SIMPLEST ARCHITECTURE ═══ -->
+<div class="sec">
+  <div class="eye"><span class="eye-dot"></span> Section 01</div>
+  <h2 class="st">The Simplest MCP Architecture</h2>
+  <p class="bd">The architecture of MCP begins with just two entities. Everything else is built on top of this foundation. Nitish starts from first principles and gradually adds detail throughout the video.</p>
+
+  <div class="g2">
+    <div class="card v-t">
+      <div class="ci">🤖</div>
+      <h4>Host</h4>
+      <p>The AI chatbot that users interact with. The user types a prompt → the Host receives it → sends it to an LLM (OpenAI, Anthropic, Gemini, etc.). This is the interface layer — could be Claude Desktop, Cursor IDE, or a custom-built chatbot.</p>
+    </div>
+    <div class="card t-t">
+      <div class="ci">🔧</div>
+      <h4>Server</h4>
+      <p>A tool/service with the capability to execute a specific task. Examples: a GitHub server to manage repositories, a Slack server to read/write messages, or a Google Drive server to manipulate files. Servers do the actual work.</p>
+    </div>
+  </div>
+
+  <div class="note v">
+    <strong>Simplest Flow:</strong> User asks "Are there any new commits on the GitHub repo?" → Host receives prompt → sends to LLM → LLM realises it can't answer from training data → LLM says "Ask the GitHub server" → Host queries the server → server returns latest commits → LLM formats the answer → user sees the response.
+  </div>
+
+  <h3 class="sh">Example: GitHub Commit Query Flow (Simplified)</h3>
+  <div class="dbox">
+    <div class="dbox-label">// Diagram: Simplest 2-entity MCP flow</div>
+    <svg width="100%" viewBox="0 0 680 200" role="img">
+      <title>Simplified Host-Server flow</title>
+      <desc>Shows user query flowing through Host to LLM to GitHub Server and back</desc>
+      <defs>
+        <marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <!-- User -->
+      <rect x="10" y="70" width="88" height="60" rx="8" fill="rgba(124,92,247,0.15)" stroke="rgba(124,92,247,0.5)" stroke-width="1.5"/>
+      <text x="54" y="97" text-anchor="middle" fill="#c4b8ff" font-size="12" font-weight="700">User</text>
+      <text x="54" y="114" text-anchor="middle" fill="rgba(196,184,255,0.6)" font-size="10">Prompt</text>
+
+      <!-- Arrow 1 -->
+      <line x1="98" y1="100" x2="148" y2="100" stroke="#7c5cf7" stroke-width="1.5" marker-end="url(#a1)"/>
+
+      <!-- Host -->
+      <rect x="148" y="55" width="120" height="90" rx="10" fill="rgba(124,92,247,0.2)" stroke="#7c5cf7" stroke-width="2"/>
+      <text x="208" y="90" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">Host</text>
+      <text x="208" y="108" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10">AI Chatbot</text>
+      <text x="208" y="126" text-anchor="middle" fill="#7c5cf7" font-size="10">+ LLM</text>
+
+      <!-- Arrow 2 -->
+      <line x1="268" y1="100" x2="318" y2="100" stroke="#7c5cf7" stroke-width="1.5" marker-end="url(#a1)"/>
+      <text x="293" y="92" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10">asks</text>
+
+      <!-- Server -->
+      <rect x="318" y="60" width="160" height="80" rx="10" fill="rgba(14,207,176,0.15)" stroke="#0ecfb0" stroke-width="2"/>
+      <text x="398" y="93" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">GitHub Server</text>
+      <text x="398" y="112" text-anchor="middle" fill="rgba(14,207,176,0.7)" font-size="10">Fetches commits</text>
+
+      <!-- Arrow 3 - return -->
+      <line x1="318" y1="115" x2="268" y2="115" stroke="#0ecfb0" stroke-width="1.5" marker-end="url(#a1)"/>
+      <text x="293" y="132" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10">returns data</text>
+
+      <!-- Arrow back to user -->
+      <line x1="148" y1="130" x2="98" y2="130" stroke="#0ecfb0" stroke-width="1.5" marker-end="url(#a1)"/>
+
+      <!-- Label -->
+      <rect x="500" y="65" width="170" height="70" rx="8" fill="rgba(240,160,48,0.1)" stroke="rgba(240,160,48,0.3)" stroke-width="1"/>
+      <text x="585" y="90" text-anchor="middle" fill="#f0a030" font-size="11" font-weight="700">Two Entities:</text>
+      <text x="585" y="107" text-anchor="middle" fill="rgba(240,160,48,0.8)" font-size="11">Host ↔ Server</text>
+      <text x="585" y="124" text-anchor="middle" fill="rgba(240,160,48,0.6)" font-size="10">Direct communication</text>
+    </svg>
+  </div>
+</div>
+
+<!-- ═══ SEC 2 — MCP CLIENT ═══ -->
+<div class="sec">
+  <div class="eye"><span class="eye-dot"></span> Section 02</div>
+  <h2 class="st">Introducing the MCP Client</h2>
+  <p class="bd">In reality, the Host <strong>never communicates directly</strong> with the Server. Communication always passes through a helper entity called the <strong>MCP Client</strong>. This is the key architectural refinement over the simplified view.</p>
+
+  <div class="note a">
+    <strong>Key Insight:</strong> The MCP Client is the entity that speaks the MCP language fluently. Because the client knows the MCP protocol, it can communicate seamlessly with any MCP-compliant server. The Host just hands off a high-level request to the client; the client handles all protocol-level communication.
+  </div>
+
+  <div class="g3">
+    <div class="card v-t">
+      <div class="ci">🤖</div>
+      <h4>Host</h4>
+      <p>The AI chatbot/application. Receives user prompts, invokes the LLM, decides WHEN a tool needs to be called. Generates high-level requests. Never speaks directly to servers.</p>
+    </div>
+    <div class="card a-t">
+      <div class="ci">🔌</div>
+      <h4>MCP Client</h4>
+      <p>The protocol translator and communication handler. Lives inside the Host. Converts high-level requests into MCP-format messages, sends them to servers, and translates responses back for the Host to understand.</p>
+    </div>
+    <div class="card t-t">
+      <div class="ci">⚙️</div>
+      <h4>MCP Server</h4>
+      <p>The actual capability/tool. GitHub, Slack, Google Drive, File System, etc. Speaks MCP natively. Receives structured requests, executes tasks, returns structured responses. Does all the heavy lifting.</p>
+    </div>
+  </div>
+
+  <h3 class="sh">Updated Flow: Host → Client → Server</h3>
+  <div class="dbox">
+    <div class="dbox-label">// Diagram: 3-entity MCP architecture with Client as intermediary</div>
+    <svg width="100%" viewBox="0 0 680 230" role="img">
+      <title>Three entity MCP architecture</title>
+      <desc>Shows Host generating a high-level request, Client converting to MCP format, Server executing and returning response</desc>
+      <defs>
+        <marker id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- User -->
+      <rect x="10" y="85" width="82" height="60" rx="8" fill="rgba(124,92,247,0.12)" stroke="rgba(124,92,247,0.4)" stroke-width="1.5"/>
+      <text x="51" y="112" text-anchor="middle" fill="#c4b8ff" font-size="12" font-weight="700">User</text>
+      <text x="51" y="128" text-anchor="middle" fill="rgba(196,184,255,0.5)" font-size="10">Prompt</text>
+
+      <line x1="92" y1="115" x2="128" y2="115" stroke="rgba(124,92,247,0.6)" stroke-width="1.5" marker-end="url(#a2)"/>
+
+      <!-- Host box (contains Client) -->
+      <rect x="128" y="30" width="240" height="170" rx="12" fill="rgba(124,92,247,0.08)" stroke="rgba(124,92,247,0.35)" stroke-width="1.5" stroke-dasharray="6 3"/>
+      <text x="248" y="54" text-anchor="middle" fill="rgba(124,92,247,0.7)" font-size="11" font-weight="700">HOST (AI Chatbot)</text>
+
+      <!-- LLM inside host -->
+      <rect x="142" y="65" width="100" height="50" rx="8" fill="rgba(124,92,247,0.25)" stroke="#7c5cf7" stroke-width="1.5"/>
+      <text x="192" y="86" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">LLM</text>
+      <text x="192" y="103" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10">OpenAI/Claude</text>
+
+      <!-- MCP Client inside host -->
+      <rect x="142" y="130" width="100" height="50" rx="8" fill="rgba(240,160,48,0.2)" stroke="#f0a030" stroke-width="1.5"/>
+      <text x="192" y="151" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">MCP Client</text>
+      <text x="192" y="168" text-anchor="middle" fill="rgba(240,160,48,0.7)" font-size="10">Protocol layer</text>
+
+      <!-- Arrow LLM -> Client (decision) -->
+      <line x1="192" y1="115" x2="192" y2="130" stroke="#f0a030" stroke-width="1.5" marker-end="url(#a2)"/>
+      <text x="210" y="124" fill="rgba(255,255,255,0.35)" font-size="9">call tool</text>
+
+      <!-- High-level req label -->
+      <text x="248" y="80" text-anchor="middle" fill="rgba(124,92,247,0.5)" font-size="10">High-level req</text>
+      <line x1="242" y1="90" x2="248" y2="65" stroke="rgba(124,92,247,0.3)" stroke-width="1" stroke-dasharray="3 2"/>
+
+      <!-- Arrow Client to Server: MCP formatted -->
+      <line x1="330" y1="155" x2="380" y2="155" stroke="#f0a030" stroke-width="2" marker-end="url(#a2)"/>
+      <text x="355" y="148" text-anchor="middle" fill="rgba(240,160,48,0.7)" font-size="10">MCP format</text>
+
+      <!-- Arrow Server to Client: MCP response -->
+      <line x1="380" y1="175" x2="330" y2="175" stroke="#0ecfb0" stroke-width="2" marker-end="url(#a2)"/>
+      <text x="355" y="192" text-anchor="middle" fill="rgba(14,207,176,0.7)" font-size="10">MCP response</text>
+
+      <!-- Server box -->
+      <rect x="380" y="65" width="165" height="140" rx="12" fill="rgba(14,207,176,0.1)" stroke="#0ecfb0" stroke-width="2"/>
+      <text x="462" y="92" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">MCP Server</text>
+      <text x="462" y="110" text-anchor="middle" fill="rgba(14,207,176,0.7)" font-size="11">(GitHub / Slack /</text>
+      <text x="462" y="126" text-anchor="middle" fill="rgba(14,207,176,0.7)" font-size="11">Drive / FileSystem)</text>
+      <text x="462" y="150" text-anchor="middle" fill="rgba(14,207,176,0.5)" font-size="10">Executes tasks</text>
+      <text x="462" y="166" text-anchor="middle" fill="rgba(14,207,176,0.5)" font-size="10">Returns structured data</text>
+      <text x="462" y="192" text-anchor="middle" fill="rgba(14,207,176,0.4)" font-size="10">Speaks MCP natively</text>
+
+      <!-- Response back to user -->
+      <line x1="128" y1="195" x2="92" y2="195" stroke="#0ecfb0" stroke-width="1.5" marker-end="url(#a2)"/>
+      <text x="110" y="188" text-anchor="middle" fill="rgba(14,207,176,0.6)" font-size="9">Answer</text>
+
+      <!-- Translation label -->
+      <text x="248" y="215" text-anchor="middle" fill="rgba(240,160,48,0.5)" font-size="10">Client translates MCP response → Host understands it</text>
+    </svg>
+  </div>
+</div>
+
+<!-- ═══ SEC 3 — REQUEST-RESPONSE LIFECYCLE ═══ -->
+<div class="sec">
+  <div class="eye"><span class="eye-dot"></span> Section 03</div>
+  <h2 class="st">Flowchart — Complete Request-Response Lifecycle</h2>
+  <p class="bd">This is the full, detailed step-by-step flow of what happens when a user asks a question that requires a server tool. Each step is distinct and important.</p>
+
+  <div class="dbox">
+    <div class="dbox-label">// Flowchart: Full MCP request-response lifecycle (8 steps)</div>
+    <svg width="100%" viewBox="0 0 680 680" role="img">
+      <title>Complete MCP request response lifecycle</title>
+      <desc>Eight step flowchart from user prompt through host, LLM, client, server and back to user</desc>
+      <defs>
+        <marker id="a3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- Step 1: User sends prompt -->
+      <rect x="200" y="10" width="280" height="54" rx="10" fill="rgba(124,92,247,0.35)" stroke="#7c5cf7" stroke-width="2"/>
+      <text x="340" y="31" text-anchor="middle" fill="rgba(196,184,255,0.7)" font-size="10" font-weight="600">STEP 1</text>
+      <text x="340" y="51" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">User sends prompt to Host</text>
+
+      <line x1="340" y1="64" x2="340" y2="94" stroke="#7c5cf7" stroke-width="2" marker-end="url(#a3)"/>
+
+      <!-- Step 2: Host sends to LLM -->
+      <rect x="200" y="94" width="280" height="54" rx="10" fill="rgba(124,92,247,0.18)" stroke="#7c5cf7" stroke-width="1.5"/>
+      <text x="340" y="115" text-anchor="middle" fill="rgba(196,184,255,0.7)" font-size="10" font-weight="600">STEP 2</text>
+      <text x="340" y="135" text-anchor="middle" fill="#e0dff5" font-size="13" font-weight="700">Host forwards prompt to LLM</text>
+
+      <line x1="340" y1="148" x2="340" y2="178" stroke="#7c5cf7" stroke-width="2" marker-end="url(#a3)"/>
+
+      <!-- Step 3: LLM can't answer -->
+      <rect x="160" y="178" width="360" height="54" rx="10" fill="rgba(240,80,96,0.15)" stroke="rgba(240,80,96,0.5)" stroke-width="1.5"/>
+      <text x="340" y="199" text-anchor="middle" fill="rgba(240,120,130,0.7)" font-size="10" font-weight="600">STEP 3 — LLM DECISION</text>
+      <text x="340" y="219" text-anchor="middle" fill="#e0dff5" font-size="13" font-weight="700">LLM: "I can't answer from training data"</text>
+
+      <line x1="340" y1="232" x2="340" y2="262" stroke="#f05060" stroke-width="2" marker-end="url(#a3)"/>
+
+      <!-- Step 4: LLM selects server -->
+      <rect x="160" y="262" width="360" height="54" rx="10" fill="rgba(240,160,48,0.15)" stroke="rgba(240,160,48,0.5)" stroke-width="1.5"/>
+      <text x="340" y="283" text-anchor="middle" fill="rgba(240,180,80,0.7)" font-size="10" font-weight="600">STEP 4</text>
+      <text x="340" y="303" text-anchor="middle" fill="#e0dff5" font-size="13" font-weight="700">LLM scans available servers → selects GitHub</text>
+
+      <line x1="340" y1="316" x2="340" y2="346" stroke="#f0a030" stroke-width="2" marker-end="url(#a3)"/>
+
+      <!-- Step 5: Host tells Client -->
+      <rect x="180" y="346" width="320" height="54" rx="10" fill="rgba(240,160,48,0.12)" stroke="rgba(240,160,48,0.4)" stroke-width="1.5"/>
+      <text x="340" y="367" text-anchor="middle" fill="rgba(240,180,80,0.7)" font-size="10" font-weight="600">STEP 5</text>
+      <text x="340" y="387" text-anchor="middle" fill="#e0dff5" font-size="13" font-weight="700">Host sends request → MCP Client</text>
+
+      <line x1="340" y1="400" x2="340" y2="430" stroke="#f0a030" stroke-width="2" marker-end="url(#a3)"/>
+
+      <!-- Step 6: Client sends MCP request to server -->
+      <rect x="150" y="430" width="380" height="54" rx="10" fill="rgba(14,207,176,0.12)" stroke="rgba(14,207,176,0.5)" stroke-width="1.5"/>
+      <text x="340" y="451" text-anchor="middle" fill="rgba(100,240,220,0.7)" font-size="10" font-weight="600">STEP 6</text>
+      <text x="340" y="471" text-anchor="middle" fill="#e0dff5" font-size="13" font-weight="700">Client converts to MCP format → sends to Server</text>
+
+      <line x1="340" y1="484" x2="340" y2="514" stroke="#0ecfb0" stroke-width="2" marker-end="url(#a3)"/>
+
+      <!-- Step 7: Server executes + responds -->
+      <rect x="130" y="514" width="420" height="54" rx="10" fill="rgba(14,207,176,0.2)" stroke="#0ecfb0" stroke-width="2"/>
+      <text x="340" y="535" text-anchor="middle" fill="rgba(100,240,220,0.7)" font-size="10" font-weight="600">STEP 7 — SERVER EXECUTES</text>
+      <text x="340" y="555" text-anchor="middle" fill="#e0dff5" font-size="13" font-weight="700">Server processes → returns structured MCP response</text>
+
+      <line x1="340" y1="568" x2="340" y2="598" stroke="#0ecfb0" stroke-width="2" marker-end="url(#a3)"/>
+
+      <!-- Step 8: User sees answer -->
+      <rect x="200" y="598" width="280" height="54" rx="12" fill="#0ecfb0" stroke="#09a88e" stroke-width="2"/>
+      <text x="340" y="619" text-anchor="middle" fill="rgba(0,60,50,0.7)" font-size="10" font-weight="700">STEP 8 — COMPLETE</text>
+      <text x="340" y="640" text-anchor="middle" fill="#003830" font-size="13" font-weight="800">User receives formatted answer ✓</text>
+
+      <!-- Side labels -->
+      <text x="24" y="200" fill="rgba(124,92,247,0.5)" font-size="11" font-weight="600">HOST</text>
+      <text x="24" y="216" fill="rgba(124,92,247,0.5)" font-size="11" font-weight="600">ZONE</text>
+      <rect x="12" y="94" width="3" height="236" fill="rgba(124,92,247,0.4)" rx="2"/>
+
+      <text x="648" y="456" text-anchor="middle" fill="rgba(14,207,176,0.5)" font-size="11" font-weight="600">SERVER</text>
+      <text x="648" y="472" text-anchor="middle" fill="rgba(14,207,176,0.5)" font-size="11" font-weight="600">ZONE</text>
+      <rect x="665" y="430" width="3" height="138" fill="rgba(14,207,176,0.4)" rx="2"/>
+    </svg>
+  </div>
+</div>
+
+<!-- ═══ SEC 4 — ONE-ON-ONE & ANALOGY ═══ -->
+<div class="sec">
+  <div class="eye"><span class="eye-dot"></span> Section 04</div>
+  <h2 class="st">One-on-One Relationship & The SIM Card Analogy</h2>
+  <p class="bd">A crucial rule in MCP: the Client-Server relationship is always <strong>one-on-one</strong>. One client can only communicate with one server at a time. If a Host needs to talk to multiple servers, it needs one separate client per server.</p>
+
+  <div class="dbox">
+    <div class="dbox-label">// Diagram: One-on-one client-server relationships — one client per server</div>
+    <svg width="100%" viewBox="0 0 680 250" role="img">
+      <title>One on one client server relationships</title>
+      <desc>Shows one Host connected to three servers via three separate dedicated clients</desc>
+      <defs>
+        <marker id="a4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- HOST big box -->
+      <rect x="10" y="30" width="210" height="200" rx="14" fill="rgba(124,92,247,0.1)" stroke="rgba(124,92,247,0.4)" stroke-width="1.5" stroke-dasharray="6 3"/>
+      <text x="115" y="52" text-anchor="middle" fill="rgba(124,92,247,0.8)" font-size="12" font-weight="700">HOST</text>
+
+      <!-- Client 1 -->
+      <rect x="22" y="62" width="110" height="40" rx="7" fill="rgba(240,160,48,0.2)" stroke="#f0a030" stroke-width="1.5"/>
+      <text x="77" y="87" text-anchor="middle" fill="#f5d090" font-size="12" font-weight="700">Client 1</text>
+
+      <!-- Client 2 -->
+      <rect x="22" y="125" width="110" height="40" rx="7" fill="rgba(240,160,48,0.2)" stroke="#f0a030" stroke-width="1.5"/>
+      <text x="77" y="150" text-anchor="middle" fill="#f5d090" font-size="12" font-weight="700">Client 2</text>
+
+      <!-- Client 3 -->
+      <rect x="22" y="188" width="110" height="40" rx="7" fill="rgba(240,160,48,0.2)" stroke="#f0a030" stroke-width="1.5"/>
+      <text x="77" y="213" text-anchor="middle" fill="#f5d090" font-size="12" font-weight="700">Client 3</text>
+
+      <!-- 1:1 label -->
+      <text x="157" y="84" text-anchor="middle" fill="rgba(124,92,247,0.5)" font-size="10">1:1</text>
+      <text x="157" y="147" text-anchor="middle" fill="rgba(124,92,247,0.5)" font-size="10">1:1</text>
+      <text x="157" y="210" text-anchor="middle" fill="rgba(124,92,247,0.5)" font-size="10">1:1</text>
+
+      <!-- Connecting lines -->
+      <line x1="132" y1="82" x2="288" y2="82" stroke="#7c5cf7" stroke-width="1.5" marker-end="url(#a4)"/>
+      <line x1="132" y1="145" x2="288" y2="165" stroke="#7c5cf7" stroke-width="1.5" marker-end="url(#a4)"/>
+      <line x1="132" y1="208" x2="288" y2="248" stroke="#7c5cf7" stroke-width="1.5" marker-end="url(#a4)"/>
+
+      <!-- GitHub Server -->
+      <rect x="288" y="60" width="140" height="44" rx="8" fill="rgba(14,207,176,0.15)" stroke="#0ecfb0" stroke-width="1.5"/>
+      <text x="358" y="87" text-anchor="middle" fill="#e0dff5" font-size="13" font-weight="700">GitHub Server</text>
+
+      <!-- Slack Server -->
+      <rect x="288" y="143" width="140" height="44" rx="8" fill="rgba(14,207,176,0.15)" stroke="#0ecfb0" stroke-width="1.5"/>
+      <text x="358" y="170" text-anchor="middle" fill="#e0dff5" font-size="13" font-weight="700">Slack Server</text>
+
+      <!-- Drive Server -->
+      <rect x="288" y="226" width="140" height="44" rx="8" fill="rgba(14,207,176,0.15)" stroke="#0ecfb0" stroke-width="1.5"/>
+      <text x="358" y="253" text-anchor="middle" fill="#e0dff5" font-size="13" font-weight="700">Drive Server</text>
+
+      <!-- Parallel annotation -->
+      <rect x="450" y="60" width="220" height="80" rx="8" fill="rgba(48,208,128,0.08)" stroke="rgba(48,208,128,0.25)" stroke-width="1"/>
+      <text x="560" y="82" text-anchor="middle" fill="#30d080" font-size="11" font-weight="700">✓ Decoupled Channels</text>
+      <text x="560" y="100" text-anchor="middle" fill="rgba(48,208,128,0.7)" font-size="11">Each operates independently</text>
+      <text x="560" y="118" text-anchor="middle" fill="rgba(48,208,128,0.7)" font-size="11">Can run in parallel</text>
+
+      <rect x="450" y="158" width="220" height="60" rx="8" fill="rgba(124,92,247,0.08)" stroke="rgba(124,92,247,0.25)" stroke-width="1"/>
+      <text x="560" y="180" text-anchor="middle" fill="#c4b8ff" font-size="11" font-weight="700">✓ Scalable</text>
+      <text x="560" y="198" text-anchor="middle" fill="rgba(196,184,255,0.7)" font-size="11">Add servers = add clients</text>
+    </svg>
+  </div>
+
+  <h3 class="sh">The SIM Card Analogy</h3>
+  <div class="analogy">
+    <div class="analogy-mcp">
+      <h4>MCP Architecture</h4>
+      <ul>
+        <li><span class="a-label">Host</span> = Your phone (the intelligence)</li>
+        <li><span class="a-label">MCP Client</span> = SIM card (protocol handler)</li>
+        <li><span class="a-label">MCP Server</span> = Mobile network (Airtel/Jio)</li>
+        <li><span class="a-label">Multiple servers</span> = Install multiple SIM cards</li>
+        <li><span class="a-label">1:1 rule</span> = Each SIM connects to one network</li>
+      </ul>
+    </div>
+    <div class="analogy-phone">
+      <h4>Phone Analogy</h4>
+      <ul>
+        <li>Phone doesn't talk to the tower directly</li>
+        <li>SIM translates for the phone</li>
+        <li>Tower (network) does the heavy work</li>
+        <li>Multi-SIM phone = multiple independent channels</li>
+        <li>Each SIM-to-network link is independent and 1:1</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SEC 5 — BENEFITS ═══ -->
+<div class="sec">
+  <div class="eye"><span class="eye-dot"></span> Section 05</div>
+  <h2 class="st">Architecture Benefits</h2>
+  <div class="g2">
+    <div class="card g-t">
+      <div class="ci">🔗</div>
+      <h4>Decoupling (Separation of Concerns)</h4>
+      <p>Each client-server communication channel is isolated. The GitHub channel knows nothing about the Slack channel. If the GitHub connection fails, Slack and Drive connections keep working perfectly. This creates fault isolation and operational safety.</p>
+    </div>
+    <div class="card v-t">
+      <div class="ci">📈</div>
+      <h4>Scalability</h4>
+      <p>Want to add a new server? Just add one more client inside the Host. The pattern is consistent and infinitely extensible. One Host can theoretically connect to hundreds of servers simultaneously — each through its own dedicated client.</p>
+    </div>
+    <div class="card t-t">
+      <div class="ci">⚡</div>
+      <h4>Parallelism</h4>
+      <p>Because each server has a separate client, multiple tool calls can execute simultaneously. If a task requires both GitHub data AND Slack messages, both can be fetched in parallel — not sequentially. This dramatically speeds up complex tasks.</p>
+    </div>
+    <div class="card a-t">
+      <div class="ci">🛡️</div>
+      <h4>Security Isolation</h4>
+      <p>Each client maintains its own credentials and auth tokens for its server. Security is scoped per-connection. A vulnerability in one integration doesn't automatically expose credentials for other integrations.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SEC 6 — PRIMITIVES ═══ -->
+<div class="sec">
+  <div class="eye"><span class="eye-dot"></span> Section 06</div>
+  <h2 class="st">MCP Primitives — What Servers Offer to Hosts</h2>
+  <p class="bd"><strong>Primitives</strong> are the three types of offerings that a Server can provide to a Host. Understanding these is essential to understanding what you can do with any MCP server.</p>
+
+  <div class="note v">
+    <strong>Definition:</strong> Primitives are things the server can offer to the host. Every MCP server exposes its capabilities through exactly these three primitives — Tools, Resources, and Prompts.
+  </div>
+
+  <table class="prim-table">
+    <thead>
+      <tr>
+        <th>Primitive</th>
+        <th>Type</th>
+        <th>Definition</th>
+        <th>Nature</th>
+        <th>GitHub Example</th>
+        <th>Google Drive Example</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>tools/</td>
+        <td>🔧 Actions</td>
+        <td>Things the AI can ASK the server to DO. Executable actions that perform real operations.</td>
+        <td>Dynamic — changes over time</td>
+        <td>Count commits, list issues, create PR, push code</td>
+        <td>Create file, search documents, upload files</td>
+      </tr>
+      <tr>
+        <td>resources/</td>
+        <td>📄 Data</td>
+        <td>Structured data sources the AI can READ. Static knowledge documents on the server.</td>
+        <td>Static — doesn't change frequently</td>
+        <td>README.md content, repository description</td>
+        <td>Database schema, configuration document</td>
+      </tr>
+      <tr>
+        <td>prompts/</td>
+        <td>📝 Templates</td>
+        <td>Predefined prompt templates that guide HOW the AI should use the server. Behavioral instructions.</td>
+        <td>Instructional — shapes AI behavior</td>
+        <td>GitHub Issue Report template with required fields</td>
+        <td>Document formatting guidelines</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="sh">The Prompts Primitive — Detailed Example</h3>
+  <p class="bd">Prompts are the trickiest to understand. Here's how Nitish explains them with a concrete scenario:</p>
+
+  <div class="g2">
+    <div class="card r-t">
+      <h4>❌ Without Prompt Primitive</h4>
+      <p>User asks to "create an issue for a bug: the login button doesn't work."</p>
+      <br>
+      <p>The LLM generates a vague issue:</p>
+      <br>
+      <p>Title: "Login bug"<br>Body: "The login button doesn't work."</p>
+      <br>
+      <p style="color: var(--coral);">❌ Lacks steps to reproduce, expected behavior, environment details — useless for developers.</p>
+    </div>
+    <div class="card g-t">
+      <h4>✓ With Prompt Primitive</h4>
+      <p>Server stores a template: "Always include: Title, Steps to Reproduce, Expected Behavior, Actual Behavior, Environment."</p>
+      <br>
+      <p>The LLM reads this template and generates:</p>
+      <br>
+      <p>Title: "Login button bug"<br>Steps: 1. Open login page 2. Enter credentials 3. Click login<br>Expected: User logged in<br>Actual: Nothing happens<br>Env: Chrome, macOS</p>
+    </div>
+  </div>
+
+  <div class="note t">
+    <strong>When to use Prompts:</strong> Not needed in every scenario. They're useful in specialised cases where you want to enforce a specific format or quality standard on how the AI interacts with a particular server. Think of them as "server usage guidelines" for the AI.
+  </div>
+</div>
+
+<!-- ═══ SEC 7 — STANDARD OPERATIONS ═══ -->
+<div class="sec">
+  <div class="eye"><span class="eye-dot"></span> Section 07</div>
+  <h2 class="st">Standard Operations for Each Primitive</h2>
+  <p class="bd">MCP provides standardised method names (like REST endpoints) for interacting with each type of primitive. These are the "vocabulary" of MCP communication.</p>
+
+  <table class="mtable">
+    <thead>
+      <tr><th>Method Name</th><th>Primitive</th><th>What it Does</th><th>Needs Params?</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>tools/list</td><td>🔧 Tools</td><td>Ask server: "What tools/actions do you offer?" Returns full list of available tools with descriptions.</td><td>No</td></tr>
+      <tr><td>tools/call</td><td>🔧 Tools</td><td>Execute a specific tool. "Please run THIS tool with THESE arguments." The action actually happens here.</td><td>Yes (tool name + args)</td></tr>
+      <tr><td>resources/list</td><td>📄 Resources</td><td>Ask server: "What static documents/data are available for me to read?"</td><td>No</td></tr>
+      <tr><td>resources/read</td><td>📄 Resources</td><td>Fetch the content of a specific resource document by its URL/identifier.</td><td>Yes (resource URI)</td></tr>
+      <tr><td>resources/subscribe</td><td>📄 Resources</td><td>Start watching a resource. Server will notify client when the document changes.</td><td>Yes (resource URI)</td></tr>
+      <tr><td>resources/unsubscribe</td><td>📄 Resources</td><td>Stop watching a resource. No more change notifications from the server for this resource.</td><td>Yes (resource URI)</td></tr>
+      <tr><td>prompts/list</td><td>📝 Prompts</td><td>Get all available prompt templates on the server.</td><td>No</td></tr>
+      <tr><td>prompts/get</td><td>📝 Prompts</td><td>Fetch a specific prompt template by name to use as guidance.</td><td>Yes (prompt name)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══ SEC 8 — DATA LAYER / JSON-RPC ═══ -->
+<div class="sec">
+  <div class="eye"><span class="eye-dot"></span> Section 08</div>
+  <h2 class="st">Data Layer — JSON-RPC 2.0 Explained</h2>
+  <p class="bd">The <strong>Data Layer</strong> is the language and grammar of the MCP ecosystem. It defines exactly how Client and Server messages are structured — the rules both sides follow to communicate.</p>
+
+  <div class="note a">
+    <strong>Definition:</strong> The Data Layer is the language and grammar of the MCP ecosystem that everyone agrees upon to communicate. In MCP, this grammar is provided by <strong>JSON-RPC 2.0</strong>.
+  </div>
+
+  <h3 class="sh">What is JSON-RPC?</h3>
+  <div class="g2">
+    <div class="card v-t">
+      <h4>RPC — Remote Procedure Call</h4>
+      <p>A mechanism that allows a program to execute a function on <em>another computer</em> as if it were local — hiding all the network details. Instead of writing complex API calls, you simply say "call this function with these parameters" and the result comes back.</p>
+      <br>
+      <p style="color: var(--muted); font-family: 'Fira Code', monospace; font-size: 12px;">// Instead of this:<br>fetch("https://server/add", {method:"POST",...})<br><br>// RPC lets you write this:<br>rpc.call("add", [2, 3])  // → 5</p>
+    </div>
+    <div class="card t-t">
+      <h4>JSON-RPC = RPC + JSON Format</h4>
+      <p>JSON-RPC combines the RPC concept with the simplicity of JSON. All RPC requests and responses are structured as standard JSON objects, making them easy to write, read, and debug.</p>
+      <br>
+      <p>Currently on version 2.0 — hence the full name <strong>JSON-RPC 2.0</strong>. This is the version MCP uses as its data layer foundation.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SEC 9 — JSON-RPC EXAMPLES ═══ -->
+<div class="sec">
+  <div class="eye"><span class="eye-dot"></span> Section 09</div>
+  <h2 class="st">JSON-RPC Message Examples</h2>
+  <p class="bd">Let's see exactly how MCP communication looks in JSON-RPC 2.0 format. These are real message structures used when clients talk to servers.</p>
+
+  <h3 class="sh">Example 1: tools/list — Discover available tools</h3>
+  <p class="bd">When an AI chatbot first connects to a GitHub server, the first thing it does is ask: "What can you do for me?"</p>
+  <div class="g2">
+    <div>
+      <p class="bd" style="font-size:13px; color: var(--muted); margin-bottom:8px;">→ CLIENT REQUEST</p>
+      <div class="code"><pre>{
+  <span class="key2">"jsonrpc"</span>: <span class="str">"2.0"</span>,
+  <span class="key2">"id"</span>: <span class="num">1</span>,
+  <span class="key2">"method"</span>: <span class="str">"tools/list"</span>,
+  <span class="key2">"params"</span>: {}  <span class="cm">// No params needed</span>
+}</pre></div>
+    </div>
+    <div>
+      <p class="bd" style="font-size:13px; color: var(--muted); margin-bottom:8px;">← SERVER RESPONSE</p>
+      <div class="code"><pre>{
+  <span class="key2">"jsonrpc"</span>: <span class="str">"2.0"</span>,
+  <span class="key2">"id"</span>: <span class="num">1</span>,  <span class="cm">// Same ID — matches request</span>
+  <span class="key2">"result"</span>: {
+    <span class="key2">"tools"</span>: [
+      { <span class="key2">"name"</span>: <span class="str">"list_issues"</span>,
+        <span class="key2">"description"</span>: <span class="str">"List all open issues"</span> },
+      { <span class="key2">"name"</span>: <span class="str">"list_pulls"</span>,
+        <span class="key2">"description"</span>: <span class="str">"List all pull requests"</span> }
+    ]
+  }
+}</pre></div>
+    </div>
+  </div>
+
+  <h3 class="sh">Example 2: tools/call — Execute a specific tool</h3>
+  <div class="g2">
+    <div>
+      <p class="bd" style="font-size:13px; color: var(--muted); margin-bottom:8px;">→ CLIENT REQUEST</p>
+      <div class="code"><pre>{
+  <span class="key2">"jsonrpc"</span>: <span class="str">"2.0"</span>,
+  <span class="key2">"id"</span>: <span class="num">2</span>,
+  <span class="key2">"method"</span>: <span class="str">"tools/call"</span>,
+  <span class="key2">"params"</span>: {
+    <span class="key2">"name"</span>: <span class="str">"list_issues"</span>,
+    <span class="key2">"arguments"</span>: {
+      <span class="key2">"owner"</span>: <span class="str">"campusx"</span>,
+      <span class="key2">"repo"</span>: <span class="str">"mcp-demo"</span>
+    }
+  }
+}</pre></div>
+    </div>
+    <div>
+      <p class="bd" style="font-size:13px; color: var(--muted); margin-bottom:8px;">← SERVER RESPONSE</p>
+      <div class="code"><pre>{
+  <span class="key2">"jsonrpc"</span>: <span class="str">"2.0"</span>,
+  <span class="key2">"id"</span>: <span class="num">2</span>,
+  <span class="key2">"result"</span>: {
+    <span class="key2">"issues"</span>: [
+      { <span class="key2">"id"</span>: <span class="num">1</span>, <span class="key2">"title"</span>: <span class="str">"Login bug"</span>,
+        <span class="key2">"state"</span>: <span class="str">"open"</span> },
+      { <span class="key2">"id"</span>: <span class="num">2</span>, <span class="key2">"title"</span>: <span class="str">"UI fix"</span>,
+        <span class="key2">"state"</span>: <span class="str">"open"</span> }
+    ]
+  }
+}</pre></div>
+    </div>
+  </div>
+
+  <h3 class="sh">Example 3: Error Response</h3>
+  <div class="g2">
+    <div>
+      <p class="bd" style="font-size:13px; color: var(--muted); margin-bottom:8px;">→ CLIENT sends malformed request (missing repo)</p>
+      <div class="code"><pre>{
+  <span class="key2">"jsonrpc"</span>: <span class="str">"2.0"</span>,
+  <span class="key2">"id"</span>: <span class="num">3</span>,
+  <span class="key2">"method"</span>: <span class="str">"tools/call"</span>,
+  <span class="key2">"params"</span>: {
+    <span class="key2">"name"</span>: <span class="str">"list_issues"</span>,
+    <span class="key2">"arguments"</span>: {
+      <span class="key2">"owner"</span>: <span class="str">"campusx"</span>
+      <span class="cm">// Missing: "repo" field!</span>
+    }
+  }
+}</pre></div>
+    </div>
+    <div>
+      <p class="bd" style="font-size:13px; color: var(--muted); margin-bottom:8px;">← SERVER returns structured error</p>
+      <div class="code"><pre>{
+  <span class="key2">"jsonrpc"</span>: <span class="str">"2.0"</span>,
+  <span class="key2">"id"</span>: <span class="num">3</span>,  <span class="cm">// ID matches — client knows which req failed</span>
+  <span class="key2">"error"</span>: {
+    <span class="key2">"code"</span>: <span class="num">-32602</span>,  <span class="cm">// Invalid params error code</span>
+    <span class="key2">"message"</span>: <span class="str">"Missing required field: repo"</span>
+  }
+}</pre></div>
+    </div>
+  </div>
+
+  <div class="note v">
+    <strong>The ID field is critical:</strong> Every JSON-RPC request includes an <code>id</code>. Every response echoes back that same <code>id</code>. This is how the client matches responses to requests — especially important when multiple requests are sent simultaneously. The client can tell "this response belongs to request #3."
+  </div>
+</div>
+
+<!-- ═══ SEC 10 — NOTIFICATIONS & BATCHING ═══ -->
+<div class="sec">
+  <div class="eye"><span class="eye-dot"></span> Section 10</div>
+  <h2 class="st">Notifications & Batching in JSON-RPC</h2>
+
+  <h3 class="sh">Notifications — Fire and Forget</h3>
+  <div class="g2">
+    <div class="card v-t">
+      <h4>Regular Request/Response</h4>
+      <p>Every request MUST get a response. Client sends request → server MUST reply. Used when you need data back. Identified by the presence of an <code>id</code> field.</p>
+      <br>
+      <p style="color: var(--muted); font-size: 12px;">Client: "What are the issues?" → Server: "Here they are: [...]"</p>
+    </div>
+    <div class="card a-t">
+      <h4>Notifications</h4>
+      <p>No response expected. Either side can send a notification; the recipient just acknowledges it internally. Identified by the <strong>absence of an id field</strong>. Think: "fire and forget."</p>
+      <br>
+      <p style="color: var(--muted); font-size: 12px;">Server: "Hey, README.md was updated!" → Client just records this, no reply needed.</p>
+    </div>
+  </div>
+
+  <div class="code" style="margin-top: 16px;">
+    <pre><span class="cm">// Notification from Server → Client (no id field!)</span>
+{
+  <span class="key2">"jsonrpc"</span>: <span class="str">"2.0"</span>,
+  <span class="cm">// No "id" field — this is a notification, not a request</span>
+  <span class="key2">"method"</span>: <span class="str">"notifications/resources/updated"</span>,
+  <span class="key2">"params"</span>: {
+    <span class="key2">"uri"</span>: <span class="str">"github://campusx/mcp-demo/README.md"</span>,
+    <span class="key2">"updated_by"</span>: <span class="str">"nitish"</span>,
+    <span class="key2">"updated_at"</span>: <span class="str">"2025-04-20T10:30:00Z"</span>
+  }
+}
+<span class="cm">// Client receives this because it subscribed via resources/subscribe</span></pre>
+  </div>
+
+  <h3 class="sh">Batching — Multiple Requests in One</h3>
+  <p class="bd">JSON-RPC allows sending multiple requests in a single array. Useful when you need data from multiple tools simultaneously — reduces round trips.</p>
+  <div class="code">
+    <pre><span class="cm">// Batch request: fetch issues AND pull requests at once</span>
+[
+  {
+    <span class="key2">"jsonrpc"</span>: <span class="str">"2.0"</span>, <span class="key2">"id"</span>: <span class="num">1</span>,
+    <span class="key2">"method"</span>: <span class="str">"tools/call"</span>,
+    <span class="key2">"params"</span>: { <span class="key2">"name"</span>: <span class="str">"list_issues"</span>, <span class="key2">"arguments"</span>: { <span class="key2">"repo"</span>: <span class="str">"mcp-demo"</span> } }
+  },
+  {
+    <span class="key2">"jsonrpc"</span>: <span class="str">"2.0"</span>, <span class="key2">"id"</span>: <span class="num">2</span>,
+    <span class="key2">"method"</span>: <span class="str">"tools/call"</span>,
+    <span class="key2">"params"</span>: { <span class="key2">"name"</span>: <span class="str">"list_pulls"</span>, <span class="key2">"arguments"</span>: { <span class="key2">"repo"</span>: <span class="str">"mcp-demo"</span> } }
+  }
+]
+<span class="cm">// Server returns both results in a single batch response array</span></pre>
+  </div>
+</div>
+
+<!-- ═══ SEC 11 — WHY JSON-RPC ═══ -->
+<div class="sec">
+  <div class="eye"><span class="eye-dot"></span> Section 11</div>
+  <h2 class="st">Why JSON-RPC over REST API? (5 Reasons)</h2>
+  <p class="bd">REST API could theoretically do the same job (fetching data from remote machines). Nitish explains exactly why Anthropic chose JSON-RPC 2.0 instead — and why this choice was architecturally brilliant.</p>
+
+  <div class="reasons">
+    <div class="reason-row">
+      <div class="reason-num">01</div>
+      <div class="reason-body">
+        <h5>Lightweight Protocol</h5>
+        <p>REST uses HTTP which adds many headers, metadata, and overhead to every request. JSON-RPC messages are just plain JSON — no headers, no HTTP verbs (GET/POST/PUT), no overhead. Easier to write, easier to debug, faster to transmit between machines.</p>
+      </div>
+    </div>
+    <div class="reason-row">
+      <div class="reason-num">02</div>
+      <div class="reason-body">
+        <h5>Supports Bidirectional Communication</h5>
+        <p>REST is inherently one-way: client requests, server responds. In JSON-RPC, the server can also send requests to the client. This is crucial for MCP — servers need to push notifications to clients when data changes, which REST can't natively do.</p>
+      </div>
+    </div>
+    <div class="reason-row">
+      <div class="reason-num">03</div>
+      <div class="reason-body">
+        <h5>Transport Agnostic</h5>
+        <p>REST is tied to HTTP. JSON-RPC works over ANY transport: stdio, HTTP, WebSockets, custom transports. This lets MCP use different transports for local vs remote servers (stdio for local, HTTP+SSE for remote) while keeping the same message format.</p>
+      </div>
+    </div>
+    <div class="reason-row">
+      <div class="reason-num">04</div>
+      <div class="reason-body">
+        <h5>Supports Request Batching</h5>
+        <p>REST requires a separate HTTP call for each request. JSON-RPC lets you bundle multiple requests into a single transmission. In AI workflows, it's common to need data from multiple tools simultaneously — batching makes this efficient.</p>
+      </div>
+    </div>
+    <div class="reason-row">
+      <div class="reason-num">05</div>
+      <div class="reason-body">
+        <h5>Built-in Notifications (Fire & Forget)</h5>
+        <p>REST has no concept of one-way messages that don't need a response. JSON-RPC natively supports notifications. When a server needs to inform clients about changes (like a subscribed resource being updated), notifications are the perfect mechanism.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SEC 12 — TRANSPORT LAYER INTRO ═══ -->
+<div class="sec">
+  <div class="eye"><span class="eye-dot"></span> Section 12</div>
+  <h2 class="st">Transport Layer — Local vs Remote Servers</h2>
+  <p class="bd">The <strong>Transport Layer</strong> is the mechanism that physically moves JSON-RPC messages between Client and Server. The transport mechanism depends on where the server lives — local machine or remote internet.</p>
+
+  <div class="note t">
+    <strong>Definition:</strong> The Transport Layer is the mechanism that moves JSON-RPC messages between the client and server. It's the "pipe" through which messages flow — the physical medium, not the message format (that's JSON-RPC's job).
+  </div>
+
+  <div class="g2">
+    <div class="card v-t">
+      <div class="ci">💻</div>
+      <h4>Local Servers</h4>
+      <p>A server running on the SAME machine as the Host. Installed on the user's computer. Example: a File System MCP server that reads/writes local files. Has access to local resources that a remote server could never reach.</p>
+      <br>
+      <p><strong style="color: var(--violet-light);">Transport: stdio (Standard Input/Output)</strong></p>
+    </div>
+    <div class="card t-t">
+      <div class="ci">🌐</div>
+      <h4>Remote Servers</h4>
+      <p>A server running on a DIFFERENT machine — on the internet or a company network. Example: GitHub's MCP server running on GitHub's infrastructure. Accessible from anywhere on the internet.</p>
+      <br>
+      <p><strong style="color: var(--teal);">Transport: HTTP + SSE (Server-Sent Events)</strong></p>
+    </div>
+  </div>
+
+  <h3 class="sh">Live Demo Confirmed — Both Types in Action</h3>
+  <p class="bd">Nitish demonstrates both server types live on Claude Desktop:</p>
+  <div class="g2">
+    <div class="card" style="border-left: 3px solid var(--violet);">
+      <h4>Local Server Demo — File System</h4>
+      <p>Query: "Is there a Python file on my Desktop?"<br>→ Claude uses the local filesystem MCP server<br>→ Scans the actual Desktop folder on Nitish's laptop<br>→ Returns: "No Python file found" (one was found on second try: hello.py)<br><br><em style="color:var(--muted); font-size:12px;">This MUST be local — it reads private computer files that a remote server could never access.</em></p>
+    </div>
+    <div class="card" style="border-left: 3px solid var(--teal);">
+      <h4>Remote Server Demo — GitHub</h4>
+      <p>Query: "List my top 5 most starred repositories"<br>→ Claude uses the GitHub remote MCP server<br>→ Queries the GitHub API over the internet<br>→ Returns: Top 5 repos with star counts<br><br><em style="color:var(--muted); font-size:12px;">This is remote — GitHub's servers are in the cloud, not on Nitish's laptop.</em></p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SEC 13 — STDIO TRANSPORT ═══ -->
+<div class="sec">
+  <div class="eye"><span class="eye-dot"></span> Section 13</div>
+  <h2 class="st">stdio Transport — How Local Server Communication Works</h2>
+  <p class="bd">For local servers, MCP uses <strong>stdio (Standard Input/Output)</strong> — the fundamental I/O mechanism built into every programming language. This is elegant, fast, and secure.</p>
+
+  <div class="note v">
+    <strong>stdio basics:</strong> Every running program has two built-in communication channels: <em>stdin</em> (standard input — receives data from outside) and <em>stdout</em> (standard output — sends data to outside). In normal programming, stdin = keyboard input and stdout = screen output.
+  </div>
+
+  <h3 class="sh">How stdio Transport Works in MCP (3 Steps)</h3>
+  <div class="dbox">
+    <div class="dbox-label">// Diagram: stdio transport mechanism — host launches server as subprocess</div>
+    <svg width="100%" viewBox="0 0 680 310" role="img">
+      <title>stdio transport mechanism</title>
+      <desc>Three step process showing Host launching Server as subprocess, writing to stdin, server responding via stdout</desc>
+      <defs>
+        <marker id="a5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- Step 1 label -->
+      <text x="340" y="22" text-anchor="middle" fill="rgba(124,92,247,0.7)" font-size="11" font-weight="700" font-family="Fira Code, monospace">SAME MACHINE</text>
+
+      <!-- Host Process -->
+      <rect x="20" y="30" width="190" height="260" rx="12" fill="rgba(124,92,247,0.1)" stroke="rgba(124,92,247,0.4)" stroke-width="1.5" stroke-dasharray="5 3"/>
+      <text x="115" y="56" text-anchor="middle" fill="rgba(124,92,247,0.8)" font-size="12" font-weight="700">HOST PROCESS</text>
+      <text x="115" y="73" text-anchor="middle" fill="rgba(124,92,247,0.5)" font-size="10">(Claude Desktop / Cursor)</text>
+
+      <!-- LLM inside host -->
+      <rect x="35" y="88" width="160" height="44" rx="8" fill="rgba(124,92,247,0.2)" stroke="#7c5cf7" stroke-width="1.5"/>
+      <text x="115" y="115" text-anchor="middle" fill="#c4b8ff" font-size="13" font-weight="700">LLM + Host Logic</text>
+
+      <!-- Client inside host -->
+      <rect x="35" y="150" width="160" height="44" rx="8" fill="rgba(240,160,48,0.2)" stroke="#f0a030" stroke-width="1.5"/>
+      <text x="115" y="177" text-anchor="middle" fill="#f5d090" font-size="13" font-weight="700">MCP Client</text>
+
+      <!-- stdin/stdout pipes -->
+      <rect x="35" y="220" width="70" height="36" rx="6" fill="rgba(48,208,128,0.15)" stroke="#30d080" stroke-width="1.5"/>
+      <text x="70" y="238" text-anchor="middle" fill="#a0f5c8" font-size="11" font-weight="600">stdin</text>
+      <text x="70" y="252" text-anchor="middle" fill="rgba(160,245,200,0.5)" font-size="10">→ write</text>
+
+      <rect x="115" y="220" width="70" height="36" rx="6" fill="rgba(14,207,176,0.15)" stroke="#0ecfb0" stroke-width="1.5"/>
+      <text x="150" y="238" text-anchor="middle" fill="#a0f5e8" font-size="11" font-weight="600">stdout</text>
+      <text x="150" y="252" text-anchor="middle" fill="rgba(160,245,232,0.5)" font-size="10">← read</text>
+
+      <!-- Step 1 arrow: Host launches server -->
+      <path d="M210 160 Q 265 140 320 130" fill="none" stroke="rgba(124,92,247,0.6)" stroke-width="2" marker-end="url(#a5)" stroke-dasharray="4 3"/>
+      <text x="265" y="135" text-anchor="middle" fill="rgba(196,184,255,0.6)" font-size="10">① launch as</text>
+      <text x="265" y="148" text-anchor="middle" fill="rgba(196,184,255,0.6)" font-size="10">subprocess</text>
+
+      <!-- Server Process -->
+      <rect x="320" y="60" width="200" height="240" rx="12" fill="rgba(14,207,176,0.1)" stroke="rgba(14,207,176,0.4)" stroke-width="1.5" stroke-dasharray="5 3"/>
+      <text x="420" y="88" text-anchor="middle" fill="rgba(14,207,176,0.8)" font-size="12" font-weight="700">SERVER PROCESS</text>
+      <text x="420" y="106" text-anchor="middle" fill="rgba(14,207,176,0.5)" font-size="10">(filesystem / local MCP)</text>
+
+      <!-- Server logic -->
+      <rect x="335" y="120" width="170" height="44" rx="8" fill="rgba(14,207,176,0.2)" stroke="#0ecfb0" stroke-width="1.5"/>
+      <text x="420" y="147" text-anchor="middle" fill="#a0f5e8" font-size="13" font-weight="700">Server Logic</text>
+
+      <!-- Server stdin/stdout -->
+      <rect x="335" y="220" width="70" height="36" rx="6" fill="rgba(48,208,128,0.15)" stroke="#30d080" stroke-width="1.5"/>
+      <text x="370" y="238" text-anchor="middle" fill="#a0f5c8" font-size="11" font-weight="600">stdin</text>
+      <text x="370" y="252" text-anchor="middle" fill="rgba(160,245,200,0.5)" font-size="10">← reads</text>
+
+      <rect x="415" y="220" width="70" height="36" rx="6" fill="rgba(14,207,176,0.15)" stroke="#0ecfb0" stroke-width="1.5"/>
+      <text x="450" y="238" text-anchor="middle" fill="#a0f5e8" font-size="11" font-weight="600">stdout</text>
+      <text x="450" y="252" text-anchor="middle" fill="rgba(160,245,232,0.5)" font-size="10">→ writes</text>
+
+      <!-- Step 2: write to stdin -->
+      <line x1="105" y1="238" x2="335" y2="238" stroke="#30d080" stroke-width="2" marker-end="url(#a5)"/>
+      <text x="220" y="226" text-anchor="middle" fill="rgba(48,208,128,0.8)" font-size="10" font-weight="700">② JSON-RPC msg via stdin</text>
+
+      <!-- Step 3: read from stdout -->
+      <line x1="415" y1="256" x2="185" y2="256" stroke="#0ecfb0" stroke-width="2" marker-end="url(#a5)"/>
+      <text x="300" y="276" text-anchor="middle" fill="rgba(14,207,176,0.8)" font-size="10" font-weight="700">③ JSON-RPC response via stdout</text>
+
+      <!-- Parent-child annotation -->
+      <rect x="544" y="100" width="128" height="70" rx="8" fill="rgba(240,160,48,0.08)" stroke="rgba(240,160,48,0.25)" stroke-width="1"/>
+      <text x="608" y="122" text-anchor="middle" fill="#f0a030" font-size="11" font-weight="700">Parent-Child</text>
+      <text x="608" y="140" text-anchor="middle" fill="rgba(240,160,48,0.7)" font-size="11">Relationship</text>
+      <text x="608" y="158" text-anchor="middle" fill="rgba(240,160,48,0.5)" font-size="10">Host controls</text>
+      <text x="608" y="171" text-anchor="middle" fill="rgba(240,160,48,0.5)" font-size="10">server's stdio</text>
+    </svg>
+  </div>
+
+  <div class="g3">
+    <div class="card g-t">
+      <div class="ci">⚡</div>
+      <h4>Extremely Fast</h4>
+      <p>Both processes are on the same machine. No network latency. Literally two processes piping data directly to each other through the OS — as fast as it gets.</p>
+    </div>
+    <div class="card v-t">
+      <div class="ci">🔒</div>
+      <h4>Maximum Security</h4>
+      <p>No network ports opened. No internet exposure. Communication is entirely within the machine's process boundaries. Zero attack surface from the network.</p>
+    </div>
+    <div class="card t-t">
+      <div class="ci">🛠️</div>
+      <h4>Simple to Implement</h4>
+      <p>Every programming language (Python, JavaScript, Java, C++, Go) has built-in stdio support. Writing an MCP server that uses stdio requires minimal boilerplate code.</p>
+    </div>
+  </div>
+
+  <h3 class="sh">Demo Proof — Hello.py Analogy</h3>
+  <div class="note a">
+    <strong>Nitish's insight:</strong> When you run <code>python3 hello.py</code> in a terminal and type a name when prompted, you're already doing all 3 stdio steps: (1) Terminal launches Python as a subprocess, (2) Your keyboard input goes via stdin, (3) "Hello Nitish!" appears via stdout. This is EXACTLY how Claude Desktop communicates with local MCP servers — just with JSON-RPC messages instead of names.
+  </div>
+</div>
+
+<!-- ═══ SEC 14 — HTTP + SSE TRANSPORT ═══ -->
+<div class="sec">
+  <div class="eye"><span class="eye-dot"></span> Section 14</div>
+  <h2 class="st">HTTP + SSE Transport — Remote Servers</h2>
+  <p class="bd">For remote servers (running on the internet), MCP uses <strong>HTTP</strong> for sending requests and <strong>Server-Sent Events (SSE)</strong> for receiving streaming responses.</p>
+
+  <div class="trans-grid">
+    <div class="trans-col local">
+      <h4>HTTP — The Request Mechanism</h4>
+      <div class="trans-row"><span class="icon">🌐</span><span>HTTP is the most universal application protocol on the internet — the host can reach any server globally using it.</span></div>
+      <div class="trans-row"><span class="icon">📦</span><span>Client sends an HTTP <strong style="color:#e0dff5">POST request</strong> to the server's URL with a JSON body containing the JSON-RPC message.</span></div>
+      <div class="trans-row"><span class="icon">🔑</span><span>All standard HTTP authentication methods work: Bearer tokens, API keys in headers, OAuth — no new auth system needed.</span></div>
+      <div class="trans-row"><span class="icon">✅</span><span>Well understood, well documented, supported by every language and framework. Widely deployed infrastructure.</span></div>
+    </div>
+    <div class="trans-col remote">
+      <h4>SSE — The Streaming Response Mechanism</h4>
+      <div class="trans-row"><span class="icon">🔄</span><span>SSE = Server-Sent Events. An HTTP extension that allows a server to push multiple messages over a single open connection.</span></div>
+      <div class="trans-row"><span class="icon">📺</span><span>Instead of waiting for one big JSON response, the server streams data <strong style="color:#e0dff5">chunk by chunk</strong> as it becomes available — creating the "typing" effect in AI.</span></div>
+      <div class="trans-row"><span class="icon">⏱️</span><span>Ideal for long-running tasks and incremental updates — common in AI agents that perform multi-step workflows.</span></div>
+      <div class="trans-row"><span class="icon">🔌</span><span>Single open connection maintained — server can push updates to client whenever new data is ready without waiting for a new request.</span></div>
+    </div>
+  </div>
+
+  <div class="code" style="margin-top:20px;">
+    <pre><span class="cm">// HTTP POST request carrying JSON-RPC payload to remote MCP server</span>
+POST https://api.github-mcp.com/mcp
+Content-Type: application/json
+Authorization: Bearer YOUR_GITHUB_TOKEN
+
+{
+  <span class="key2">"jsonrpc"</span>: <span class="str">"2.0"</span>,
+  <span class="key2">"id"</span>: <span class="num">1</span>,
+  <span class="key2">"method"</span>: <span class="str">"tools/call"</span>,
+  <span class="key2">"params"</span>: {
+    <span class="key2">"name"</span>: <span class="str">"list_repositories"</span>,
+    <span class="key2">"arguments"</span>: { <span class="key2">"sort"</span>: <span class="str">"stars"</span>, <span class="key2">"limit"</span>: <span class="num">5</span> }
+  }
+}
+
+<span class="cm">// Server responds via SSE — streams results as they're ready</span>
+data: {"jsonrpc":"2.0","id":1,"result":{"repos":[{"name":"repo1"...</span>}
+
+<span class="cm">// Connection stays open for follow-up streaming updates</span></pre>
+  </div>
+</div>
+
+<!-- ═══ SEC 15 — COMPLETE ARCHITECTURE DIAGRAM ═══ -->
+<div class="sec">
+  <div class="eye"><span class="eye-dot"></span> Section 15</div>
+  <h2 class="st">Complete MCP Architecture Diagram</h2>
+  <p class="bd">This is the full architecture as presented by Nitish at the end of the video — built layer by layer through the lecture. Every component, relationship, and communication pathway in one unified view.</p>
+
+  <div class="dbox">
+    <div class="dbox-label">// Complete MCP Architecture — All layers: Host, Clients, Servers, Primitives, Data Layer, Transport Layer</div>
+    <svg width="100%" viewBox="0 0 680 560" role="img">
+      <title>Complete MCP Architecture Diagram</title>
+      <desc>Full architecture showing Host with LLM and multiple MCP clients connecting to local and remote servers via stdio and HTTP+SSE transports, with primitives shown for each server</desc>
+      <defs>
+        <marker id="a6" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- ── HOST container ── -->
+      <rect x="10" y="30" width="230" height="500" rx="14" fill="rgba(124,92,247,0.07)" stroke="rgba(124,92,247,0.4)" stroke-width="1.5" stroke-dasharray="6 3"/>
+      <text x="125" y="54" text-anchor="middle" fill="rgba(124,92,247,0.8)" font-size="12" font-weight="700">HOST (AI Chatbot)</text>
+
+      <!-- User -->
+      <rect x="24" y="62" width="198" height="44" rx="8" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+      <text x="123" y="85" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="12">User Interface + LLM</text>
+
+      <!-- Divider line inside host -->
+      <line x1="24" y1="118" x2="222" y2="118" stroke="rgba(124,92,247,0.2)" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="123" y="132" text-anchor="middle" fill="rgba(124,92,247,0.5)" font-size="10">MCP Clients (one per server)</text>
+
+      <!-- Client 1 -->
+      <rect x="24" y="142" width="198" height="40" rx="7" fill="rgba(240,160,48,0.18)" stroke="#f0a030" stroke-width="1.5"/>
+      <text x="91" y="157" text-anchor="middle" fill="#f5d090" font-size="11" font-weight="700">Client 1</text>
+      <text x="91" y="173" text-anchor="middle" fill="rgba(245,208,144,0.5)" font-size="9">1:1 with GitHub Server</text>
+      <text x="190" y="163" text-anchor="middle" fill="#f0a030" font-size="9" font-family="Fira Code, monospace">stdio</text>
+
+      <!-- Client 2 -->
+      <rect x="24" y="196" width="198" height="40" rx="7" fill="rgba(240,160,48,0.18)" stroke="#f0a030" stroke-width="1.5"/>
+      <text x="91" y="211" text-anchor="middle" fill="#f5d090" font-size="11" font-weight="700">Client 2</text>
+      <text x="91" y="227" text-anchor="middle" fill="rgba(245,208,144,0.5)" font-size="9">1:1 with Slack Server</text>
+      <text x="190" y="217" text-anchor="middle" fill="#f0a030" font-size="9" font-family="Fira Code, monospace">HTTP+SSE</text>
+
+      <!-- Client 3 -->
+      <rect x="24" y="250" width="198" height="40" rx="7" fill="rgba(240,160,48,0.18)" stroke="#f0a030" stroke-width="1.5"/>
+      <text x="91" y="265" text-anchor="middle" fill="#f5d090" font-size="11" font-weight="700">Client 3</text>
+      <text x="91" y="281" text-anchor="middle" fill="rgba(245,208,144,0.5)" font-size="9">1:1 with FileSystem Server</text>
+      <text x="190" y="271" text-anchor="middle" fill="#f0a030" font-size="9" font-family="Fira Code, monospace">stdio</text>
+
+      <!-- ── COMMUNICATION LINES ── -->
+      <!-- Client 1 → GitHub (remote) -->
+      <line x1="222" y1="162" x2="290" y2="115" stroke="rgba(240,160,48,0.6)" stroke-width="1.5" marker-end="url(#a6)"/>
+      <!-- Client 2 → Slack (remote) -->
+      <line x1="222" y1="216" x2="290" y2="236" stroke="rgba(240,160,48,0.6)" stroke-width="1.5" marker-end="url(#a6)"/>
+      <!-- Client 3 → FileSystem (local) -->
+      <line x1="222" y1="270" x2="290" y2="388" stroke="rgba(240,160,48,0.6)" stroke-width="1.5" marker-end="url(#a6)"/>
+
+      <!-- ── REMOTE SERVERS container ── -->
+      <rect x="290" y="30" width="268" height="320" rx="14" fill="rgba(14,207,176,0.05)" stroke="rgba(14,207,176,0.35)" stroke-width="1.5" stroke-dasharray="6 3"/>
+      <text x="424" y="52" text-anchor="middle" fill="rgba(14,207,176,0.7)" font-size="11" font-weight="700">REMOTE SERVERS</text>
+      <text x="424" y="68" text-anchor="middle" fill="rgba(14,207,176,0.4)" font-size="10">Transport: HTTP + SSE</text>
+
+      <!-- GitHub Server -->
+      <rect x="304" y="78" width="240" height="94" rx="10" fill="rgba(14,207,176,0.12)" stroke="#0ecfb0" stroke-width="1.5"/>
+      <text x="424" y="100" text-anchor="middle" fill="#e0dff5" font-size="13" font-weight="700">GitHub MCP Server</text>
+      <text x="350" y="122" text-anchor="middle" fill="rgba(14,207,176,0.7)" font-size="10">tools/</text>
+      <text x="350" y="137" text-anchor="middle" fill="rgba(14,207,176,0.5)" font-size="9">list_issues, create_pr</text>
+      <text x="424" y="122" text-anchor="middle" fill="rgba(14,207,176,0.7)" font-size="10">resources/</text>
+      <text x="424" y="137" text-anchor="middle" fill="rgba(14,207,176,0.5)" font-size="9">README.md</text>
+      <text x="502" y="122" text-anchor="middle" fill="rgba(14,207,176,0.7)" font-size="10">prompts/</text>
+      <text x="502" y="137" text-anchor="middle" fill="rgba(14,207,176,0.5)" font-size="9">issue_template</text>
+      <!-- Primitive dividers -->
+      <line x1="388" y1="113" x2="388" y2="162" stroke="rgba(14,207,176,0.2)" stroke-width="1"/>
+      <line x1="462" y1="113" x2="462" y2="162" stroke="rgba(14,207,176,0.2)" stroke-width="1"/>
+      <text x="350" y="158" text-anchor="middle" fill="rgba(14,207,176,0.35)" font-size="9">🔧 dynamic</text>
+      <text x="424" y="158" text-anchor="middle" fill="rgba(14,207,176,0.35)" font-size="9">📄 static</text>
+      <text x="502" y="158" text-anchor="middle" fill="rgba(14,207,176,0.35)" font-size="9">📝 template</text>
+
+      <!-- Slack Server -->
+      <rect x="304" y="196" width="240" height="64" rx="10" fill="rgba(14,207,176,0.12)" stroke="#0ecfb0" stroke-width="1.5"/>
+      <text x="424" y="218" text-anchor="middle" fill="#e0dff5" font-size="13" font-weight="700">Slack MCP Server</text>
+      <text x="350" y="240" text-anchor="middle" fill="rgba(14,207,176,0.6)" font-size="10">tools/ read, send messages</text>
+      <text x="500" y="240" text-anchor="middle" fill="rgba(14,207,176,0.6)" font-size="10">resources/ channel list</text>
+
+      <!-- JSON-RPC 2.0 labels on arrows -->
+      <text x="255" y="155" text-anchor="middle" fill="rgba(196,184,255,0.5)" font-size="9" font-family="Fira Code, monospace">JSON-RPC 2.0</text>
+      <text x="255" y="230" text-anchor="middle" fill="rgba(196,184,255,0.5)" font-size="9" font-family="Fira Code, monospace">JSON-RPC 2.0</text>
+      <text x="255" y="338" text-anchor="middle" fill="rgba(196,184,255,0.5)" font-size="9" font-family="Fira Code, monospace">JSON-RPC 2.0</text>
+
+      <!-- ── LOCAL SERVERS container ── -->
+      <rect x="290" y="366" width="268" height="164" rx="14" fill="rgba(124,92,247,0.06)" stroke="rgba(124,92,247,0.35)" stroke-width="1.5" stroke-dasharray="6 3"/>
+      <text x="424" y="388" text-anchor="middle" fill="rgba(124,92,247,0.7)" font-size="11" font-weight="700">LOCAL SERVERS</text>
+      <text x="424" y="404" text-anchor="middle" fill="rgba(124,92,247,0.4)" font-size="10">Transport: stdio</text>
+
+      <!-- FileSystem Server -->
+      <rect x="304" y="414" width="240" height="94" rx="10" fill="rgba(124,92,247,0.12)" stroke="#7c5cf7" stroke-width="1.5"/>
+      <text x="424" y="436" text-anchor="middle" fill="#e0dff5" font-size="13" font-weight="700">FileSystem MCP Server</text>
+      <text x="350" y="458" text-anchor="middle" fill="rgba(164,141,255,0.7)" font-size="10">tools/ read, write, list</text>
+      <text x="500" y="458" text-anchor="middle" fill="rgba(164,141,255,0.7)" font-size="10">resources/ file contents</text>
+      <text x="424" y="492" text-anchor="middle" fill="rgba(164,141,255,0.4)" font-size="9">🔒 Runs on same machine — accesses local files</text>
+
+      <!-- ── LEGEND ── -->
+      <rect x="574" y="370" width="100" height="138" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <text x="624" y="390" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-weight="700">LEGEND</text>
+      <line x1="586" y1="405" x2="608" y2="405" stroke="#f0a030" stroke-width="2"/>
+      <text x="650" y="409" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9">Client</text>
+      <rect x="586" y="420" width="18" height="10" rx="2" fill="rgba(14,207,176,0.2)" stroke="#0ecfb0" stroke-width="1"/>
+      <text x="650" y="430" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9">Remote Svr</text>
+      <rect x="586" y="443" width="18" height="10" rx="2" fill="rgba(124,92,247,0.2)" stroke="#7c5cf7" stroke-width="1"/>
+      <text x="650" y="453" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9">Local Svr</text>
+      <text x="624" y="476" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8">Data layer:</text>
+      <text x="624" y="490" text-anchor="middle" fill="rgba(196,184,255,0.5)" font-size="8" font-family="Fira Code, monospace">JSON-RPC 2.0</text>
+    </svg>
+  </div>
+</div>
+
+<!-- ═══ SEC 16 — KEY TAKEAWAYS ═══ -->
+<div class="sec">
+  <div class="eye"><span class="eye-dot"></span> Section 16</div>
+  <h2 class="st">Key Takeaways — Complete Architecture Summary</h2>
+
+  <div class="g2" style="margin-bottom: 28px;">
+    <div class="card v-t">
+      <h4>🏗️ Architecture Components</h4>
+      <p><strong style="color:#e0dff5">Host</strong> — The AI chatbot (Claude Desktop, Cursor, custom). Contains LLM + multiple clients.<br><br>
+      <strong style="color:#e0dff5">MCP Client</strong> — One per server. The protocol translator inside the Host. Handles all low-level MCP communication.<br><br>
+      <strong style="color:#e0dff5">MCP Server</strong> — The tool/capability (GitHub, Slack, FileSystem). Does all the heavy lifting. Can be local or remote.</p>
+    </div>
+    <div class="card t-t">
+      <h4>⚖️ Relationship Rules</h4>
+      <p><strong style="color:#e0dff5">One-on-One</strong> — Each client ↔ exactly one server.<br><br>
+      <strong style="color:#e0dff5">Host → Client</strong> — Host never talks to server directly.<br><br>
+      <strong style="color:#e0dff5">Parallel</strong> — Multiple clients run independently and can execute simultaneously.<br><br>
+      <strong style="color:#e0dff5">Scale</strong> — Add unlimited servers by adding one client per server.</p>
+    </div>
+    <div class="card a-t">
+      <h4>📦 Three Primitives</h4>
+      <p><strong style="color:#e0dff5">Tools</strong> — Dynamic actions (execute tasks). Use: tools/list + tools/call<br><br>
+      <strong style="color:#e0dff5">Resources</strong> — Static data (read documents). Use: resources/list + resources/read + subscribe/unsubscribe<br><br>
+      <strong style="color:#e0dff5">Prompts</strong> — Behavioral templates (guide AI). Use: prompts/list + prompts/get</p>
+    </div>
+    <div class="card g-t">
+      <h4>🔌 Two Transport Modes</h4>
+      <p><strong style="color:#e0dff5">stdio</strong> — For local servers (same machine). Fast, secure, no network. Host launches server as subprocess; communicates via stdin/stdout pipes.<br><br>
+      <strong style="color:#e0dff5">HTTP + SSE</strong> — For remote servers (internet). Uses HTTP POST for requests, SSE for streaming responses. Works with all standard HTTP auth.</p>
+    </div>
+  </div>
+
+  <div class="note g">
+    <strong>The Elegant Insight — Data Layer + Transport Layer Separation:</strong> JSON-RPC handles WHAT messages say (data format). Transport handles HOW messages travel (the pipe). By separating these two concerns, MCP achieves transport agnosticism — the same JSON-RPC message format works identically whether sent via stdio to a local server or via HTTP to a remote server. This architectural decision makes MCP flexible, extensible, and future-proof.
+  </div>
+
+  <h3 class="sh">What's Coming Next</h3>
+  <div class="g3">
+    <div class="card" style="border-top: 2px solid var(--muted); opacity: 0.6;">
+      <h4>✓ Video 2.1 — Architecture</h4>
+      <p style="color: var(--dim);">This video. Host, Client, Server. Primitives. JSON-RPC 2.0. stdio and HTTP+SSE transports. Complete architecture.</p>
+    </div>
+    <div class="card t-t">
+      <h4>→ Video 2.2 — Lifecycle</h4>
+      <p>How Client and Server communicate step by step. The full initialization handshake, capability negotiation, and message exchange lifecycle.</p>
+    </div>
+    <div class="card a-t">
+      <h4>→ Video 2.3 — Advanced Concepts</h4>
+      <p>Advanced MCP features, edge cases, and patterns used in production deployments. Sampling, roots, and more.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Study guide generated from <span>CampusX · MCP Trilogy · "MCP Architecture" video</span></p>
+  <p style="margin-top:8px; color: rgba(255,255,255,0.2);">youtube.com/watch?v=nQa31xdXbGk · Presenter: Nitish · Channel: CampusX</p>
+</footer>
+
+</body>
+</html>

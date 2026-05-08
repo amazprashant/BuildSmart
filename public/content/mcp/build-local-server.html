@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Build Local MCP Servers | CampusX</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f9f8ff;--surface:#fff;--card:#fff;--border:#e2defd;--border2:#c8c2fc;
+  --text:#160f30;--text2:#3b3462;--muted:#7870a0;--dim:#b4b0d0;
+  --p:#5c30e8;--p-l:#8060f5;--p-pale:#f2efff;--p-m:rgba(92,48,232,.1);
+  --g:#00c48a;--g-pale:#e6fdf5;--g-m:rgba(0,196,138,.1);
+  --o:#ff8c00;--o-pale:#fff5e6;--o-m:rgba(255,140,0,.1);
+  --r:#e83050;--r-pale:#fff0f3;--r-m:rgba(232,48,80,.1);
+  --b:#1e90f0;--b-pale:#edf5ff;--b-m:rgba(30,144,240,.1);
+  --y:#e0a800;--y-pale:#fffbeb;--y-m:rgba(224,168,0,.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.75;}
+
+/* ── COVER ── */
+.cover{min-height:100vh;background:linear-gradient(148deg,#0a061e 0%,#150c3a 40%,#0c1e2e 75%,#071428 100%);
+  display:flex;flex-direction:column;justify-content:flex-end;padding:80px 72px;
+  position:relative;overflow:hidden;}
+.cg1{position:absolute;width:560px;height:560px;border-radius:50%;
+  background:radial-gradient(circle,rgba(92,48,232,.28) 0%,transparent 65%);top:-160px;right:-80px;}
+.cg2{position:absolute;width:380px;height:380px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,196,138,.18) 0%,transparent 65%);bottom:-60px;left:80px;}
+.cg3{position:absolute;width:300px;height:300px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,140,0,.12) 0%,transparent 65%);top:100px;left:-60px;}
+.cgrid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(92,48,232,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(92,48,232,.06) 1px,transparent 1px);
+  background-size:44px 44px;}
+.c-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(92,48,232,.22);
+  border:1px solid rgba(92,48,232,.45);color:#b0a0ff;font-family:'JetBrains Mono',monospace;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:7px 18px;
+  border-radius:4px;width:fit-content;margin-bottom:30px;position:relative;}
+.cover h1{font-size:clamp(38px,5.2vw,62px);font-weight:800;line-height:1.1;color:#fff;
+  margin-bottom:22px;position:relative;letter-spacing:-1px;}
+.cover h1 .ac{color:#5dffd0;}
+.cover-desc{font-size:17px;color:rgba(255,255,255,.5);max-width:680px;margin-bottom:56px;
+  line-height:1.8;position:relative;}
+.cover-meta{display:flex;border-top:1px solid rgba(255,255,255,.1);padding-top:28px;position:relative;}
+.cm{flex:1;padding-right:28px;border-right:1px solid rgba(255,255,255,.07);margin-right:28px;}
+.cm:last-child{border-right:none;margin-right:0;padding-right:0;}
+.cm-l{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.3);
+  margin-bottom:4px;font-family:'JetBrains Mono',monospace;}
+.cm-v{font-size:14px;font-weight:600;color:rgba(255,255,255,.75);}
+
+/* PLAN BAR */
+.pbar{background:var(--p);padding:0 72px;display:flex;gap:0;overflow:hidden;}
+.pi{flex:1;padding:15px 18px;border-right:1px solid rgba(255,255,255,.15);
+  display:flex;align-items:center;gap:10px;}
+.pi:last-child{border-right:none;}
+.pi.a{background:rgba(255,255,255,.12);}
+.pn{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.pi.a .pn{background:#5dffd0;color:#0a061e;}
+.pt{font-size:12px;font-weight:600;color:rgba(255,255,255,.7);}
+.pi.a .pt{color:#fff;}
+.ps{font-size:10px;color:rgba(255,255,255,.4);}
+
+/* TOC */
+.toc-sec{padding:48px 72px;background:var(--surface);border-bottom:1px solid var(--border);}
+.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border2);border-radius:14px;overflow:hidden;}
+.toc-head{grid-column:1/-1;background:var(--p);padding:16px 24px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:rgba(255,255,255,.9);font-weight:600;}
+.te{display:flex;align-items:center;gap:14px;padding:12px 24px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);font-size:13.5px;color:var(--text2);}
+.te:nth-child(even){border-right:none;}
+.te:last-child,.te:nth-last-child(2){border-bottom:none;}
+.tn{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--p);font-weight:600;min-width:28px;}
+
+/* SECTIONS */
+.sec{padding:60px 72px;border-bottom:1px solid var(--border);}
+.sec.alt{background:var(--surface);}
+.eye{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--p);margin-bottom:12px;}
+.ed{width:5px;height:5px;background:var(--p);border-radius:50%;}
+h2.st{font-size:32px;font-weight:800;color:var(--text);margin-bottom:14px;line-height:1.2;letter-spacing:-.5px;}
+h3.sh{font-size:19px;font-weight:700;color:var(--text);margin:30px 0 12px;}
+p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
+
+/* NOTES */
+.note{border-radius:10px;padding:16px 20px;margin:20px 0;font-size:14.5px;line-height:1.75;border-left:3px solid;}
+.np{background:var(--p-pale);border-color:var(--p);color:#1e0870;}
+.ng{background:var(--g-pale);border-color:var(--g);color:#00503a;}
+.no{background:var(--o-pale);border-color:var(--o);color:#6b3a00;}
+.nr{background:var(--r-pale);border-color:var(--r);color:#70061e;}
+.nb{background:var(--b-pale);border-color:var(--b);color:#073a78;}
+.ny{background:var(--y-pale);border-color:var(--y);color:#6b4400;}
+.note strong{font-weight:700;}
+
+/* CARDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:24px 0;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:24px 0;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;box-shadow:0 1px 6px rgba(92,48,232,.04);}
+.cp-t{border-top:2.5px solid var(--p);}
+.cg-t{border-top:2.5px solid var(--g);}
+.co-t{border-top:2.5px solid var(--o);}
+.cr-t{border-top:2.5px solid var(--r);}
+.cb-t{border-top:2.5px solid var(--b);}
+.cy-t{border-top:2.5px solid var(--y);}
+.card h4{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.card p{font-size:13.5px;color:var(--muted);line-height:1.65;margin:0;}
+.ci{font-size:26px;margin-bottom:10px;}
+
+/* DIAGRAM */
+.dbox{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:28px;margin:28px 0;box-shadow:0 2px 16px rgba(92,48,232,.05);}
+.dbox-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--dim);margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+
+/* CODE */
+.code{background:#0c0a20;border-radius:10px;padding:20px 24px;margin:16px 0;overflow-x:auto;border:1px solid rgba(92,48,232,.2);}
+.code pre{font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.85;color:#ddd8ff;}
+.kw{color:#c792ea;}.str{color:#a5e279;}.num{color:#f78c6c;}.cm{color:#3e3a60;}
+.key2{color:#82aaff;}.val{color:#ffcb6b;}.path{color:#5dffd0;}.dec{color:#f5a623;}.fn{color:#5dffd0;}
+
+/* STEP LIST */
+.sl{display:flex;flex-direction:column;gap:0;}
+.si{display:grid;grid-template-columns:52px 1fr;border-bottom:1px solid var(--border);}
+.si:last-child{border-bottom:none;}
+.sn{display:flex;align-items:flex-start;justify-content:center;padding-top:18px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--p);}
+.sb{padding:16px 4px 16px 0;}
+.sb h5{font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px;}
+.sb p{font-size:13.5px;color:var(--muted);margin:0;line-height:1.65;}
+
+/* LIBRARY TIMELINE */
+.timeline{position:relative;padding-left:28px;margin:28px 0;}
+.timeline::before{content:'';position:absolute;left:9px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--p),var(--g),var(--o));}
+.tli{position:relative;margin-bottom:28px;}
+.tli::before{content:'';position:absolute;left:-22px;top:18px;width:12px;height:12px;border-radius:50%;background:var(--p);border:2px solid var(--surface);box-shadow:0 0 0 2px var(--p);}
+.tli:nth-child(2)::before{background:var(--g);box-shadow:0 0 0 2px var(--g);}
+.tli:nth-child(3)::before{background:var(--o);box-shadow:0 0 0 2px var(--o);}
+.tli:nth-child(4)::before{background:var(--b);box-shadow:0 0 0 2px var(--b);}
+.tli-head{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.tli-sub{font-size:13px;color:var(--muted);}
+
+/* COMPARE */
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-radius:14px;overflow:hidden;margin:24px 0;}
+.cc{background:var(--surface);padding:26px;}
+.cc h4{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.cc.c1 h4{color:var(--p);}
+.cc.c2 h4{color:var(--g);}
+.crow{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--muted);}
+.crow:last-child{border-bottom:none;}
+
+/* VERSION TABLE */
+.vtable{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px;}
+.vtable thead th{background:var(--p);color:#fff;padding:12px 16px;text-align:left;font-weight:600;font-size:13px;}
+.vtable tbody tr{border-bottom:1px solid var(--border);}
+.vtable tbody tr:hover{background:var(--p-pale);}
+.vtable td{padding:12px 16px;color:var(--text2);vertical-align:top;}
+.vtable td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--p);font-weight:600;}
+.vtable td:nth-child(2){font-weight:600;color:var(--text);}
+
+/* FEATURE CARD */
+.feat-card{border:1px solid var(--border2);border-radius:16px;overflow:hidden;margin:28px 0;}
+.fc-head{padding:20px 26px;display:flex;align-items:center;gap:14px;color:#fff;font-weight:700;font-size:17px;}
+.fc-icon{width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.fc-body{background:var(--surface);padding:24px 26px;}
+
+/* ITERATION BADGE */
+.iter{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:20px;
+  font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;}
+.iter.v1{background:rgba(30,144,240,.12);color:var(--b);}
+.iter.v2{background:rgba(0,196,138,.12);color:var(--g);}
+.iter.v3{background:rgba(92,48,232,.12);color:var(--p);}
+.iter.v4{background:rgba(255,140,0,.12);color:var(--o);}
+
+footer{background:#0c0a20;color:rgba(255,255,255,.35);text-align:center;padding:36px 72px;font-size:13px;}
+footer span{color:#b0a0ff;}
+svg text{font-family:'DM Sans',sans-serif;}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cg1"></div><div class="cg2"></div><div class="cg3"></div><div class="cgrid"></div>
+  <div class="c-badge">▶ CampusX · MCP Series · How to Build Local MCP Servers</div>
+  <h1>Build Your Own<br><span class="ac">Local MCP Server</span></h1>
+  <p class="cover-desc">A complete hands-on guide to building a local MCP server from scratch using fastmcp — covering the MCP library ecosystem, a demo server, and an incremental Expense Tracker MCP server with Tools, Resources, and SQLite integration.</p>
+  <div class="cover-meta">
+    <div class="cm"><div class="cm-l">Presenter</div><div class="cm-v">Nitish · CampusX</div></div>
+    <div class="cm"><div class="cm-l">Library</div><div class="cm-v">fastmcp 2.0</div></div>
+    <div class="cm"><div class="cm-l">Project Built</div><div class="cm-v">Expense Tracker MCP Server</div></div>
+    <div class="cm"><div class="cm-l">Database</div><div class="cm-v">SQLite (sqlite3)</div></div>
+    <div class="cm"><div class="cm-l">Client Used</div><div class="cm-v">Claude Desktop</div></div>
+  </div>
+</div>
+
+<!-- PLAN BAR -->
+<div class="pbar">
+  <div class="pi"><div class="pn">✓</div><div><div class="pt">The Why</div><div class="ps">Why MCP exists</div></div></div>
+  <div class="pi"><div class="pn">✓</div><div><div class="pt">The What</div><div class="ps">Architecture + Lifecycle</div></div></div>
+  <div class="pi"><div class="pn">✓</div><div><div class="pt">How Part 1</div><div class="ps">Existing servers + Claude Desktop</div></div></div>
+  <div class="pi a"><div class="pn">→</div><div><div class="pt">How Part 2 — This Video</div><div class="ps">Build your own LOCAL server</div></div></div>
+  <div class="pi"><div class="pn">5</div><div><div class="pt">How Part 3</div><div class="ps">Build remote server + your client</div></div></div>
+</div>
+
+<!-- TOC -->
+<div class="toc-sec">
+  <div class="toc-grid">
+    <div class="toc-head">// Table of Contents</div>
+    <div class="te"><span class="tn">01</span> Video Goal & What We're Building</div>
+    <div class="te"><span class="tn">02</span> MCP Library Ecosystem — The Full Story</div>
+    <div class="te"><span class="tn">03</span> MCP SDK vs fastmcp — Comparison & Evolution</div>
+    <div class="te"><span class="tn">04</span> Why fastmcp? (WSGI/Flask Analogy)</div>
+    <div class="te"><span class="tn">05</span> Demo Server — Setup & Installation (uv + fastmcp)</div>
+    <div class="te"><span class="tn">06</span> Writing a Basic MCP Server with fastmcp</div>
+    <div class="te"><span class="tn">07</span> MCP Inspector — Testing Your Server</div>
+    <div class="te"><span class="tn">08</span> Integrating Your Server with Claude Desktop</div>
+    <div class="te"><span class="tn">09</span> Expense Tracker — Architecture & Feature Plan</div>
+    <div class="te"><span class="tn">10</span> Iteration 1 — Add + List Expenses</div>
+    <div class="te"><span class="tn">11</span> Iteration 2 — Date-Range Filtering</div>
+    <div class="te"><span class="tn">12</span> Iteration 3 — Summarize by Category</div>
+    <div class="te"><span class="tn">13</span> Iteration 4 — Adding a Resource (JSON Categories)</div>
+    <div class="te"><span class="tn">14</span> Bonus: Convert FastAPI → fastmcp Server</div>
+  </div>
+</div>
+
+<!-- SEC 1 — GOAL -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 01</div>
+  <h2 class="st">Video Goal & What We're Building</h2>
+  <p class="bd">Today's goal: build a <strong>complete, working local MCP server</strong> — one that's actually useful in real life. The server connects to Claude Desktop via stdio transport and uses SQLite as its database.</p>
+
+  <div class="g2">
+    <div class="card cp-t">
+      <div class="ci">💸</div>
+      <h4>The Product: Expense Tracker MCP Server</h4>
+      <p>An MCP server that lets you manage personal expenses by <em>talking</em> to Claude Desktop in natural language. No forms, no app — just type what you spent and ask questions about your spending.</p>
+    </div>
+    <div class="card cg-t">
+      <div class="ci">🎯</div>
+      <h4>Live Demo Examples</h4>
+      <p>"Add ₹500 travel expense for cab ride yesterday" → Claude adds it to SQLite DB.<br><br>"Show me all expenses from September in tabular fashion" → Claude queries and formats the results.<br><br>"What did I spend on health in August?" → Claude runs a summary query.</p>
+    </div>
+  </div>
+
+  <h3 class="sh">The Three-Part "How" Journey</h3>
+  <div class="g3">
+    <div class="card cb-t" style="opacity:.6">
+      <div class="ci">✅</div>
+      <h4>How Part 1 (Previous)</h4>
+      <p>Used existing MCP servers (Google Drive, Filesystem, Manim) with Claude Desktop as the ready-made client. No custom code.</p>
+    </div>
+    <div class="card cp-t" style="border:2px solid var(--p);">
+      <div class="ci">🔨</div>
+      <h4>How Part 2 — This Video</h4>
+      <p>Build your own local MCP server in Python using fastmcp. Use Claude Desktop as the client. Connect via JSON config or install command.</p>
+    </div>
+    <div class="card co-t" style="opacity:.6">
+      <div class="ci">🏗️</div>
+      <h4>How Part 3 (Next)</h4>
+      <p>Convert this local server to a remote server hosted somewhere on the internet. Then build your own custom MCP client.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 2 — MCP LIBRARY ECOSYSTEM -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 02</div>
+  <h2 class="st">MCP Library Ecosystem — The Full Chronological Story</h2>
+  <p class="bd">Nitish spends 5 minutes clarifying a common confusion: why do two different libraries exist for building MCP servers? Here's the complete story in order.</p>
+
+  <div class="timeline">
+    <div class="tli">
+      <div class="tli-head">Late 2023 — MCP Protocol released by Anthropic</div>
+      <div class="tli-sub">Developers want to build their own servers and clients. Problem: implementing all the MCP protocol rules from scratch in Python is extremely complex AND redundant (same boilerplate repeated for every server).</div>
+    </div>
+    <div class="tli">
+      <div class="tli-head">Anthropic releases the official MCP Python SDK</div>
+      <div class="tli-sub">The <code>mcp</code> package on PyPI. Contains three sub-libraries: <code>mcp.server</code> (build servers), <code>mcp.client</code> (build clients), <code>mcp.cli</code> (command-line tools). Install: <code>pip install mcp[cli]</code>. Problem: very verbose — simple servers require huge amounts of boilerplate code.</div>
+    </div>
+    <div class="tli">
+      <div class="tli-head">Jeremiah Lowin (CEO of Prefect) creates fastmcp 1.0</div>
+      <div class="tli-sub">He identified the boilerplate problem and built an abstraction layer on top of the MCP SDK. fastmcp makes building servers dramatically simpler — same functionality, 10x less code. It becomes extremely popular. Anthropic eventually adopts it: <code>mcp.server.fastmcp</code> gets built into the official SDK.</div>
+    </div>
+    <div class="tli">
+      <div class="tli-head">2025 — fastmcp goes independent as fastmcp 2.0</div>
+      <div class="tli-sub">fastmcp's creator realizes there's so much more potential beyond the MCP spec. The official SDK focuses strictly on the spec. They diverge: <code>pip install fastmcp</code> now installs the independent <strong>fastmcp 2.0</strong> (more features), while <code>pip install mcp[cli]</code> still includes fastmcp 1.0 inside the SDK. Today you can use either — but Nitish recommends fastmcp 2.0.</div>
+    </div>
+  </div>
+
+  <div class="note np"><strong>Bottom line:</strong> Why you see similar-looking code in different videos using different library names — both use fastmcp syntax under the hood. The difference is which package they installed: <code>mcp[cli]</code> (includes fastmcp 1.0) vs <code>fastmcp</code> (standalone version 2.0).</div>
+</div>
+
+<!-- SEC 3 — MCP SDK vs fastmcp -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 03</div>
+  <h2 class="st">MCP SDK vs fastmcp — Side-by-Side Code Comparison</h2>
+  <p class="bd">The best way to understand why fastmcp won is to see the same server written both ways. Both do identical things — add two numbers:</p>
+
+  <div class="cmp">
+    <div class="cc c1">
+      <h4>MCP SDK (verbose — old way)</h4>
+      <div class="code"><pre><span class="kw">import</span> asyncio
+<span class="kw">from</span> mcp <span class="kw">import</span> Server
+<span class="kw">from</span> mcp.server.stdio <span class="kw">import</span> stdio_server
+<span class="kw">from</span> mcp.types <span class="kw">import</span> Tool, TextContent
+
+<span class="cm"># Create server instance</span>
+app = Server(<span class="str">"demo-server"</span>)
+
+<span class="cm"># Register a tool — lots of ceremony</span>
+@app.list_tools()
+<span class="kw">async def</span> <span class="fn">list_tools</span>():
+    <span class="kw">return</span> [
+        Tool(name=<span class="str">"add"</span>,
+             description=<span class="str">"Add two numbers"</span>,
+             inputSchema={
+                 <span class="str">"type"</span>: <span class="str">"object"</span>,
+                 <span class="str">"properties"</span>: {
+                     <span class="str">"a"</span>: {<span class="str">"type"</span>: <span class="str">"number"</span>},
+                     <span class="str">"b"</span>: {<span class="str">"type"</span>: <span class="str">"number"</span>}
+                 },
+                 <span class="str">"required"</span>: [<span class="str">"a"</span>, <span class="str">"b"</span>]
+             })
+    ]
+
+@app.call_tool()
+<span class="kw">async def</span> <span class="fn">call_tool</span>(name, arguments):
+    <span class="kw">if</span> name == <span class="str">"add"</span>:
+        result = arguments[<span class="str">"a"</span>] + arguments[<span class="str">"b"</span>]
+        <span class="kw">return</span> [TextContent(type=<span class="str">"text"</span>, text=str(result))]
+
+<span class="cm"># Must manually configure transport!</span>
+<span class="kw">async def</span> <span class="fn">main</span>():
+    <span class="kw">async with</span> stdio_server() <span class="kw">as</span> (r, w):
+        <span class="kw">await</span> app.run(r, w, app.create_initialization_options())
+
+asyncio.run(main())</pre></div>
+      <p style="font-size:12px;color:var(--muted);margin-top:8px;">~30 lines for a simple add function. Transport manually configured. Schema written by hand. Not beginner-friendly.</p>
+    </div>
+    <div class="cc c2">
+      <h4>fastmcp 2.0 (simple — new way)</h4>
+      <div class="code"><pre><span class="kw">from</span> fastmcp <span class="kw">import</span> FastMCP
+
+<span class="cm"># Create server — one line</span>
+mcp = FastMCP(<span class="str">"demo-server"</span>)
+
+<span class="cm"># Just write a Python function</span>
+<span class="cm"># and add ONE decorator</span>
+<span class="dec">@mcp.tool()</span>
+<span class="kw">def</span> <span class="fn">add</span>(a: <span class="kw">int</span>, b: <span class="kw">int</span>) -> <span class="kw">int</span>:
+    <span class="str">"""Add two numbers together."""</span>
+    <span class="kw">return</span> a + b
+
+<span class="cm"># Run the server</span>
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    mcp.run()
+
+<span class="cm"># That's it! Transport is automatic.
+# Schema is inferred from type hints.
+# Description from docstring.</span></pre></div>
+      <p style="font-size:12px;color:var(--muted);margin-top:8px;">~10 lines for the same server. Transport auto-configured. Schema inferred from Python type hints. Description from docstring.</p>
+    </div>
+  </div>
+
+  <h3 class="sh">Installation Options Today</h3>
+  <table class="vtable">
+    <thead><tr><th>Command</th><th>What You Get</th><th>fastmcp Version</th><th>Recommended?</th></tr></thead>
+    <tbody>
+      <tr><td>pip install mcp[cli]</td><td>Official MCP SDK + fastmcp 1.0 inside it</td><td>1.0 (bundled)</td><td>Works, but older</td></tr>
+      <tr><td>pip install fastmcp</td><td>Standalone fastmcp 2.0 (independent library)</td><td>2.0 (latest)</td><td>✓ Nitish recommends this</td></tr>
+      <tr><td>uv add fastmcp</td><td>Same as above but using uv package manager</td><td>2.0 (latest)</td><td>✓ Used in this video</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- SEC 4 — WHY FASTMCP / ANALOGY -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 04</div>
+  <h2 class="st">Why fastmcp? — The WSGI / Flask Analogy</h2>
+  <p class="bd">This exact same pattern happened before in Python's web development history. The analogy makes it crystal clear:</p>
+
+  <div class="dbox">
+    <div class="dbox-label">// Analogy diagram: WSGI/Flask → MCP SDK/fastmcp</div>
+    <svg width="100%" viewBox="0 0 680 220" role="img">
+      <title>WSGI Flask and MCP SDK fastmcp analogy</title>
+      <defs>
+        <marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- Web side -->
+      <rect x="10" y="20" width="280" height="180" rx="12" fill="rgba(30,144,240,.05)" stroke="rgba(30,144,240,.25)" stroke-width="1.5"/>
+      <text x="150" y="44" text-anchor="middle" fill="#1e90f0" font-size="13" font-weight="700">WEB DEVELOPMENT</text>
+
+      <rect x="24" y="56" width="120" height="54" rx="8" fill="rgba(30,144,240,.12)" stroke="#1e90f0" stroke-width="1.5"/>
+      <text x="84" y="81" text-anchor="middle" fill="#073a78" font-size="12" font-weight="700">WSGI</text>
+      <text x="84" y="97" text-anchor="middle" fill="rgba(7,58,120,.7)" font-size="11">Low-level spec</text>
+      <text x="84" y="113" text-anchor="middle" fill="rgba(7,58,120,.7)" font-size="11">Complex boilerplate</text>
+
+      <line x1="144" y1="83" x2="160" y2="83" stroke="#1e90f0" stroke-width="1.5" marker-end="url(#a1)"/>
+      <text x="152" y="76" fill="#1e90f0" font-size="10">→ led to</text>
+
+      <rect x="160" y="56" width="120" height="54" rx="8" fill="rgba(0,196,138,.15)" stroke="#00c48a" stroke-width="1.5"/>
+      <text x="220" y="81" text-anchor="middle" fill="#00503a" font-size="12" font-weight="700">Flask</text>
+      <text x="220" y="97" text-anchor="middle" fill="rgba(0,80,58,.7)" font-size="11">Developer-friendly</text>
+      <text x="220" y="113" text-anchor="middle" fill="rgba(0,80,58,.7)" font-size="11">Built on top of WSGI</text>
+
+      <text x="150" y="148" text-anchor="middle" fill="rgba(30,144,240,.6)" font-size="12">Everyone uses Flask now.</text>
+      <text x="150" y="165" text-anchor="middle" fill="rgba(30,144,240,.6)" font-size="12">WSGI is the spec underneath.</text>
+      <text x="150" y="185" text-anchor="middle" fill="rgba(30,144,240,.5)" font-size="11" font-family="JetBrains Mono,monospace">WSGI ≡ MCP Protocol Spec</text>
+
+      <!-- Arrow connecting -->
+      <text x="340" y="115" text-anchor="middle" fill="rgba(92,48,232,.6)" font-size="14" font-weight="700">≡</text>
+      <text x="340" y="132" text-anchor="middle" fill="rgba(92,48,232,.5)" font-size="11">Exact same</text>
+      <text x="340" y="147" text-anchor="middle" fill="rgba(92,48,232,.5)" font-size="11">pattern</text>
+
+      <!-- MCP side -->
+      <rect x="390" y="20" width="280" height="180" rx="12" fill="rgba(92,48,232,.05)" stroke="rgba(92,48,232,.25)" stroke-width="1.5"/>
+      <text x="530" y="44" text-anchor="middle" fill="#5c30e8" font-size="13" font-weight="700">MCP ECOSYSTEM</text>
+
+      <rect x="404" y="56" width="120" height="54" rx="8" fill="rgba(92,48,232,.12)" stroke="#5c30e8" stroke-width="1.5"/>
+      <text x="464" y="81" text-anchor="middle" fill="#1e0870" font-size="12" font-weight="700">MCP SDK</text>
+      <text x="464" y="97" text-anchor="middle" fill="rgba(30,8,112,.7)" font-size="11">Low-level spec</text>
+      <text x="464" y="113" text-anchor="middle" fill="rgba(30,8,112,.7)" font-size="11">Complex boilerplate</text>
+
+      <line x1="524" y1="83" x2="540" y2="83" stroke="#5c30e8" stroke-width="1.5" marker-end="url(#a1)"/>
+      <text x="532" y="76" fill="#5c30e8" font-size="10">→ led to</text>
+
+      <rect x="540" y="56" width="120" height="54" rx="8" fill="rgba(0,196,138,.15)" stroke="#00c48a" stroke-width="1.5"/>
+      <text x="600" y="81" text-anchor="middle" fill="#00503a" font-size="12" font-weight="700">fastmcp</text>
+      <text x="600" y="97" text-anchor="middle" fill="rgba(0,80,58,.7)" font-size="11">Developer-friendly</text>
+      <text x="600" y="113" text-anchor="middle" fill="rgba(0,80,58,.7)" font-size="11">Decorator-based API</text>
+
+      <text x="530" y="148" text-anchor="middle" fill="rgba(92,48,232,.6)" font-size="12">Everyone uses fastmcp now.</text>
+      <text x="530" y="165" text-anchor="middle" fill="rgba(92,48,232,.6)" font-size="12">MCP SDK is the spec underneath.</text>
+      <text x="530" y="185" text-anchor="middle" fill="rgba(92,48,232,.5)" font-size="11" font-family="JetBrains Mono,monospace">Flask ≡ fastmcp</text>
+    </svg>
+  </div>
+
+  <div class="note ng"><strong>Nitish's prediction:</strong> Just like Flask became THE way to build Python backends (even though WSGI is the spec), fastmcp will become THE way to build MCP servers. Developer-friendly abstractions win. That's why this entire video uses fastmcp 2.0.</div>
+</div>
+
+<!-- SEC 5 — SETUP -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 05</div>
+  <h2 class="st">Demo Server Setup — Installing uv + fastmcp</h2>
+  <p class="bd">Before writing any server code, you need to set up the development environment. fastmcp recommends <strong>uv</strong> — a blazingly fast Python package manager (much faster than pip).</p>
+
+  <h3 class="sh">Complete Setup Steps</h3>
+  <div class="sl">
+    <div class="si"><div class="sn">01</div><div class="sb">
+      <h5>Install uv (the fast Python package manager)</h5>
+      <p>fastmcp recommends uv for project management. Install it via pip if you don't have it yet.</p>
+    </div></div>
+    <div class="si"><div class="sn">02</div><div class="sb">
+      <h5>Create a new project folder</h5>
+      <p>Create an empty folder anywhere on your machine (Nitish uses Desktop). Name it something descriptive like <code>expense-tracker-mcp-server</code>. Open it in VS Code.</p>
+    </div></div>
+    <div class="si"><div class="sn">03</div><div class="sb">
+      <h5>Initialize uv in the project folder</h5>
+      <p>Run <code>uv init .</code> (dot = current directory). This generates essential project files including <code>main.py</code> — where you'll write your server code.</p>
+    </div></div>
+    <div class="si"><div class="sn">04</div><div class="sb">
+      <h5>Install fastmcp into the project</h5>
+      <p>Run <code>uv add fastmcp</code>. This installs fastmcp 2.0 and all its dependencies into the project's virtual environment.</p>
+    </div></div>
+    <div class="si"><div class="sn">05</div><div class="sb">
+      <h5>Verify installation</h5>
+      <p>Run <code>fastmcp version</code> to confirm it's installed. You'll see: fastmcp version (2.x.x), MCP SDK version, Python version, platform (Mac/Windows), and the root path.</p>
+    </div></div>
+  </div>
+
+  <div class="code" style="margin-top:20px;"><pre><span class="cm"># ── All commands in order ──────────────────────</span>
+
+<span class="cm"># Step 1: Install uv (if not already installed)</span>
+<span class="val">$</span> pip install uv
+
+<span class="cm"># Step 2: Create project folder (do this in file explorer)</span>
+<span class="cm"># Then open in VS Code</span>
+
+<span class="cm"># Step 3: Initialize uv in the project</span>
+<span class="val">$</span> uv init .
+<span class="cm"># Creates: pyproject.toml, .python-version, main.py, etc.</span>
+
+<span class="cm"># Step 4: Install fastmcp</span>
+<span class="val">$</span> uv add fastmcp
+<span class="cm"># Installs fastmcp 2.0 + all dependencies</span>
+
+<span class="cm"># Step 5: Verify installation</span>
+<span class="val">$</span> fastmcp version
+<span class="cm"># Output example:</span>
+<span class="cm"># FastMCP version: 2.1.1</span>
+<span class="cm"># MCP SDK version: 1.x.x</span>
+<span class="cm"># Python version: 3.12.x</span>
+<span class="cm"># Platform: macOS</span>
+<span class="cm"># Root path: /path/to/project</span></pre></div>
+</div>
+
+<!-- SEC 6 — WRITING A BASIC SERVER -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 06</div>
+  <h2 class="st">Writing a Basic MCP Server with fastmcp</h2>
+  <p class="bd">Now let's understand the anatomy of an MCP server. The demo server has just two tools: roll a dice and add two numbers. Simple — but it teaches the entire server-building pattern.</p>
+
+  <div class="dbox">
+    <div class="dbox-label">// Anatomy of a fastmcp server — four key elements</div>
+    <svg width="100%" viewBox="0 0 680 160" role="img">
+      <title>Four elements of a fastmcp server</title>
+      <defs>
+        <marker id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <!-- 4 boxes -->
+      <rect x="10" y="30" width="140" height="100" rx="10" fill="rgba(92,48,232,.1)" stroke="#5c30e8" stroke-width="1.5"/>
+      <text x="80" y="58" text-anchor="middle" fill="#5c30e8" font-size="20">①</text>
+      <text x="80" y="80" text-anchor="middle" fill="#160f30" font-size="12" font-weight="700">Import</text>
+      <text x="80" y="98" text-anchor="middle" fill="rgba(22,15,48,.6)" font-size="11">from fastmcp</text>
+      <text x="80" y="114" text-anchor="middle" fill="rgba(22,15,48,.6)" font-size="11">import FastMCP</text>
+      <line x1="150" y1="80" x2="170" y2="80" stroke="#5c30e8" stroke-width="1.5" marker-end="url(#a2)"/>
+
+      <rect x="170" y="30" width="140" height="100" rx="10" fill="rgba(92,48,232,.1)" stroke="#5c30e8" stroke-width="1.5"/>
+      <text x="240" y="58" text-anchor="middle" fill="#5c30e8" font-size="20">②</text>
+      <text x="240" y="80" text-anchor="middle" fill="#160f30" font-size="12" font-weight="700">Instantiate</text>
+      <text x="240" y="98" text-anchor="middle" fill="rgba(22,15,48,.6)" font-size="11">mcp = FastMCP(</text>
+      <text x="240" y="114" text-anchor="middle" fill="rgba(22,15,48,.6)" font-size="11">"server-name")</text>
+      <line x1="310" y1="80" x2="330" y2="80" stroke="#5c30e8" stroke-width="1.5" marker-end="url(#a2)"/>
+
+      <rect x="330" y="30" width="160" height="100" rx="10" fill="rgba(0,196,138,.12)" stroke="#00c48a" stroke-width="1.5"/>
+      <text x="410" y="58" text-anchor="middle" fill="#00c48a" font-size="20">③</text>
+      <text x="410" y="78" text-anchor="middle" fill="#160f30" font-size="12" font-weight="700">Add Tools</text>
+      <text x="410" y="96" text-anchor="middle" fill="rgba(22,15,48,.6)" font-size="11">@mcp.tool()</text>
+      <text x="410" y="112" text-anchor="middle" fill="rgba(22,15,48,.6)" font-size="11">def my_tool(): ...</text>
+      <line x1="490" y1="80" x2="510" y2="80" stroke="#00c48a" stroke-width="1.5" marker-end="url(#a2)"/>
+
+      <rect x="510" y="30" width="160" height="100" rx="10" fill="rgba(255,140,0,.12)" stroke="#ff8c00" stroke-width="1.5"/>
+      <text x="590" y="58" text-anchor="middle" fill="#ff8c00" font-size="20">④</text>
+      <text x="590" y="78" text-anchor="middle" fill="#160f30" font-size="12" font-weight="700">Run Server</text>
+      <text x="590" y="96" text-anchor="middle" fill="rgba(22,15,48,.6)" font-size="11">if __name__==</text>
+      <text x="590" y="112" text-anchor="middle" fill="rgba(22,15,48,.6)" font-size="11">"__main__": mcp.run()</text>
+    </svg>
+  </div>
+
+  <h3 class="sh">Complete Demo Server Code</h3>
+  <div class="code"><pre><span class="kw">from</span> fastmcp <span class="kw">import</span> FastMCP   <span class="cm"># Step 1: Import</span>
+<span class="kw">import</span> random
+
+<span class="cm"># Step 2: Create server instance with a name</span>
+mcp = FastMCP(<span class="str">"demo-server"</span>)
+
+<span class="cm"># ─────────────────────────────────────────────────────────
+# Step 3: Add tools using the @mcp.tool() decorator
+# 
+# Key: Write a NORMAL Python function.
+# Add @mcp.tool() above it.
+# That's it — it becomes an MCP Tool!
+#
+# fastmcp automatically:
+#   • Reads type hints to build the JSON schema
+#   • Uses the docstring as the tool description
+#   • Handles all MCP protocol communication
+# ─────────────────────────────────────────────────────────</span>
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">def</span> <span class="fn">roll_dice</span>(num_dice: <span class="kw">int</span>) -> <span class="kw">list</span>[<span class="kw">int</span>]:
+    <span class="str">"""Roll a specified number of dice and return results (1–6 each)."""</span>
+    <span class="kw">return</span> [random.randint(<span class="num">1</span>, <span class="num">6</span>) <span class="kw">for</span> _ <span class="kw">in</span> range(num_dice)]
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">def</span> <span class="fn">add_numbers</span>(a: <span class="kw">int</span>, b: <span class="kw">int</span>) -> <span class="kw">int</span>:
+    <span class="str">"""Add two numbers together and return their sum."""</span>
+    <span class="kw">return</span> a + b
+
+<span class="cm"># Step 4: Run the server (stdio transport is automatic)</span>
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    mcp.run()
+
+<span class="cm"># What the decorator does automatically:
+#   • Registers the function as an MCP tool
+#   • Sets tool name = function name
+#   • Sets tool description = docstring
+#   • Builds inputSchema from type annotations
+#   • Handles JSON-RPC tools/list and tools/call</span></pre></div>
+
+  <div class="note np"><strong>Key insight — the @mcp.tool() decorator:</strong> You write a completely normal Python function with type hints and a docstring. Adding <code>@mcp.tool()</code> transforms it into a full MCP Tool. No JSON schemas to write manually, no protocol handling — fastmcp does it all.</div>
+</div>
+
+<!-- SEC 7 — MCP INSPECTOR -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 07</div>
+  <h2 class="st">MCP Inspector — Testing Your Server</h2>
+  <p class="bd">Before integrating your server with Claude Desktop, use the <strong>MCP Inspector</strong> to test it. This is a browser-based debugging tool that comes bundled with fastmcp — like Postman but for MCP servers.</p>
+
+  <div class="g2">
+    <div class="card cp-t">
+      <div class="ci">🔬</div>
+      <h4>What is MCP Inspector?</h4>
+      <p>A browser-based debugging tool for MCP servers. Created by Anthropic and bundled with fastmcp. Shows all JSON-RPC message exchanges. Lets you manually call tools, list resources, test prompts — without needing Claude Desktop.</p>
+    </div>
+    <div class="card co-t">
+      <div class="ci">🏄</div>
+      <h4>How to launch it</h4>
+      <p>Run: <code>uv run fastmcp dev main.py</code><br>This starts your server AND opens the MCP Inspector in your browser. The Inspector connects to your server automatically.</p>
+    </div>
+  </div>
+
+  <h3 class="sh">What You Can Do in MCP Inspector</h3>
+  <div class="g4">
+    <div class="card cg-t"><h4>List Tools</h4><p>Click "List Tools" to fire a <code>tools/list</code> JSON-RPC request. See all registered tools with their schemas.</p></div>
+    <div class="card cg-t"><h4>Call Tools</h4><p>Select a tool, fill in arguments, click "Run Tool". See the JSON-RPC request/response in the History panel.</p></div>
+    <div class="card cg-t"><h4>Message History</h4><p>Every JSON-RPC message (initialize, tools/list, tools/call, etc.) shown in real-time. See the exact protocol communication.</p></div>
+    <div class="card cg-t"><h4>Ping & Debug</h4><p>Send ping requests, test sampling, test elicitation. All the protocol features from the Lifecycle video visible here.</p></div>
+  </div>
+
+  <div class="code"><pre><span class="cm"># Launch MCP Inspector</span>
+<span class="val">$</span> uv run fastmcp dev main.py
+
+<span class="cm"># Output:</span>
+<span class="cm"># Starting MCP inspector...</span>
+<span class="cm"># Inspector running at: http://localhost:5173</span>
+<span class="cm"># ✓ Connected to demo-server</span>
+
+<span class="cm"># ─── In Inspector Browser UI ────────────────────
+# Transport Type: stdio (for local servers)
+# Click "Connect"
+# → Initialization handshake happens automatically
+# → Tools tab appears
+#
+# Click "List Tools"
+# → JSON-RPC: { "method": "tools/list" }
+# ← Response: { "result": { "tools": [...] } }
+# → Shows: roll_dice, add_numbers
+#
+# Select "add_numbers" → fill a:5, b:6 → Run Tool
+# → JSON-RPC: { "method": "tools/call", "params": {...} }
+# ← Response: { "result": { "content": [{ "text": "11" }] } }</span></pre></div>
+
+  <div class="note ng"><strong>Nitish's recommendation:</strong> Always test your server with MCP Inspector BEFORE adding it to Claude Desktop. It's much faster to catch issues here. Inspector is to MCP servers what Postman is to REST APIs.</div>
+</div>
+
+<!-- SEC 8 — INTEGRATING WITH CLAUDE DESKTOP -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 08</div>
+  <h2 class="st">Integrating Your Server with Claude Desktop</h2>
+  <p class="bd">Once your server works in MCP Inspector, you have two ways to connect it to Claude Desktop. The easiest way is the <strong>install command</strong>.</p>
+
+  <div class="g2">
+    <div class="card cp-t">
+      <h4>Method 1 — Install Command (Recommended)</h4>
+      <p>One command installs the server directly into Claude Desktop's config automatically:</p>
+      <div class="code" style="margin-top:12px;"><pre><span class="val">$</span> uv run fastmcp install claude-desktop main.py
+
+<span class="cm"># Optional: give it a custom name</span>
+<span class="val">$</span> uv run fastmcp install claude-desktop main.py --name "My Server"
+
+<span class="cm"># Optional: add environment variables</span>
+<span class="val">$</span> uv run fastmcp install claude-desktop main.py --env API_KEY=abc</span></pre></div>
+    </div>
+    <div class="card cb-t">
+      <h4>Method 2 — Manual JSON Config</h4>
+      <p>Settings → Developer → Edit Config → add to <code>mcpServers</code>:</p>
+      <div class="code" style="margin-top:12px;"><pre>{
+  <span class="key2">"mcpServers"</span>: {
+    <span class="key2">"my-server"</span>: {
+      <span class="key2">"command"</span>: <span class="path">"/absolute/path/to/uv"</span>,
+      <span class="key2">"args"</span>: [
+        <span class="str">"run"</span>,
+        <span class="str">"fastmcp"</span>,
+        <span class="str">"run"</span>,
+        <span class="path">"/absolute/path/to/main.py"</span>
+      ]
+    }
+  }
+}</pre></div>
+    </div>
+  </div>
+
+  <div class="note nr"><strong>Common issue — absolute paths:</strong> After running the install command, Claude Desktop may fail to connect. The reason: the config file writes just <code>uv</code> as the command, but Claude Desktop can't find it without the full path. Fix: run <code>which uv</code> (Mac/Linux) or <code>where uv</code> (Windows) to get the absolute path. Edit the config file and replace <code>uv</code> with the full path like <code>/Users/nitish/.local/bin/uv</code>. Save → close → restart Claude Desktop.</div>
+
+  <h3 class="sh">Full Integration Workflow</h3>
+  <div class="dbox">
+    <div class="dbox-label">// Flowchart: From code to running in Claude Desktop</div>
+    <svg width="100%" viewBox="0 0 680 120" role="img">
+      <title>Integration workflow from code to Claude Desktop</title>
+      <defs>
+        <marker id="a3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <rect x="10" y="30" width="110" height="60" rx="8" fill="rgba(92,48,232,.1)" stroke="#5c30e8" stroke-width="1.5"/>
+      <text x="65" y="57" text-anchor="middle" fill="#160f30" font-size="12" font-weight="700">Write</text>
+      <text x="65" y="75" text-anchor="middle" fill="rgba(92,48,232,.7)" font-size="11">main.py</text>
+      <line x1="120" y1="60" x2="150" y2="60" stroke="#5c30e8" stroke-width="1.5" marker-end="url(#a3)"/>
+
+      <rect x="150" y="30" width="120" height="60" rx="8" fill="rgba(0,196,138,.1)" stroke="#00c48a" stroke-width="1.5"/>
+      <text x="210" y="57" text-anchor="middle" fill="#160f30" font-size="12" font-weight="700">Test with</text>
+      <text x="210" y="75" text-anchor="middle" fill="rgba(0,196,138,.7)" font-size="11">MCP Inspector</text>
+      <line x1="270" y1="60" x2="300" y2="60" stroke="#00c48a" stroke-width="1.5" marker-end="url(#a3)"/>
+
+      <rect x="300" y="30" width="120" height="60" rx="8" fill="rgba(255,140,0,.1)" stroke="#ff8c00" stroke-width="1.5"/>
+      <text x="360" y="50" text-anchor="middle" fill="#160f30" font-size="12" font-weight="700">Run Install</text>
+      <text x="360" y="66" text-anchor="middle" fill="rgba(255,140,0,.7)" font-size="11">fastmcp install</text>
+      <text x="360" y="82" text-anchor="middle" fill="rgba(255,140,0,.7)" font-size="11">claude-desktop</text>
+      <line x1="420" y1="60" x2="450" y2="60" stroke="#ff8c00" stroke-width="1.5" marker-end="url(#a3)"/>
+
+      <rect x="450" y="30" width="100" height="60" rx="8" fill="rgba(92,48,232,.1)" stroke="#5c30e8" stroke-width="1.5"/>
+      <text x="500" y="57" text-anchor="middle" fill="#160f30" font-size="12" font-weight="700">Fix path</text>
+      <text x="500" y="75" text-anchor="middle" fill="rgba(92,48,232,.7)" font-size="11">if needed</text>
+      <line x1="550" y1="60" x2="580" y2="60" stroke="#5c30e8" stroke-width="1.5" marker-end="url(#a3)"/>
+
+      <rect x="580" y="30" width="90" height="60" rx="12" fill="#00c48a"/>
+      <text x="625" y="57" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Restart</text>
+      <text x="625" y="75" text-anchor="middle" fill="rgba(255,255,255,.8)" font-size="11">Claude ✓</text>
+    </svg>
+  </div>
+</div>
+
+<!-- SEC 9 — EXPENSE TRACKER ARCHITECTURE -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 09</div>
+  <h2 class="st">Expense Tracker MCP Server — Architecture & Feature Plan</h2>
+
+  <h3 class="sh">Database Schema (SQLite)</h3>
+  <div class="code"><pre><span class="cm"># SQLite database: expenses.db (stored in project folder)</span>
+<span class="cm"># Table: expenses</span>
+
+CREATE TABLE <span class="kw">IF</span> <span class="kw">NOT</span> EXISTS expenses (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    date        TEXT NOT NULL,      <span class="cm">-- Date of expense (YYYY-MM-DD)</span>
+    amount      REAL NOT NULL,      <span class="cm">-- Amount in ₹</span>
+    category    TEXT NOT NULL,      <span class="cm">-- e.g., "Travel", "Food", "Health"</span>
+    subcategory TEXT,               <span class="cm">-- e.g., "Cab Ride", "Groceries"</span>
+    note        TEXT                <span class="cm">-- e.g., "Cab to airport on Sunday"</span>
+);</pre></div>
+
+  <h3 class="sh">The Incremental Build Plan — 4 Iterations</h3>
+  <div class="g2">
+    <div class="card cb-t">
+      <div class="iter v1">Version 1.0</div>
+      <h4>Add + List All Expenses</h4>
+      <p>Tool 1: <code>add_expense</code> — add a new entry to the database.<br>Tool 2: <code>list_expenses</code> — return ALL transactions from the database.</p>
+    </div>
+    <div class="card cg-t">
+      <div class="iter v2">Version 2.0</div>
+      <h4>Date-Range Filtering</h4>
+      <p>Improve <code>list_expenses</code> to accept <code>start_date</code> and <code>end_date</code> parameters. Now you can ask "show me September expenses" and Claude auto-computes the dates.</p>
+    </div>
+    <div class="card cp-t">
+      <div class="iter v3">Version 3.0</div>
+      <h4>Summarize by Category</h4>
+      <p>New Tool: <code>summarize</code> — takes date range + optional category name. Returns total spend in that period, optionally filtered by category (uses SQL GROUP BY).</p>
+    </div>
+    <div class="card co-t">
+      <div class="iter v4">Version 4.0</div>
+      <h4>Resource: Category JSON</h4>
+      <p>Add a <strong>Resource</strong> (not a Tool) — a JSON file listing all valid categories and subcategories. Claude reads this to ensure consistent category naming in the database.</p>
+    </div>
+  </div>
+
+  <h3 class="sh">Features to Add After the Video (Homework)</h3>
+  <div class="g4">
+    <div class="card cp-t"><h4>Edit Expense</h4><p>Update an existing expense entry (e.g., correct a wrong amount).</p></div>
+    <div class="card cp-t"><h4>Delete Expense</h4><p>Remove an expense entry by ID from the database.</p></div>
+    <div class="card cp-t"><h4>Add Credits</h4><p>Record income — salary, reimbursements, etc.</p></div>
+    <div class="card cp-t"><h4>Budget Alerts</h4><p>Set a budget per category and get alerts when nearing the limit.</p></div>
+  </div>
+</div>
+
+<!-- SEC 10 — ITERATION 1 -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 10</div>
+  <div class="feat-card">
+    <div class="fc-head" style="background:linear-gradient(135deg,#1e90f0,#4ba8ff);">
+      <div class="fc-icon">➕</div>
+      <div>
+        <div class="iter v1" style="margin-bottom:4px;">Iteration 1</div>
+        <div>add_expense + list_expenses</div>
+        <div style="font-size:12px;font-weight:400;opacity:.8;margin-top:3px;">Two tools: write to DB + read from DB</div>
+      </div>
+    </div>
+    <div class="fc-body">
+      <div class="code"><pre><span class="kw">from</span> fastmcp <span class="kw">import</span> FastMCP
+<span class="kw">import</span> sqlite3
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+
+mcp = FastMCP(<span class="str">"expense-tracker"</span>)
+
+<span class="cm"># Database file lives in the project folder</span>
+DB_PATH = Path(__file__).parent / <span class="str">"expenses.db"</span>
+
+<span class="kw">def</span> <span class="fn">init_db</span>():
+    <span class="str">"""Create the expenses table if it doesn't exist."""</span>
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute(<span class="str">"""
+        CREATE TABLE IF NOT EXISTS expenses (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            date        TEXT NOT NULL,
+            amount      REAL NOT NULL,
+            category    TEXT NOT NULL,
+            subcategory TEXT,
+            note        TEXT
+        )
+    """</span>)
+    conn.commit()
+    conn.close()
+
+<span class="cm"># Initialize DB when server starts</span>
+init_db()
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">def</span> <span class="fn">add_expense</span>(date: str, amount: <span class="kw">float</span>, category: str,
+                subcategory: str = <span class="str">""</span>, note: str = <span class="str">""</span>) -> str:
+    <span class="str">"""Add a new expense entry to the database.
+    
+    Date format: YYYY-MM-DD. Category examples: Travel, Food,
+    Health, Entertainment. Subcategory is optional.
+    """</span>
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute(
+        <span class="str">"INSERT INTO expenses (date, amount, category, subcategory, note)"</span>
+        <span class="str">" VALUES (?, ?, ?, ?, ?)"</span>,
+        (date, amount, category, subcategory, note)
+    )
+    conn.commit()
+    conn.close()
+    <span class="kw">return</span> <span class="str">f"✓ Added: {category} expense of ₹{amount} on {date}"</span>
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">def</span> <span class="fn">list_expenses</span>() -> <span class="kw">list</span>[<span class="kw">dict</span>]:
+    <span class="str">"""List all expense entries from the database in ascending date order."""</span>
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.execute(
+        <span class="str">"SELECT id, date, amount, category, subcategory, note"</span>
+        <span class="str">" FROM expenses ORDER BY date ASC"</span>
+    )
+    expenses = [
+        {<span class="str">"id"</span>: r[<span class="num">0</span>], <span class="str">"date"</span>: r[<span class="num">1</span>], <span class="str">"amount"</span>: r[<span class="num">2</span>],
+         <span class="str">"category"</span>: r[<span class="num">3</span>], <span class="str">"subcategory"</span>: r[<span class="num">4</span>], <span class="str">"note"</span>: r[<span class="num">5</span>]}
+        <span class="kw">for</span> r <span class="kw">in</span> cursor.fetchall()
+    ]
+    conn.close()
+    <span class="kw">return</span> expenses
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    mcp.run()</pre></div>
+
+      <h3 class="sh">Demo Queries That Work After Iteration 1</h3>
+      <div class="g2">
+        <div class="card cb-t">
+          <h4>Adding expenses (natural language)</h4>
+          <p>"Add cab ride to Delhi last Sunday, fare was ₹300"<br>"Add ₹500 for groceries yesterday"<br>"Add ₹999 Udemy course purchase last Friday"<br><br>Claude auto-converts "yesterday", "last Sunday", "last Friday" into actual dates and fills in the category intelligently.</p>
+        </div>
+        <div class="card cg-t">
+          <h4>Listing expenses</h4>
+          <p>"Show me all my expenses"<br>"List all transactions in tabular fashion"<br><br>Claude calls <code>list_expenses</code>, gets the raw list, and formats it as a beautiful markdown table with totals.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 11 — ITERATION 2 -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 11</div>
+  <div class="feat-card">
+    <div class="fc-head" style="background:linear-gradient(135deg,#00c48a,#00e0a0);">
+      <div class="fc-icon">📅</div>
+      <div>
+        <div class="iter v2" style="margin-bottom:4px;">Iteration 2</div>
+        <div>Date-Range Filtering for list_expenses</div>
+        <div style="font-size:12px;font-weight:400;opacity:.8;margin-top:3px;">Add start_date + end_date parameters</div>
+      </div>
+    </div>
+    <div class="fc-body">
+      <p class="bd">Problem: listing ALL expenses becomes useless as the database grows. Solution: add optional date range parameters so Claude can filter by period.</p>
+      <div class="code"><pre><span class="cm"># Updated list_expenses — now accepts a date range</span>
+<span class="dec">@mcp.tool()</span>
+<span class="kw">def</span> <span class="fn">list_expenses</span>(start_date: str, end_date: str) -> <span class="kw">list</span>[<span class="kw">dict</span>]:
+    <span class="str">"""List expenses within a date range (inclusive).
+    
+    Both dates in YYYY-MM-DD format.
+    Claude will auto-compute dates from natural language like
+    'September', 'last week', 'last month'.
+    """</span>
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.execute(
+        <span class="str">"SELECT id, date, amount, category, subcategory, note"</span>
+        <span class="str">" FROM expenses"</span>
+        <span class="str">" WHERE date BETWEEN ? AND ?"</span>    <span class="cm"># ← The key change</span>
+        <span class="str">" ORDER BY date ASC"</span>,
+        (start_date, end_date)
+    )
+    expenses = [
+        {<span class="str">"id"</span>: r[<span class="num">0</span>], <span class="str">"date"</span>: r[<span class="num">1</span>], <span class="str">"amount"</span>: r[<span class="num">2</span>],
+         <span class="str">"category"</span>: r[<span class="num">3</span>], <span class="str">"subcategory"</span>: r[<span class="num">4</span>], <span class="str">"note"</span>: r[<span class="num">5</span>]}
+        <span class="kw">for</span> r <span class="kw">in</span> cursor.fetchall()
+    ]
+    conn.close()
+    <span class="kw">return</span> expenses</pre></div>
+      <div class="note ng"><strong>The LLM magic:</strong> You say "show me expenses from September first week" — Claude's LLM auto-converts this to <code>start_date="2025-09-01"</code> and <code>end_date="2025-09-07"</code> before calling the tool. The tool just receives clean date strings. This is the power of connecting LLMs to tools.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 12 — ITERATION 3 -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 12</div>
+  <div class="feat-card">
+    <div class="fc-head" style="background:linear-gradient(135deg,#5c30e8,#9570ff);">
+      <div class="fc-icon">📊</div>
+      <div>
+        <div class="iter v3" style="margin-bottom:4px;">Iteration 3</div>
+        <div>summarize — Total Spend by Category</div>
+        <div style="font-size:12px;font-weight:400;opacity:.8;margin-top:3px;">New tool: GROUP BY SQL query</div>
+      </div>
+    </div>
+    <div class="fc-body">
+      <div class="code"><pre><span class="dec">@mcp.tool()</span>
+<span class="kw">def</span> <span class="fn">summarize</span>(start_date: str, end_date: str,
+              category: str | <span class="kw">None</span> = <span class="kw">None</span>) -> <span class="kw">list</span>[<span class="kw">dict</span>]:
+    <span class="str">"""Summarize total expenses by category within a date range.
+    
+    If category is provided: returns total for that category only.
+    If category is None: returns totals for ALL categories.
+    Date format: YYYY-MM-DD.
+    """</span>
+    conn = sqlite3.connect(DB_PATH)
+
+    <span class="cm"># Build the base query dynamically</span>
+    query = <span class="str">"SELECT category, SUM(amount) AS total"</span>
+    query += <span class="str">" FROM expenses WHERE date BETWEEN ? AND ?"</span>
+    params = [start_date, end_date]
+
+    <span class="kw">if</span> category:
+        query += <span class="str">" AND category = ?"</span>   <span class="cm"># Filter by specific category</span>
+        params.append(category)
+
+    query += <span class="str">" GROUP BY category ORDER BY category ASC"</span>
+
+    cursor = conn.execute(query, params)
+    results = [
+        {<span class="str">"category"</span>: row[<span class="num">0</span>], <span class="str">"total"</span>: row[<span class="num">1</span>]}
+        <span class="kw">for</span> row <span class="kw">in</span> cursor.fetchall()
+    ]
+    conn.close()
+    <span class="kw">return</span> results</pre></div>
+
+      <h3 class="sh">Demo Queries Using summarize</h3>
+      <div class="g2">
+        <div class="card cp-t">
+          <h4>"What was my total education expense in the last 10 days?"</h4>
+          <p>Claude calls: <code>summarize(start_date="2025-09-18", end_date="2025-09-27", category="Education")</code><br>Result: ₹1800 — Online course subscription.</p>
+        </div>
+        <div class="card cp-t">
+          <h4>"How much did I spend in August total?"</h4>
+          <p>Claude calls: <code>summarize(start_date="2025-08-01", end_date="2025-08-31")</code> (no category)<br>Result: table of all categories with their totals.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 13 — ITERATION 4 (RESOURCE) -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 13</div>
+  <div class="feat-card">
+    <div class="fc-head" style="background:linear-gradient(135deg,#ff8c00,#ffb040);">
+      <div class="fc-icon">📂</div>
+      <div>
+        <div class="iter v4" style="margin-bottom:4px;">Iteration 4</div>
+        <div>Adding a Resource — Category JSON File</div>
+        <div style="font-size:12px;font-weight:400;opacity:.8;margin-top:3px;">Using @mcp.resource() instead of @mcp.tool()</div>
+      </div>
+    </div>
+    <div class="fc-body">
+      <h3 class="sh" style="margin-top:0;">The Problem This Solves</h3>
+      <p class="bd">When Claude automatically determines the category for an expense, it may use inconsistent naming: one day "Education", next day "Upskilling" or "education" (lowercase). This creates messy data that's hard to analyze later.</p>
+      <p class="bd"><strong>Solution:</strong> Add a <code>categories.json</code> file as a <em>Resource</em> in your MCP server. Claude reads this resource to know exactly which category and subcategory names are valid — and always picks from that list.</p>
+
+      <h3 class="sh">categories.json Structure</h3>
+      <div class="code"><pre><span class="cm">// categories.json — stored in project folder</span>
+{
+  <span class="key2">"Food"</span>: [<span class="str">"Groceries"</span>, <span class="str">"Restaurant"</span>, <span class="str">"Delivery"</span>, <span class="str">"Snacks"</span>],
+  <span class="key2">"Travel"</span>: [<span class="str">"Cab Ride"</span>, <span class="str">"Auto Rickshaw"</span>, <span class="str">"Flight"</span>, <span class="str">"Train"</span>, <span class="str">"Metro"</span>],
+  <span class="key2">"Health"</span>: [<span class="str">"Medicine"</span>, <span class="str">"Doctor Consultation"</span>, <span class="str">"Gym"</span>, <span class="str">"Lab Tests"</span>],
+  <span class="key2">"Entertainment"</span>: [<span class="str">"OTT Subscription"</span>, <span class="str">"Movies"</span>, <span class="str">"Games"</span>, <span class="str">"Sports"</span>],
+  <span class="key2">"Education"</span>: [<span class="str">"Online Course"</span>, <span class="str">"Books"</span>, <span class="str">"Subscription"</span>, <span class="str">"Workshop"</span>],
+  <span class="key2">"Shopping"</span>: [<span class="str">"Clothing"</span>, <span class="str">"Electronics"</span>, <span class="str">"Home Essentials"</span>, <span class="str">"Gifts"</span>],
+  <span class="key2">"Utilities"</span>: [<span class="str">"Electricity"</span>, <span class="str">"Internet"</span>, <span class="str">"Mobile Recharge"</span>, <span class="str">"Water"</span>],
+  <span class="key2">"Housing"</span>: [<span class="str">"Rent"</span>, <span class="str">"Maintenance"</span>, <span class="str">"Repairs"</span>]
+}</pre></div>
+
+      <h3 class="sh">Adding the Resource to Your MCP Server</h3>
+      <div class="code"><pre><span class="cm"># Add this to main.py alongside the tools</span>
+
+<span class="kw">import</span> json
+CATEGORIES_PATH = Path(__file__).parent / <span class="str">"categories.json"</span>
+
+<span class="dec">@mcp.resource(<span class="str">"categories://expense-categories"</span>)</span>
+<span class="kw">def</span> <span class="fn">get_categories</span>() -> str:
+    <span class="str">"""Returns all valid expense categories and their subcategories.
+    
+    Always reference this resource when adding a new expense to ensure
+    consistent category and subcategory naming in the database.
+    """</span>
+    <span class="kw">with</span> <span class="fn">open</span>(CATEGORIES_PATH) <span class="kw">as</span> f:
+        <span class="kw">return</span> json.load(f)
+
+<span class="cm"># Key difference: @mcp.resource() vs @mcp.tool()
+#
+# @mcp.tool()     → Dynamic action, executed on demand
+#                   Changes data, makes calculations
+#
+# @mcp.resource() → Static data, read-only
+#                   Returns pre-existing information
+#                   Claude can "attach" it to a conversation</span></pre></div>
+
+      <h3 class="sh">How Claude Uses the Resource</h3>
+      <div class="g2">
+        <div class="card co-t">
+          <h4>Attach to Conversation</h4>
+          <p>In Claude Desktop, click the "+" icon → "Add from Expense Tracker" → "categories". The full JSON contents are now attached to the conversation as context.</p>
+        </div>
+        <div class="card cg-t">
+          <h4>Consistent Categories</h4>
+          <p>When adding a new expense, tell Claude: "Fetch category from the pasted resource." Claude reads the JSON and picks the exact right category and subcategory — no more inconsistency.</p>
+        </div>
+      </div>
+
+      <div class="note no"><strong>Resources vs Tools:</strong> A Resource is like a file the AI can read. A Tool is like a function the AI can execute. Use Resources for static data (categories, configuration, templates). Use Tools for dynamic operations (add/query/update the database).</div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 14 — FASTAPI TO FASTMCP -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 14</div>
+  <h2 class="st">Bonus: Convert FastAPI App → fastmcp Server in 3 Lines</h2>
+  <p class="bd">One of fastmcp 2.0's most powerful features: if you already have a FastAPI backend, you can instantly create an MCP server from it without rewriting any code.</p>
+
+  <div class="dbox">
+    <div class="dbox-label">// Business scenario: Company already has FastAPI backend → wants to add MCP support</div>
+    <svg width="100%" viewBox="0 0 680 200" role="img">
+      <title>FastAPI to fastmcp conversion scenario</title>
+      <defs>
+        <marker id="a4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <!-- FastAPI backend -->
+      <rect x="10" y="30" width="200" height="140" rx="12" fill="rgba(30,144,240,.08)" stroke="#1e90f0" stroke-width="1.5"/>
+      <text x="110" y="56" text-anchor="middle" fill="#1e90f0" font-size="12" font-weight="700">FastAPI Backend</text>
+      <rect x="24" y="66" width="172" height="24" rx="6" fill="rgba(30,144,240,.12)" stroke="rgba(30,144,240,.3)" stroke-width="1"/>
+      <text x="110" y="84" text-anchor="middle" fill="#073a78" font-size="11">POST /expenses</text>
+      <rect x="24" y="96" width="172" height="24" rx="6" fill="rgba(30,144,240,.12)" stroke="rgba(30,144,240,.3)" stroke-width="1"/>
+      <text x="110" y="114" text-anchor="middle" fill="#073a78" font-size="11">GET /expenses</text>
+      <rect x="24" y="126" width="172" height="24" rx="6" fill="rgba(30,144,240,.12)" stroke="rgba(30,144,240,.3)" stroke-width="1"/>
+      <text x="110" y="144" text-anchor="middle" fill="#073a78" font-size="11">GET /expenses/summary</text>
+      <text x="110" y="162" text-anchor="middle" fill="rgba(30,144,240,.5)" font-size="10">Powers: web / android / iOS</text>
+
+      <!-- Arrow with label -->
+      <line x1="210" y1="100" x2="272" y2="100" stroke="#5c30e8" stroke-width="2" marker-end="url(#a4)"/>
+      <rect x="215" y="80" width="52" height="40" rx="6" fill="#5c30e8"/>
+      <text x="241" y="97" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">fastmcp</text>
+      <text x="241" y="113" text-anchor="middle" fill="rgba(255,255,255,.8)" font-size="10">.from_</text>
+      <text x="241" y="128" fill="rgba(255,255,255,.8)" font-size="9">fastapi(app)</text>
+
+      <!-- MCP Server -->
+      <rect x="272" y="30" width="200" height="140" rx="12" fill="rgba(92,48,232,.08)" stroke="#5c30e8" stroke-width="1.5"/>
+      <text x="372" y="56" text-anchor="middle" fill="#5c30e8" font-size="12" font-weight="700">MCP Server (auto-generated)</text>
+      <rect x="286" y="66" width="172" height="24" rx="6" fill="rgba(92,48,232,.12)" stroke="rgba(92,48,232,.3)" stroke-width="1"/>
+      <text x="372" y="84" text-anchor="middle" fill="#1e0870" font-size="11">add_expenses tool</text>
+      <rect x="286" y="96" width="172" height="24" rx="6" fill="rgba(92,48,232,.12)" stroke="rgba(92,48,232,.3)" stroke-width="1"/>
+      <text x="372" y="114" text-anchor="middle" fill="#1e0870" font-size="11">get_expenses tool</text>
+      <rect x="286" y="126" width="172" height="24" rx="6" fill="rgba(92,48,232,.12)" stroke="rgba(92,48,232,.3)" stroke-width="1"/>
+      <text x="372" y="144" text-anchor="middle" fill="#1e0870" font-size="11">get_expense_summary tool</text>
+      <text x="372" y="162" text-anchor="middle" fill="rgba(92,48,232,.5)" font-size="10">Powers: Claude Desktop / custom clients</text>
+
+      <!-- Claude Desktop -->
+      <line x1="472" y1="100" x2="510" y2="100" stroke="#00c48a" stroke-width="2" marker-end="url(#a4)"/>
+      <rect x="510" y="40" width="160" height="120" rx="12" fill="rgba(0,196,138,.1)" stroke="#00c48a" stroke-width="1.5"/>
+      <text x="590" y="68" text-anchor="middle" fill="#00503a" font-size="12" font-weight="700">Claude Desktop</text>
+      <text x="590" y="88" text-anchor="middle" fill="rgba(0,80,58,.7)" font-size="11">Now 4th platform!</text>
+      <text x="590" y="108" text-anchor="middle" fill="rgba(0,80,58,.6)" font-size="11">Web + Android</text>
+      <text x="590" y="124" text-anchor="middle" fill="rgba(0,80,58,.6)" font-size="11">+ iOS + Claude ✓</text>
+    </svg>
+  </div>
+
+  <h3 class="sh">The 3-Line Conversion</h3>
+  <div class="code"><pre><span class="cm"># server.py — this is ALL you need to create a fastmcp server
+#             from your existing FastAPI app</span>
+
+<span class="kw">from</span> fastmcp <span class="kw">import</span> FastMCP
+<span class="kw">from</span> main <span class="kw">import</span> app  <span class="cm"># Your existing FastAPI app object</span>
+
+<span class="cm"># ONE LINE creates the entire MCP server from your FastAPI app</span>
+mcp = FastMCP.from_fastapi(app, name=<span class="str">"expense-tracker-mcp"</span>)
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    mcp.run()
+
+<span class="cm"># fastmcp automatically:
+#   • Converts each FastAPI endpoint into an MCP Tool
+#   • Reads Pydantic models for input validation
+#   • Copies endpoint descriptions as tool descriptions
+#   • Handles all MCP protocol communication
+# You write ZERO additional tool code!</span></pre></div>
+
+  <div class="g2">
+    <div class="card cp-t">
+      <h4>FastAPI endpoint → MCP Tool mapping</h4>
+      <p><code>POST /expenses</code> → <code>add_expense</code> tool<br><code>GET /expenses</code> → <code>get_expenses</code> tool<br><code>GET /expenses/summary</code> → <code>get_expense_summary</code> tool<br><br>Endpoint names, parameters, types, and Pydantic validation are all preserved automatically.</p>
+    </div>
+    <div class="card cg-t">
+      <h4>Business value of this feature</h4>
+      <p>A company with an existing FastAPI backend can expose their entire product as an MCP server in <strong>minutes</strong> — not days. Adds Claude Desktop as a new platform without any separate server development. Reduces development time dramatically.</p>
+    </div>
+  </div>
+
+  <div class="note np"><strong>Design philosophy connection:</strong> fastmcp was built with the same design principles as FastAPI. The creator of fastmcp studied FastAPI's approach (decorator-based, type-hint-driven, Pydantic integration) and applied the same ideas to MCP. That's why they're so compatible — and why converting between them is so seamless.</div>
+
+  <h3 class="sh">What's Coming Next in the MCP Series</h3>
+  <div class="g2">
+    <div class="card co-t" style="border:2px dashed var(--o); border-top:2.5px solid var(--o);">
+      <div class="ci">☁️</div>
+      <h4>Next Video — Build a Remote MCP Server</h4>
+      <p>Take this same Expense Tracker local server, make it production-ready, and deploy it as a remote server. Anyone in the world will be able to connect their Claude Desktop (or any MCP client) to it from anywhere on the internet.</p>
+    </div>
+    <div class="card cp-t" style="border:2px dashed var(--p); border-top:2.5px solid var(--p);">
+      <div class="ci">🔌</div>
+      <h4>Future Video — Build Your Own MCP Client</h4>
+      <p>Build a custom Python MCP client from scratch. No Claude Desktop dependency — your own client talks to your own server, giving you complete control over the entire MCP communication pipeline.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Study guide from <span>CampusX · MCP Series · "How to Build Local MCP Servers"</span></p>
+  <p style="margin-top:8px;color:rgba(255,255,255,.2);">youtube.com/watch?v=tc2oOznpdE0 · Presenter: Nitish · CampusX</p>
+</footer>
+</body>
+</html>

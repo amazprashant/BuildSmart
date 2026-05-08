@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP: The How — Connecting Servers to Claude Desktop | CampusX</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f4fc;--surface:#ffffff;--card:#ffffff;--border:#e4e0ff;--border2:#ccc8ff;
+  --text:#15122e;--text2:#38345c;--muted:#7570a0;--dim:#b0acc8;
+  --purple:#6c3de8;--purple-l:#9570ff;--purple-p:#f0edff;--purple-m:rgba(108,61,232,.11);
+  --teal:#0bc4a8;--teal-p:#e6fdf9;--teal-m:rgba(11,196,168,.11);
+  --amber:#f5a623;--amber-p:#fff8ec;--amber-m:rgba(245,166,35,.11);
+  --red:#e83d55;--red-p:#fff1f3;--red-m:rgba(232,61,85,.11);
+  --blue:#2d80ef;--blue-p:#edf4ff;--blue-m:rgba(45,128,239,.11);
+  --green:#1bbb6e;--green-p:#edfaf3;--green-m:rgba(27,187,110,.11);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);line-height:1.75;}
+
+/* ── COVER ── */
+.cover{min-height:100vh;background:linear-gradient(150deg,#0c083a 0%,#1a0f55 35%,#0a2244 70%,#061830 100%);
+  display:flex;flex-direction:column;justify-content:flex-end;padding:80px 72px;
+  position:relative;overflow:hidden;}
+.c-glow1{position:absolute;width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(108,61,232,.3) 0%,transparent 65%);top:-200px;right:-100px;}
+.c-glow2{position:absolute;width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(11,196,168,.2) 0%,transparent 65%);bottom:-50px;left:60px;}
+.c-grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(108,61,232,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(108,61,232,.07) 1px,transparent 1px);
+  background-size:50px 50px;}
+.c-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(108,61,232,.22);
+  border:1px solid rgba(108,61,232,.45);color:#b8a0ff;font-family:'JetBrains Mono',monospace;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:7px 18px;
+  border-radius:4px;width:fit-content;margin-bottom:30px;position:relative;}
+.cover h1{font-size:clamp(38px,5.2vw,64px);font-weight:800;line-height:1.1;color:#fff;
+  margin-bottom:22px;position:relative;letter-spacing:-1px;}
+.cover h1 .ac{color:#5df4d8;}
+.cover-desc{font-size:17px;color:rgba(255,255,255,.5);max-width:680px;margin-bottom:56px;
+  line-height:1.8;position:relative;}
+.cover-meta{display:flex;border-top:1px solid rgba(255,255,255,.1);padding-top:28px;position:relative;}
+.cm{flex:1;padding-right:30px;border-right:1px solid rgba(255,255,255,.07);margin-right:30px;}
+.cm:last-child{border-right:none;margin-right:0;padding-right:0;}
+.cm-l{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.3);
+  margin-bottom:4px;font-family:'JetBrains Mono',monospace;}
+.cm-v{font-size:14px;font-weight:600;color:rgba(255,255,255,.75);}
+
+/* PLAN BAR */
+.plan-bar{background:var(--purple);padding:0 72px;display:flex;gap:0;overflow:hidden;}
+.pb-item{flex:1;padding:16px 20px;border-right:1px solid rgba(255,255,255,.15);
+  display:flex;align-items:center;gap:10px;transition:background .2s;}
+.pb-item:last-child{border-right:none;}
+.pb-item.active{background:rgba(255,255,255,.12);}
+.pb-n{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.pb-item.active .pb-n{background:#5df4d8;color:#0c083a;}
+.pb-t{font-size:12px;font-weight:600;color:rgba(255,255,255,.75);}
+.pb-item.active .pb-t{color:#fff;}
+.pb-sub{font-size:10px;color:rgba(255,255,255,.45);}
+
+/* TOC */
+.toc-sec{padding:48px 72px;background:var(--surface);border-bottom:1px solid var(--border);}
+.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border2);
+  border-radius:14px;overflow:hidden;}
+.toc-head{grid-column:1/-1;background:var(--purple);padding:16px 24px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;
+  color:rgba(255,255,255,.9);font-weight:600;}
+.te{display:flex;align-items:center;gap:14px;padding:12px 24px;
+  border-bottom:1px solid var(--border);border-right:1px solid var(--border);
+  font-size:13.5px;color:var(--text2);}
+.te:nth-child(even){border-right:none;}
+.te:last-child,.te:nth-last-child(2){border-bottom:none;}
+.tn{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--purple);font-weight:600;min-width:28px;}
+
+/* SECTIONS */
+.sec{padding:60px 72px;border-bottom:1px solid var(--border);}
+.sec.alt{background:var(--surface);}
+.eye{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--purple);margin-bottom:12px;}
+.ed{width:5px;height:5px;background:var(--purple);border-radius:50%;}
+h2.st{font-size:32px;font-weight:800;color:var(--text);margin-bottom:14px;line-height:1.2;letter-spacing:-.5px;}
+h3.sh{font-size:19px;font-weight:700;color:var(--text);margin:30px 0 12px;}
+p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
+
+/* NOTES */
+.note{border-radius:10px;padding:16px 20px;margin:20px 0;font-size:14.5px;line-height:1.75;border-left:3px solid;}
+.np{background:var(--purple-p);border-color:var(--purple);color:#2d1680;}
+.nt{background:var(--teal-p);border-color:var(--teal);color:#04504a;}
+.na{background:var(--amber-p);border-color:var(--amber);color:#703d00;}
+.nr{background:var(--red-p);border-color:var(--red);color:#7a0a1e;}
+.nb{background:var(--blue-p);border-color:var(--blue);color:#0c3880;}
+.ng{background:var(--green-p);border-color:var(--green);color:#075c30;}
+.note strong{font-weight:700;}
+
+/* CARDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:24px 0;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:24px 0;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;
+  box-shadow:0 1px 6px rgba(108,61,232,.04);}
+.cp-t{border-top:2.5px solid var(--purple);}
+.ct-t{border-top:2.5px solid var(--teal);}
+.ca-t{border-top:2.5px solid var(--amber);}
+.cr-t{border-top:2.5px solid var(--red);}
+.cb-t{border-top:2.5px solid var(--blue);}
+.cg-t{border-top:2.5px solid var(--green);}
+.card h4{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.card p{font-size:13.5px;color:var(--muted);line-height:1.65;margin:0;}
+.ci{font-size:26px;margin-bottom:10px;}
+
+/* SERVER CARD — big styled card */
+.srv-card{border-radius:16px;overflow:hidden;border:1px solid var(--border2);margin:28px 0;}
+.srv-head{padding:22px 28px;display:flex;align-items:center;gap:16px;color:#fff;font-weight:700;font-size:18px;}
+.srv-icon{width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.srv-body{background:var(--surface);padding:26px 28px;}
+
+/* STEP LIST */
+.sl{display:flex;flex-direction:column;gap:0;}
+.si{display:grid;grid-template-columns:52px 1fr;border-bottom:1px solid var(--border);}
+.si:last-child{border-bottom:none;}
+.sn{display:flex;align-items:flex-start;justify-content:center;padding-top:18px;
+  font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--purple);}
+.sb{padding:16px 4px 16px 0;}
+.sb h5{font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px;}
+.sb p{font-size:13.5px;color:var(--muted);margin:0;line-height:1.65;}
+
+/* CODE */
+.code{background:#0e0c2a;border-radius:10px;padding:20px 24px;margin:16px 0;
+  overflow-x:auto;border:1px solid rgba(108,61,232,.2);}
+.code pre{font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.85;color:#e0dcff;}
+.kw{color:#c792ea;}.str{color:#a5e279;}.num{color:#f78c6c;}.cm{color:#44406a;}
+.key2{color:#82aaff;}.val{color:#ffcb6b;}.path{color:#5df4d8;}.cmd{color:#f5a623;}
+
+/* DIAGRAM */
+.dbox{background:var(--surface);border:1px solid var(--border2);border-radius:14px;
+  padding:28px;margin:28px 0;box-shadow:0 2px 16px rgba(108,61,232,.05);}
+.dbox-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;
+  letter-spacing:2px;color:var(--dim);margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+
+/* COMPARE */
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-radius:14px;overflow:hidden;margin:24px 0;}
+.cc{background:var(--surface);padding:26px;}
+.cc h4{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;
+  margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.cc.c1 h4{color:var(--purple);}
+.cc.c2 h4{color:var(--teal);}
+.crow{display:flex;gap:10px;align-items:flex-start;padding:9px 0;
+  border-bottom:1px solid var(--border);font-size:13.5px;color:var(--muted);}
+.crow:last-child{border-bottom:none;}
+.crow strong{color:var(--text);}
+
+/* STATUS BADGES */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;
+  font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+.badge.local{background:rgba(108,61,232,.12);color:var(--purple);}
+.badge.remote{background:rgba(11,196,168,.12);color:var(--teal);}
+.badge.connector{background:rgba(245,166,35,.12);color:var(--amber);}
+.badge.json{background:rgba(45,128,239,.12);color:var(--blue);}
+.badge.success{background:rgba(27,187,110,.12);color:var(--green);}
+.badge.issue{background:rgba(232,61,85,.12);color:var(--red);}
+
+/* MATRIX TABLE */
+.mtable{width:100%;border-collapse:collapse;margin:24px 0;font-size:14px;}
+.mtable thead th{background:var(--purple);color:#fff;padding:12px 16px;text-align:left;
+  font-weight:600;font-size:13px;}
+.mtable tbody tr{border-bottom:1px solid var(--border);}
+.mtable tbody tr:hover{background:var(--purple-p);}
+.mtable td{padding:12px 16px;color:var(--text2);vertical-align:middle;}
+.mtable td:first-child{font-weight:700;color:var(--text);}
+
+footer{background:#0e0c2a;color:rgba(255,255,255,.35);text-align:center;padding:36px 72px;font-size:13px;}
+footer span{color:#b8a0ff;}
+svg text{font-family:'Sora',sans-serif;}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="c-glow1"></div><div class="c-glow2"></div><div class="c-grid"></div>
+  <div class="c-badge">▶ CampusX · MCP Trilogy · The How — Part 1 of 3</div>
+  <h1>Connecting MCP Servers<br>to <span class="ac">Claude Desktop</span></h1>
+  <p class="cover-desc">A practical, step-by-step guide to connecting Claude Desktop to 4 real MCP servers — Filesystem, Manim, Google Drive, and Twitter/X — covering both Connectors (one-click) and JSON config file approaches, local and remote servers.</p>
+  <div class="cover-meta">
+    <div class="cm"><div class="cm-l">Presenter</div><div class="cm-v">Nitish · CampusX</div></div>
+    <div class="cm"><div class="cm-l">Type</div><div class="cm-v">Hands-on Practical Demo</div></div>
+    <div class="cm"><div class="cm-l">4 Servers</div><div class="cm-v">Filesystem · Manim · Drive · Twitter</div></div>
+    <div class="cm"><div class="cm-l">Methods</div><div class="cm-v">Connectors + JSON Config</div></div>
+  </div>
+</div>
+
+<!-- PLAN BAR -->
+<div class="plan-bar">
+  <div class="pb-item"><div class="pb-n">✓</div><div><div class="pb-t">The Why</div><div class="pb-sub">Why MCP exists</div></div></div>
+  <div class="pb-item"><div class="pb-n">✓</div><div><div class="pb-t">The What</div><div class="pb-sub">Architecture + Lifecycle</div></div></div>
+  <div class="pb-item active"><div class="pb-n">→</div><div><div class="pb-t">The How · Part 1</div><div class="pb-sub">Ready-made clients + servers</div></div></div>
+  <div class="pb-item"><div class="pb-n">4</div><div><div class="pb-t">The How · Part 2</div><div class="pb-sub">Build your own server</div></div></div>
+  <div class="pb-item"><div class="pb-n">5</div><div><div class="pb-t">The How · Part 3</div><div class="pb-sub">Build your own client</div></div></div>
+</div>
+
+<!-- TOC -->
+<div class="toc-sec">
+  <div class="toc-grid">
+    <div class="toc-head">// Table of Contents</div>
+    <div class="te"><span class="tn">01</span> The "How" Plan — 3 Videos Overview</div>
+    <div class="te"><span class="tn">02</span> Two Ways to Connect MCP Servers</div>
+    <div class="te"><span class="tn">03</span> Connectors — What They Are & Why They Exist</div>
+    <div class="te"><span class="tn">04</span> Why Not Force All Servers to Use Connectors?</div>
+    <div class="te"><span class="tn">05</span> Installing Claude Desktop</div>
+    <div class="te"><span class="tn">06</span> Flowchart — All 4 Servers & Connection Methods</div>
+    <div class="te"><span class="tn">07</span> Server 1: Filesystem MCP (Local + Connector)</div>
+    <div class="te"><span class="tn">08</span> Server 2: Manim MCP (Local + JSON Config)</div>
+    <div class="te"><span class="tn">09</span> Server 3: Google Drive MCP (Remote + Connector)</div>
+    <div class="te"><span class="tn">10</span> Server 4: Twitter/X MCP (Local + JSON Config)</div>
+    <div class="te"><span class="tn">11</span> Server 5: Weather MCP (Remote + JSON Config)</div>
+    <div class="te"><span class="tn">12</span> JSON Config File — Complete Reference</div>
+    <div class="te"><span class="tn">13</span> Discovering New MCP Servers (awesome-mcp)</div>
+    <div class="te"><span class="tn">14</span> Key Takeaways & Next Steps</div>
+  </div>
+</div>
+
+<!-- SEC 1 — HOW PLAN -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 01</div>
+  <h2 class="st">The "How" Plan — 3 Practical Videos</h2>
+  <p class="bd">The MCP Trilogy's practical "How" section is divided into 3 videos, each showing the same client-server communication but with increasing control and customization.</p>
+  <div class="g3">
+    <div class="card cp-t" style="text-align:center;">
+      <div style="font-size:34px;margin-bottom:10px;">🖥️</div>
+      <h4 style="color:var(--purple);">How Part 1 — This Video</h4>
+      <p>Use Claude Desktop (ready-made client) with existing MCP servers. No building — pure experiencing. Understand how it all works with real tools.</p>
+    </div>
+    <div class="card ct-t" style="text-align:center;">
+      <div style="font-size:34px;margin-bottom:10px;">⚙️</div>
+      <h4 style="color:var(--teal);">How Part 2 — Next Video</h4>
+      <p>Keep Claude Desktop as the client. Build your own custom MCP server from scratch. Connect it to Claude Desktop via JSON config.</p>
+    </div>
+    <div class="card ca-t" style="text-align:center;">
+      <div style="font-size:34px;margin-bottom:10px;">🔨</div>
+      <h4 style="color:var(--amber);">How Part 3 — Later</h4>
+      <p>Build both your own MCP client AND your own MCP server. Full custom implementation — no dependency on Claude Desktop at all.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 2 — TWO WAYS -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 02</div>
+  <h2 class="st">Two Ways to Connect MCP Servers to Claude Desktop</h2>
+  <p class="bd">There are exactly two methods to connect any MCP server to Claude Desktop (or any AI host). Understanding the difference between these two is fundamental to this entire video.</p>
+  <div class="cmp">
+    <div class="cc c1">
+      <h4>Method 1 — Connectors (One-Click)</h4>
+      <div class="crow"><strong>What:</strong>&nbsp;Built-in feature in Claude Desktop. Click a button and connect instantly.</div>
+      <div class="crow"><strong>For whom:</strong>&nbsp;Non-technical users; anyone using popular SaaS tools.</div>
+      <div class="crow"><strong>Setup:</strong>&nbsp;Zero configuration. No JSON file editing. Authentication handled automatically.</div>
+      <div class="crow"><strong>Available for:</strong>&nbsp;Curated popular tools — Google Drive, Gmail, Calendar, Notion, Slack, Asana, HubSpot, Indeed, Hugging Face, and more.</div>
+      <div class="crow"><strong>Maintained by:</strong>&nbsp;Anthropic team writes, hosts, and maintains all connector code.</div>
+      <div class="crow"><strong>Analogy:</strong>&nbsp;Like an App Store for MCP servers.</div>
+    </div>
+    <div class="cc c2">
+      <h4>Method 2 — JSON Config File (Manual)</h4>
+      <div class="crow"><strong>What:</strong>&nbsp;Edit a JSON configuration file that Claude Desktop reads on startup.</div>
+      <div class="crow"><strong>For whom:</strong>&nbsp;Developers; anyone with a custom/personal MCP server.</div>
+      <div class="crow"><strong>Setup:</strong>&nbsp;Requires: Settings → Developer → Edit Config → Edit JSON → Restart Claude.</div>
+      <div class="crow"><strong>Available for:</strong>&nbsp;Any MCP server — custom-built, community, enterprise-specific, or personal.</div>
+      <div class="crow"><strong>Maintained by:</strong>&nbsp;You. You manage the config, paths, API keys, and updates.</div>
+      <div class="crow"><strong>Analogy:</strong>&nbsp;Like adding a custom app manually rather than from a store.</div>
+    </div>
+  </div>
+  <div class="note np"><strong>Key insight:</strong> Both methods achieve the same result — an MCP server is added to the <code>mcpServers</code> JSON object that Claude Desktop reads. Connectors just automate the JSON editing for you behind the scenes.</div>
+</div>
+
+<!-- SEC 3 — CONNECTORS -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 03</div>
+  <h2 class="st">Connectors — What They Are & Why They Exist</h2>
+  <div class="note np">
+    <strong>Definition:</strong> A Connector is a built-in feature that links Claude to MCP servers automatically, without the need for manual setup and configuration. Click a button → connected.
+  </div>
+  <h3 class="sh">The Problem Connectors Solve</h3>
+  <p class="bd">Most Claude Desktop users are non-technical. They want to connect Claude to Google Drive or Notion — but the manual JSON config approach requires: finding the GitHub repo, reading setup docs, editing JSON files, managing API keys, debugging errors. That's too technical for everyday users.</p>
+  <div class="g3">
+    <div class="card cp-t">
+      <div class="ci">🛡️</div>
+      <h4>Safer</h4>
+      <p>All connector code is written and reviewed by Anthropic's team. OAuth flows, API key handling, and authentication are battle-tested and secure. No risk of misconfiguring sensitive credentials.</p>
+    </div>
+    <div class="card ct-t">
+      <div class="ci">⚡</div>
+      <h4>Easier</h4>
+      <p>Click "Add Connectors" → select a service → sign in → done. No terminal, no JSON, no paths to configure. A non-technical person can add an MCP server in under 30 seconds.</p>
+    </div>
+    <div class="card ca-t">
+      <div class="ci">🎯</div>
+      <h4>More Consistent</h4>
+      <p>Manual JSON config often fails to load on first try due to path errors, missing dependencies, or syntax mistakes. Connectors have a near-100% success rate because Anthropic controls the entire setup flow.</p>
+    </div>
+  </div>
+  <h3 class="sh">Where to Find Connectors in Claude Desktop</h3>
+  <div class="dbox">
+    <div class="dbox-label">// Navigation path to access connectors in Claude Desktop</div>
+    <svg width="100%" viewBox="0 0 680 180" role="img">
+      <title>Navigation to connectors</title>
+      <defs>
+        <marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <!-- Step boxes -->
+      <rect x="10" y="60" width="110" height="60" rx="8" fill="rgba(108,61,232,.1)" stroke="#6c3de8" stroke-width="1.5"/>
+      <text x="65" y="87" text-anchor="middle" fill="#15122e" font-size="12" font-weight="700">Claude Desktop</text>
+      <text x="65" y="105" text-anchor="middle" fill="rgba(108,61,232,.7)" font-size="11">Open the app</text>
+      <line x1="120" y1="90" x2="154" y2="90" stroke="#6c3de8" stroke-width="1.5" marker-end="url(#a1)"/>
+
+      <rect x="154" y="60" width="110" height="60" rx="8" fill="rgba(108,61,232,.1)" stroke="#6c3de8" stroke-width="1.5"/>
+      <text x="209" y="87" text-anchor="middle" fill="#15122e" font-size="12" font-weight="700">🔍 Search &amp;</text>
+      <text x="209" y="103" text-anchor="middle" fill="#15122e" font-size="12" font-weight="700">Tools Icon</text>
+      <line x1="264" y1="90" x2="298" y2="90" stroke="#6c3de8" stroke-width="1.5" marker-end="url(#a1)"/>
+
+      <rect x="298" y="60" width="110" height="60" rx="8" fill="rgba(108,61,232,.1)" stroke="#6c3de8" stroke-width="1.5"/>
+      <text x="353" y="87" text-anchor="middle" fill="#15122e" font-size="12" font-weight="700">Add</text>
+      <text x="353" y="103" text-anchor="middle" fill="#15122e" font-size="12" font-weight="700">Connectors</text>
+      <line x1="408" y1="90" x2="442" y2="90" stroke="#6c3de8" stroke-width="1.5" marker-end="url(#a1)"/>
+
+      <rect x="442" y="60" width="110" height="60" rx="8" fill="rgba(11,196,168,.1)" stroke="#0bc4a8" stroke-width="1.5"/>
+      <text x="497" y="87" text-anchor="middle" fill="#15122e" font-size="12" font-weight="700">Browse</text>
+      <text x="497" y="103" text-anchor="middle" fill="#15122e" font-size="12" font-weight="700">Desktop / Web</text>
+      <line x1="552" y1="90" x2="586" y2="90" stroke="#0bc4a8" stroke-width="1.5" marker-end="url(#a1)"/>
+
+      <rect x="586" y="60" width="84" height="60" rx="8" fill="rgba(11,196,168,.2)" stroke="#0bc4a8" stroke-width="2"/>
+      <text x="628" y="87" text-anchor="middle" fill="#04504a" font-size="12" font-weight="700">Install &amp;</text>
+      <text x="628" y="103" text-anchor="middle" fill="#04504a" font-size="12" font-weight="700">Sign In ✓</text>
+
+      <!-- Labels below -->
+      <text x="65" y="148" text-anchor="middle" fill="rgba(108,61,232,.6)" font-size="10">Start here</text>
+      <text x="209" y="148" text-anchor="middle" fill="rgba(108,61,232,.6)" font-size="10">Bottom of chat</text>
+      <text x="353" y="148" text-anchor="middle" fill="rgba(108,61,232,.6)" font-size="10">Button in panel</text>
+      <text x="497" y="148" text-anchor="middle" fill="rgba(11,196,168,.6)" font-size="10">Local / Remote</text>
+      <text x="628" y="148" text-anchor="middle" fill="rgba(11,196,168,.6)" font-size="10">Auto-configured!</text>
+    </svg>
+  </div>
+  <p class="bd">Available connectors include: <strong>Google Drive, Gmail, Google Calendar, Notion, Slack, Asana, Box, Canva, HubSpot, Indeed, Hugging Face</strong>, and many more — with new ones added regularly.</p>
+</div>
+
+<!-- SEC 4 — WHY NOT FORCE CONNECTORS -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 04</div>
+  <h2 class="st">Why Not Force All MCP Servers to Use Connectors?</h2>
+  <p class="bd">If connectors are safer, easier, and more consistent — why not require <em>all</em> MCP servers to use them? Two fundamental reasons prevent this:</p>
+  <div class="g2">
+    <div class="card cr-t">
+      <div class="ci">🏗️</div>
+      <h4>Reason 1 — Not Scalable</h4>
+      <p>Connectors require Anthropic's team to manually write, host, and maintain every connector. There are thousands of MCP servers — with 10–15 new ones created every day. It's physically impossible for one company to build and maintain connectors for every MCP server in existence.</p>
+      <br>
+      <p style="color:var(--red);font-size:13px;">Anthropic writes the entire connector code, handles OAuth flows, manages security patches, rate limiting, and ensures a stable experience. This is enormous ongoing work.</p>
+    </div>
+    <div class="card cr-t">
+      <div class="ci">🔓</div>
+      <h4>Reason 2 — MCP is an Open Standard</h4>
+      <p>MCP was designed so anyone can build a client or server. If connectors were mandatory, a developer would have to: build an MCP server → submit it to Anthropic → wait for review → wait for Anthropic to build a connector → only then connect it to Claude Desktop.</p>
+      <br>
+      <p style="color:var(--red);font-size:13px;">This closes the open ecosystem and gives Anthropic a gatekeeper role — contrary to MCP's founding principles. The JSON config approach preserves openness.</p>
+    </div>
+  </div>
+  <div class="dbox">
+    <div class="dbox-label">// Diagram: When to use Connectors vs JSON Config</div>
+    <svg width="100%" viewBox="0 0 680 200" role="img">
+      <title>When to use connectors vs JSON config</title>
+      <defs>
+        <marker id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- Decision diamond -->
+      <polygon points="340,20 480,90 340,160 200,90" fill="rgba(108,61,232,.1)" stroke="#6c3de8" stroke-width="2"/>
+      <text x="340" y="82" text-anchor="middle" fill="#15122e" font-size="12" font-weight="700">Is there a</text>
+      <text x="340" y="98" text-anchor="middle" fill="#15122e" font-size="12" font-weight="700">Connector available?</text>
+
+      <!-- YES → Connector -->
+      <line x1="200" y1="90" x2="108" y2="90" stroke="#6c3de8" stroke-width="1.5" marker-end="url(#a2)"/>
+      <text x="154" y="80" fill="#6c3de8" font-size="12" font-weight="700">YES</text>
+      <rect x="10" y="60" width="98" height="60" rx="10" fill="rgba(108,61,232,.12)" stroke="#6c3de8" stroke-width="1.5"/>
+      <text x="59" y="87" text-anchor="middle" fill="#2d1680" font-size="12" font-weight="700">Use</text>
+      <text x="59" y="103" text-anchor="middle" fill="#2d1680" font-size="12" font-weight="700">Connector ✓</text>
+
+      <!-- NO → JSON Config -->
+      <line x1="480" y1="90" x2="572" y2="90" stroke="#2d80ef" stroke-width="1.5" marker-end="url(#a2)"/>
+      <text x="526" y="80" fill="#2d80ef" font-size="12" font-weight="700">NO</text>
+      <rect x="572" y="60" width="98" height="60" rx="10" fill="rgba(45,128,239,.12)" stroke="#2d80ef" stroke-width="1.5"/>
+      <text x="621" y="87" text-anchor="middle" fill="#0c3880" font-size="12" font-weight="700">Use</text>
+      <text x="621" y="103" text-anchor="middle" fill="#0c3880" font-size="12" font-weight="700">JSON Config</text>
+
+      <!-- Connector description -->
+      <text x="59" y="134" text-anchor="middle" fill="rgba(108,61,232,.6)" font-size="10">SaaS tools</text>
+      <text x="59" y="148" text-anchor="middle" fill="rgba(108,61,232,.6)" font-size="10">Drive, Notion, Slack…</text>
+
+      <!-- JSON description -->
+      <text x="621" y="134" text-anchor="middle" fill="rgba(45,128,239,.6)" font-size="10">Custom servers</text>
+      <text x="621" y="148" text-anchor="middle" fill="rgba(45,128,239,.6)" font-size="10">Manim, Twitter, etc.</text>
+    </svg>
+  </div>
+</div>
+
+<!-- SEC 5 — INSTALLING CLAUDE DESKTOP -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 05</div>
+  <h2 class="st">Installing Claude Desktop</h2>
+  <div class="g2">
+    <div class="card cp-t">
+      <div class="ci">🍎</div>
+      <h4>macOS</h4>
+      <p>Go to <strong>claude.ai/download</strong> → Download the macOS version → Open the .dmg file → Drag to Applications → Launch → Sign in with your Claude/Anthropic account.</p>
+    </div>
+    <div class="card cb-t">
+      <div class="ci">🪟</div>
+      <h4>Windows</h4>
+      <p>Go to <strong>claude.ai/download</strong> → Download the Windows version → Run the installer → Follow installation wizard → Launch → Sign in with your Claude/Anthropic account.</p>
+    </div>
+  </div>
+  <div class="note np">
+    <strong>Critical rule — Always restart after adding MCP servers:</strong> Every time you add a new MCP server (via connector or JSON config), you MUST close and relaunch Claude Desktop for it to take effect. Claude reads the MCP server config only at startup.
+  </div>
+  <h3 class="sh">Where is the JSON Config File?</h3>
+  <p class="bd">Navigate to: <strong>Claude Desktop → Settings → Developer → Edit Config</strong>. This opens the <code>claude_desktop_config.json</code> file in your default editor. The file contains the <code>mcpServers</code> object where all server configurations live.</p>
+  <div class="code"><pre><span class="cm">// claude_desktop_config.json — the master config file</span>
+{
+  <span class="key2">"mcpServers"</span>: {
+    <span class="cm">// Each key is the server name, value is its config</span>
+    <span class="key2">"filesystem"</span>: { <span class="cm">... connector auto-adds this ...</span> },
+    <span class="key2">"manim"</span>: { <span class="cm">... manually added ...</span> },
+    <span class="key2">"twitter"</span>: { <span class="cm">... manually added ...</span> },
+    <span class="key2">"weather"</span>: { <span class="cm">... manually added ...</span> }
+  }
+}</pre></div>
+</div>
+
+<!-- SEC 6 — OVERVIEW FLOWCHART -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 06</div>
+  <h2 class="st">Flowchart — All 4 Servers & Connection Methods</h2>
+  <div class="dbox">
+    <div class="dbox-label">// Overview: 4 servers × 2 dimensions (local/remote + connector/JSON)</div>
+    <svg width="100%" viewBox="0 0 680 480" role="img">
+      <title>Overview of all four MCP servers and their connection methods</title>
+      <defs>
+        <marker id="a3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- Claude Desktop Hub -->
+      <rect x="240" y="180" width="200" height="120" rx="14" fill="rgba(108,61,232,.15)" stroke="#6c3de8" stroke-width="2.5"/>
+      <text x="340" y="225" text-anchor="middle" fill="#fff" font-size="14" font-weight="800">☁️ Claude Desktop</text>
+      <text x="340" y="245" text-anchor="middle" fill="rgba(200,190,255,.8)" font-size="12">AI Host / MCP Client</text>
+      <text x="340" y="265" text-anchor="middle" fill="rgba(200,190,255,.6)" font-size="11">Manages all connections</text>
+      <text x="340" y="282" text-anchor="middle" fill="rgba(200,190,255,.6)" font-size="11">Reads claude_desktop_config.json</text>
+
+      <!-- SERVER 1: Filesystem (Local + Connector) -->
+      <rect x="20" y="20" width="180" height="110" rx="12" fill="rgba(108,61,232,.1)" stroke="#6c3de8" stroke-width="1.5"/>
+      <text x="110" y="48" text-anchor="middle" fill="#15122e" font-size="13" font-weight="700">📁 Filesystem</text>
+      <text x="110" y="67" text-anchor="middle" fill="rgba(108,61,232,.8)" font-size="11" font-family="JetBrains Mono,monospace">LOCAL</text>
+      <rect x="50" y="76" width="120" height="22" rx="11" fill="rgba(245,166,35,.15)" stroke="rgba(245,166,35,.4)" stroke-width="1"/>
+      <text x="110" y="92" text-anchor="middle" fill="#703d00" font-size="10" font-weight="700">✓ CONNECTOR</text>
+      <text x="110" y="116" text-anchor="middle" fill="rgba(108,61,232,.6)" font-size="10">Read + Write files</text>
+      <line x1="200" y1="75" x2="240" y2="210" stroke="#6c3de8" stroke-width="1.5" marker-end="url(#a3)"/>
+      <text x="215" y="145" fill="rgba(108,61,232,.6)" font-size="10">1-click</text>
+
+      <!-- SERVER 2: Manim (Local + JSON) -->
+      <rect x="20" y="180" width="180" height="110" rx="12" fill="rgba(108,61,232,.08)" stroke="rgba(108,61,232,.35)" stroke-width="1.5"/>
+      <text x="110" y="208" text-anchor="middle" fill="#15122e" font-size="13" font-weight="700">🎬 Manim</text>
+      <text x="110" y="227" text-anchor="middle" fill="rgba(108,61,232,.8)" font-size="11" font-family="JetBrains Mono,monospace">LOCAL</text>
+      <rect x="50" y="236" width="120" height="22" rx="11" fill="rgba(45,128,239,.15)" stroke="rgba(45,128,239,.4)" stroke-width="1"/>
+      <text x="110" y="252" text-anchor="middle" fill="#0c3880" font-size="10" font-weight="700">JSON CONFIG</text>
+      <text x="110" y="278" text-anchor="middle" fill="rgba(108,61,232,.6)" font-size="10">Math animations</text>
+      <line x1="200" y1="240" x2="240" y2="240" stroke="#2d80ef" stroke-width="1.5" marker-end="url(#a3)"/>
+      <text x="215" y="232" fill="rgba(45,128,239,.7)" font-size="10">JSON</text>
+
+      <!-- SERVER 3: Google Drive (Remote + Connector) -->
+      <rect x="480" y="20" width="180" height="110" rx="12" fill="rgba(11,196,168,.1)" stroke="#0bc4a8" stroke-width="1.5"/>
+      <text x="570" y="48" text-anchor="middle" fill="#15122e" font-size="13" font-weight="700">📂 Google Drive</text>
+      <text x="570" y="67" text-anchor="middle" fill="rgba(11,196,168,.8)" font-size="11" font-family="JetBrains Mono,monospace">REMOTE</text>
+      <rect x="510" y="76" width="120" height="22" rx="11" fill="rgba(245,166,35,.15)" stroke="rgba(245,166,35,.4)" stroke-width="1"/>
+      <text x="570" y="92" text-anchor="middle" fill="#703d00" font-size="10" font-weight="700">✓ CONNECTOR</text>
+      <text x="570" y="116" text-anchor="middle" fill="rgba(11,196,168,.6)" font-size="10">Read-only Drive files</text>
+      <line x1="480" y1="75" x2="440" y2="210" stroke="#0bc4a8" stroke-width="1.5" marker-end="url(#a3)"/>
+      <text x="465" y="145" fill="rgba(11,196,168,.7)" font-size="10">OAuth</text>
+
+      <!-- SERVER 4: Twitter (Local + JSON) — corrected from "remote" in video -->
+      <rect x="480" y="180" width="180" height="110" rx="12" fill="rgba(11,196,168,.06)" stroke="rgba(11,196,168,.3)" stroke-width="1.5"/>
+      <text x="570" y="208" text-anchor="middle" fill="#15122e" font-size="13" font-weight="700">🐦 Twitter/X</text>
+      <text x="570" y="227" text-anchor="middle" fill="rgba(108,61,232,.8)" font-size="11" font-family="JetBrains Mono,monospace">LOCAL (via npm)</text>
+      <rect x="510" y="236" width="120" height="22" rx="11" fill="rgba(45,128,239,.15)" stroke="rgba(45,128,239,.4)" stroke-width="1"/>
+      <text x="570" y="252" text-anchor="middle" fill="#0c3880" font-size="10" font-weight="700">JSON CONFIG</text>
+      <text x="570" y="278" text-anchor="middle" fill="rgba(11,196,168,.6)" font-size="10">Read + Post tweets</text>
+      <line x1="480" y1="240" x2="440" y2="240" stroke="#2d80ef" stroke-width="1.5" marker-end="url(#a3)"/>
+      <text x="455" y="232" fill="rgba(45,128,239,.7)" font-size="10">JSON</text>
+
+      <!-- SERVER 5: Weather (Remote + JSON) -->
+      <rect x="240" y="380" width="200" height="90" rx="12" fill="rgba(27,187,110,.08)" stroke="rgba(27,187,110,.4)" stroke-width="1.5"/>
+      <text x="340" y="408" text-anchor="middle" fill="#15122e" font-size="13" font-weight="700">🌤️ Weather (AccuWeather)</text>
+      <text x="340" y="427" text-anchor="middle" fill="rgba(27,187,110,.8)" font-size="11" font-family="JetBrains Mono,monospace">REMOTE (true remote)</text>
+      <rect x="280" y="436" width="120" height="22" rx="11" fill="rgba(45,128,239,.15)" stroke="rgba(45,128,239,.4)" stroke-width="1"/>
+      <text x="340" y="452" text-anchor="middle" fill="#0c3880" font-size="10" font-weight="700">JSON CONFIG</text>
+      <line x1="340" y1="380" x2="340" y2="300" stroke="#1bbb6e" stroke-width="1.5" marker-end="url(#a3)"/>
+      <text x="352" y="342" fill="rgba(27,187,110,.7)" font-size="10">JSON</text>
+
+      <!-- LEGEND -->
+      <rect x="280" y="10" width="80" height="22" rx="11" fill="rgba(245,166,35,.15)" stroke="rgba(245,166,35,.4)" stroke-width="1"/>
+      <text x="320" y="26" text-anchor="middle" fill="#703d00" font-size="10" font-weight="700">✓ CONNECTOR</text>
+      <rect x="370" y="10" width="100" height="22" rx="11" fill="rgba(45,128,239,.15)" stroke="rgba(45,128,239,.4)" stroke-width="1"/>
+      <text x="420" y="26" text-anchor="middle" fill="#0c3880" font-size="10" font-weight="700">JSON CONFIG</text>
+    </svg>
+  </div>
+  <h3 class="sh">The 5 Servers at a Glance</h3>
+  <table class="mtable">
+    <thead><tr><th>Server</th><th>Type</th><th>Connection Method</th><th>What It Does</th><th>Status in Demo</th></tr></thead>
+    <tbody>
+      <tr><td>📁 Filesystem</td><td><span class="badge local">Local</span></td><td><span class="badge connector">Connector</span></td><td>Read/write files in specified directories on your machine</td><td><span class="badge success">✓ Working</span></td></tr>
+      <tr><td>🎬 Manim</td><td><span class="badge local">Local</span></td><td><span class="badge json">JSON Config</span></td><td>Generate mathematical animation videos from English prompts</td><td><span class="badge success">✓ Working</span></td></tr>
+      <tr><td>📂 Google Drive</td><td><span class="badge remote">Remote</span></td><td><span class="badge connector">Connector</span></td><td>Search and read documents from Google Drive (read-only)</td><td><span class="badge success">✓ Working</span></td></tr>
+      <tr><td>🐦 Twitter/X</td><td><span class="badge local">Local (npm)</span></td><td><span class="badge json">JSON Config</span></td><td>Search tweets and post tweets (read+write)</td><td><span class="badge issue">Partial — auth issue</span></td></tr>
+      <tr><td>🌤️ Weather</td><td><span class="badge remote">Remote</span></td><td><span class="badge json">JSON Config</span></td><td>Real-time weather data via AccuWeather API</td><td><span class="badge issue">API issue on demo</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- SEC 7 — FILESYSTEM -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 07</div>
+  <div class="srv-card">
+    <div class="srv-head" style="background:linear-gradient(135deg,#6c3de8,#9570ff);">
+      <div class="srv-icon">📁</div>
+      <div>
+        <div>Server 1 — Filesystem MCP</div>
+        <div style="font-size:12px;font-weight:400;opacity:.8;margin-top:3px;">Local Server · Connected via Connector · Read + Write</div>
+      </div>
+      <span class="badge connector" style="margin-left:auto;">Connector</span>
+    </div>
+    <div class="srv-body">
+      <p class="bd">The Filesystem MCP server gives Claude access to specified directories on your local machine. It can list files, read file contents, create new files, and edit existing ones.</p>
+      <h3 class="sh">Setup Steps</h3>
+      <div class="sl">
+        <div class="si"><div class="sn">01</div><div class="sb">
+          <h5>Click the Search & Tools icon in Claude Desktop</h5>
+          <p>This is the icon at the bottom of the chat input bar. A panel opens showing connected tools.</p>
+        </div></div>
+        <div class="si"><div class="sn">02</div><div class="sb">
+          <h5>Click "Add Connectors" → Desktop Extensions → Filesystem</h5>
+          <p>Browse the connector library and find the Filesystem connector. Click to install it.</p>
+        </div></div>
+        <div class="si"><div class="sn">03</div><div class="sb">
+          <h5>Configure allowed directories</h5>
+          <p>After installing, you must specify which folders on your machine the server can access. Example: add your Desktop folder. This is a safety feature — the server cannot access any path outside what you specify.</p>
+        </div></div>
+        <div class="si"><div class="sn">04</div><div class="sb">
+          <h5>Enable the connector and restart Claude Desktop</h5>
+          <p>Toggle it to Enabled → Close Claude Desktop → Reopen. The Filesystem server is now connected.</p>
+        </div></div>
+      </div>
+      <h3 class="sh">Demo Results</h3>
+      <div class="g2">
+        <div class="card cp-t">
+          <h4>Read Files Demo</h4>
+          <p>Query: "Are there any PDF files on my Desktop?"<br><br>Result: Claude used the <code>list_directory</code> and <code>search_files</code> tools, scanned the Desktop, and returned a list of 5 PDF files found.</p>
+        </div>
+        <div class="card cg-t">
+          <h4>Write Files Demo</h4>
+          <p>Query: "Write a Fibonacci numbers code in Python, then save the first version as a .py file on my Desktop."<br><br>Result: Claude generated 3 versions of Fibonacci code, then used the <code>write_file</code> tool to create and save <code>fibonacci.py</code> directly on the Desktop.</p>
+        </div>
+      </div>
+      <h3 class="sh">Creative Use Cases Nitish Suggests</h3>
+      <div class="g3">
+        <div class="card cp-t"><h4>Organize Downloads Folder</h4><p>Point Filesystem at your chaotic Downloads folder and ask Claude to organize everything into logical subfolders by file type, date, or project.</p></div>
+        <div class="card cp-t"><h4>Summarize Code Projects</h4><p>Add your project directory and ask Claude to give you a quick summary of what the codebase does, what files exist, and how it's structured.</p></div>
+        <div class="card cp-t"><h4>Bulk File Operations</h4><p>Rename hundreds of files following a pattern, convert file formats, extract data from multiple files, or create structured reports from file contents.</p></div>
+      </div>
+      <div class="note na"><strong>Safety first:</strong> Never give Filesystem access to your entire root directory. Always restrict it to specific folders you're comfortable with Claude reading and modifying. Giving full system access could be dangerous if Claude makes an error.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 8 — MANIM -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 08</div>
+  <div class="srv-card">
+    <div class="srv-head" style="background:linear-gradient(135deg,#2d80ef,#5b9fff);">
+      <div class="srv-icon">🎬</div>
+      <div>
+        <div>Server 2 — Manim MCP</div>
+        <div style="font-size:12px;font-weight:400;opacity:.8;margin-top:3px;">Local Server · Connected via JSON Config · Generate math animations</div>
+      </div>
+      <span class="badge json" style="margin-left:auto;">JSON Config</span>
+    </div>
+    <div class="srv-body">
+      <p class="bd"><strong>Manim</strong> is the Python library used by the famous <em>3Blue1Brown</em> YouTube channel to create stunning mathematical visualizations. The Manim MCP server lets Claude generate these animations from plain English prompts.</p>
+      <div class="note nb"><strong>The 3Blue1Brown connection:</strong> 3Blue1Brown makes complex math beautiful through animated visualizations. Nitish discovered they use Manim to code every visualization manually — a very hard skill. This MCP server removes that barrier: describe what you want in English → get a professional math animation video.</div>
+
+      <h3 class="sh">Prerequisites</h3>
+      <div class="g3">
+        <div class="card cb-t"><h4>Python 3.x</h4><p>Must be installed on your machine. Check with <code>python3 --version</code> in terminal.</p></div>
+        <div class="card cb-t"><h4>Manim Library</h4><p>Install with: <code>pip install manim</code></p></div>
+        <div class="card cb-t"><h4>MCP Library</h4><p>Install with: <code>pip install mcp</code></p></div>
+      </div>
+      <div class="note na"><strong>Optional — LaTeX:</strong> For perfect mathematical symbols (∫, Σ, matrices), install LaTeX (~10–15 GB). Without it, Manim will use fallback rendering — symbols may not look as polished. Nitish recommends skipping LaTeX unless you specifically need perfect symbols.</div>
+
+      <h3 class="sh">Setup Steps (JSON Config Method)</h3>
+      <div class="sl">
+        <div class="si"><div class="sn">01</div><div class="sb">
+          <h5>Clone the Manim MCP Server repository to your Desktop</h5>
+          <p>Search "manim mcp server" on Google, find the GitHub repo. Clone it to your Desktop (important: Claude needs Desktop access from the Filesystem connector).</p>
+        </div></div>
+        <div class="si"><div class="sn">02</div><div class="sb">
+          <h5>Find Python's absolute path on your machine</h5>
+          <p>In terminal: <code>which python3</code> (Mac/Linux) or check your Python installation path on Windows. Copy the full path.</p>
+        </div></div>
+        <div class="si"><div class="sn">03</div><div class="sb">
+          <h5>Find Manim's executable path</h5>
+          <p>In terminal: <code>which manim</code> (Mac/Linux). On Windows, look in your Python Scripts folder.</p>
+        </div></div>
+        <div class="si"><div class="sn">04</div><div class="sb">
+          <h5>Open Claude Desktop config: Settings → Developer → Edit Config</h5>
+          <p>This opens <code>claude_desktop_config.json</code>. Open it in VS Code or any text editor.</p>
+        </div></div>
+        <div class="si"><div class="sn">05</div><div class="sb">
+          <h5>Add the Manim server config block inside "mcpServers"</h5>
+          <p>Copy the config template from the Manim GitHub repo README. Paste it inside the <code>mcpServers</code> object. Replace the placeholder paths with your actual Python path, Manim path, and the cloned repo path.</p>
+        </div></div>
+        <div class="si"><div class="sn">06</div><div class="sb">
+          <h5>Save the file and restart Claude Desktop</h5>
+          <p>Close Claude Desktop completely, reopen it. The Manim server should now appear in your connected tools list.</p>
+        </div></div>
+      </div>
+
+      <h3 class="sh">JSON Config Template</h3>
+      <div class="code"><pre><span class="cm">// Add inside "mcpServers" object in claude_desktop_config.json</span>
+<span class="key2">"manim"</span>: {
+  <span class="key2">"command"</span>: <span class="path">"/usr/local/bin/python3"</span>,   <span class="cm">// Your Python absolute path</span>
+  <span class="key2">"args"</span>: [
+    <span class="path">"/Users/yourname/Desktop/manim-mcp-server/src/server.py"</span>
+  ],                                            <span class="cm">// Path to cloned repo's server.py</span>
+  <span class="key2">"env"</span>: {
+    <span class="key2">"MANIM_PATH"</span>: <span class="path">"/usr/local/bin/manim"</span>   <span class="cm">// Your Manim executable path</span>
+  }
+}
+<span class="cm">// Windows: paths use backslashes, e.g. C:\Users\yourname\...</span></pre></div>
+
+      <h3 class="sh">Demo: Vector Transformation Animation</h3>
+      <div class="dbox">
+        <div class="dbox-label">// Prompt used to generate the animation</div>
+        <div class="code"><pre><span class="str">"Use the Manim server to create an animation showing the concept of
+Vector Transformation in Linear Algebra. First create a 2D coordinate
+grid. Show two basis vectors I and J. Apply this matrix transformation:
+[[2, 1], [1, 3]]. Show the entire grid bending according to the matrix.
+Show the new transformed vectors. Add the title 'Linear Transformation'."</span>
+
+<span class="cm">// What happened:
+// 1. Claude generated Manim Python code for this exact animation
+// 2. The Manim MCP server executed the code
+// 3. A video file was generated showing:
+//    - 2D coordinate grid
+//    - Original basis vectors i and j
+//    - The grid morphing/rotating per the transformation matrix
+//    - New vectors i' and j' after transformation</span></pre></div>
+      </div>
+      <div class="note nt"><strong>Nitish's personal recommendation:</strong> He's been using this MCP server for ~1.5 months. Whenever he encounters a difficult concept in ML/DL, he: (1) goes to Claude/ChatGPT and asks it to write a Manim prompt for that concept, (2) pastes the prompt into Claude Desktop with Manim connected, (3) gets a visualization video in minutes. His learning output has improved significantly since using this workflow.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 9 — GOOGLE DRIVE -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 09</div>
+  <div class="srv-card">
+    <div class="srv-head" style="background:linear-gradient(135deg,#0bc4a8,#1de8c8);">
+      <div class="srv-icon">📂</div>
+      <div>
+        <div>Server 3 — Google Drive MCP</div>
+        <div style="font-size:12px;font-weight:400;opacity:.8;margin-top:3px;">Remote Server · Connected via Connector · Read-Only</div>
+      </div>
+      <span class="badge connector" style="margin-left:auto;">Connector</span>
+    </div>
+    <div class="srv-body">
+      <p class="bd">The Google Drive MCP server connects Claude Desktop to your Google Drive account, allowing Claude to search and read your documents. This is a remote server — it runs on the internet, not on your machine.</p>
+      <h3 class="sh">Setup Steps (One-Click Connector)</h3>
+      <div class="sl">
+        <div class="si"><div class="sn">01</div><div class="sb">
+          <h5>Click Search & Tools icon → Google Drive appears directly in the panel</h5>
+          <p>Google Drive is so popular it gets a direct shortcut in the tools panel — you don't even need to go to "Add Connectors".</p>
+        </div></div>
+        <div class="si"><div class="sn">02</div><div class="sb">
+          <h5>Click the Drive icon → OAuth authentication flow opens</h5>
+          <p>Your browser opens a Google sign-in page. This is the standard Google OAuth flow — the same process used by any Google-connected app.</p>
+        </div></div>
+        <div class="si"><div class="sn">03</div><div class="sb">
+          <h5>Sign in to your Google account → Grant permissions</h5>
+          <p>Allow Claude Desktop to read your Google Drive files. Anthropic manages the OAuth flow and ensures your credentials are handled securely.</p>
+        </div></div>
+        <div class="si"><div class="sn">04</div><div class="sb">
+          <h5>Done — no restart needed for connectors</h5>
+          <p>Once OAuth completes, the Drive Search connector is enabled immediately. You'll see "Drive Search" appear in your connected tools panel.</p>
+        </div></div>
+      </div>
+      <h3 class="sh">Demo Result</h3>
+      <div class="dbox">
+        <div class="dbox-label">// Live demo from the video</div>
+        <div class="code"><pre><span class="cm">// Query sent to Claude Desktop:</span>
+<span class="str">"Can you summarize the document from my Google Drive called
+'AI Newsletter Content Ideas'?"</span>
+
+<span class="cm">// What happened:
+// 1. Claude used the drive_search tool to search Google Drive
+// 2. Found the document "AI Newsletter Content Ideas"
+// 3. Read the document content via the Drive API
+// 4. Generated a comprehensive summary
+// All within seconds, with full context from the Drive document</span></pre></div>
+      </div>
+      <div class="nr note"><strong>⚠️ Important limitation — Read-Only:</strong> The Google Drive MCP connector is currently read-only. You can search and read existing documents, but you <em>cannot</em> create new files, edit existing files, or delete anything. It's purely for pulling context from your Drive into Claude's conversation.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 10 — TWITTER -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 10</div>
+  <div class="srv-card">
+    <div class="srv-head" style="background:linear-gradient(135deg,#1da1f2,#40b4ff);">
+      <div class="srv-icon">🐦</div>
+      <div>
+        <div>Server 4 — Twitter/X MCP</div>
+        <div style="font-size:12px;font-weight:400;opacity:.8;margin-top:3px;">Local Server (npm) · JSON Config · Search + Post tweets</div>
+      </div>
+      <span class="badge json" style="margin-left:auto;">JSON Config</span>
+    </div>
+    <div class="srv-body">
+      <p class="bd">The Twitter/X MCP server lets Claude read and post tweets. It runs locally on your machine (installed via npm behind the scenes) and connects to the Twitter API using your developer credentials.</p>
+      <div class="note na"><strong>Correction noted by Nitish:</strong> He initially planned to present this as a "remote" server, but discovered mid-video that it's actually a local server — the JSON config runs an <code>npx</code> command which installs and runs the server locally via npm. This is an important architectural detail.</div>
+
+      <h3 class="sh">Prerequisites</h3>
+      <div class="g2">
+        <div class="card cb-t">
+          <h4>Node.js + npm</h4>
+          <p>The Twitter MCP server uses <code>npx</code>, which requires Node.js. Install from nodejs.org. Verify with <code>node --version</code> and <code>npm --version</code>.</p>
+        </div>
+        <div class="card cb-t">
+          <h4>Twitter Developer Account + 4 API Keys</h4>
+          <p>Go to developer.twitter.com → create/use a project → get: API Key, API Secret, Access Token, Access Token Secret. All 4 required.</p>
+        </div>
+      </div>
+
+      <h3 class="sh">Setup Steps</h3>
+      <div class="sl">
+        <div class="si"><div class="sn">01</div><div class="sb">
+          <h5>Create a Twitter Developer Account</h5>
+          <p>Go to developer.twitter.com → sign in with your Twitter/X account → access the Developer Dashboard → use the Default Project.</p>
+        </div></div>
+        <div class="si"><div class="sn">02</div><div class="sb">
+          <h5>Get your 4 API keys from the Developer Portal</h5>
+          <p>In your project → Keys and Tokens → Regenerate API Key & Secret → Generate Access Token & Secret. Copy all 4 values.</p>
+        </div></div>
+        <div class="si"><div class="sn">03</div><div class="sb">
+          <h5>Open Claude config and add the Twitter server block</h5>
+          <p>Settings → Developer → Edit Config → add the Twitter config block inside <code>mcpServers</code>.</p>
+        </div></div>
+        <div class="si"><div class="sn">04</div><div class="sb">
+          <h5>Paste your 4 API keys into the config</h5>
+          <p>Replace the placeholder values with your actual API Key, API Secret, Access Token, and Access Token Secret.</p>
+        </div></div>
+        <div class="si"><div class="sn">05</div><div class="sb">
+          <h5>For write (posting) permissions: update app settings in Dev Portal</h5>
+          <p>By default, Twitter apps may only have read permissions. Go to Developer Portal → Your App → User Authentication Settings → enable Read and Write permissions.</p>
+        </div></div>
+        <div class="si"><div class="sn">06</div><div class="sb">
+          <h5>Save config, restart Claude Desktop</h5>
+          <p>After restart, Twitter MCP server appears with 2 tools: post_tweet and search_tweets.</p>
+        </div></div>
+      </div>
+
+      <h3 class="sh">JSON Config Template</h3>
+      <div class="code"><pre><span class="key2">"twitter"</span>: {
+  <span class="key2">"command"</span>: <span class="str">"npx"</span>,    <span class="cm">// Uses npm package executor — installs locally</span>
+  <span class="key2">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@some-package/twitter-mcp-server"</span>],
+  <span class="key2">"env"</span>: {
+    <span class="key2">"TWITTER_API_KEY"</span>:            <span class="str">"your_api_key_here"</span>,
+    <span class="key2">"TWITTER_API_SECRET"</span>:         <span class="str">"your_api_secret_here"</span>,
+    <span class="key2">"TWITTER_ACCESS_TOKEN"</span>:       <span class="str">"your_access_token_here"</span>,
+    <span class="key2">"TWITTER_ACCESS_TOKEN_SECRET"</span>:<span class="str">"your_access_token_secret_here"</span>
+  }
+}
+<span class="cm">// Note: npx installs the package locally on first run
+// This is a LOCAL server despite using internet-hosted npm package</span></pre></div>
+
+      <h3 class="sh">Available Tools</h3>
+      <div class="g2">
+        <div class="card cb-t"><h4>🔍 search_tweets</h4><p>Search Twitter for tweets by keyword, hashtag, or topic. Returns recent matching tweets. <strong>Working in demo.</strong></p></div>
+        <div class="card cr-t"><h4>📝 post_tweet</h4><p>Post a new tweet on your behalf. Requires Read+Write permissions in the Developer Portal. <strong>Auth issue in demo — needs permissions fix.</strong></p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 11 — WEATHER -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 11</div>
+  <div class="srv-card">
+    <div class="srv-head" style="background:linear-gradient(135deg,#1bbb6e,#27e883);">
+      <div class="srv-icon">🌤️</div>
+      <div>
+        <div>Server 5 — Weather MCP (AccuWeather)</div>
+        <div style="font-size:12px;font-weight:400;opacity:.8;margin-top:3px;">True Remote Server · JSON Config · Real-time weather data</div>
+      </div>
+      <span class="badge remote" style="margin-left:auto;">Remote</span>
+    </div>
+    <div class="srv-body">
+      <p class="bd">The Weather MCP server is a <strong>true remote server</strong> — the server code runs remotely (on a GitHub-hosted location), not on your local machine. It provides real-time weather data via the AccuWeather API.</p>
+      <div class="note nt"><strong>Why this is a true remote server:</strong> The JSON config uses <code>uvx</code> to run a server from a GitHub URL directly. The server code is not cloned to your machine — it's fetched and run from the remote source each time. This is the key difference from the Manim server (which you clone locally) and the Twitter server (which npm installs locally).</div>
+
+      <h3 class="sh">Prerequisites</h3>
+      <div class="g2">
+        <div class="card cg-t">
+          <h4>uv / uvx Tool</h4>
+          <p>A fast Python package runner. Install with: <code>pip install uv</code>. Get the absolute path with <code>which uvx</code> (Mac/Linux) for the JSON config.</p>
+        </div>
+        <div class="card cg-t">
+          <h4>AccuWeather API Key</h4>
+          <p>Sign up at developer.accuweather.com. Free tier is available (~15-day trial with full access, then limited free calls per day). Get your API key from the dashboard.</p>
+        </div>
+      </div>
+
+      <h3 class="sh">JSON Config Template</h3>
+      <div class="code"><pre><span class="key2">"weather"</span>: {
+  <span class="key2">"command"</span>: <span class="path">"/Users/yourname/.local/bin/uvx"</span>,  <span class="cm">// Absolute path to uvx</span>
+  <span class="key2">"args"</span>: [
+    <span class="str">"--from"</span>,
+    <span class="path">"git+https://github.com/someone/weather-mcp-server"</span>,  <span class="cm">// Remote GitHub repo</span>
+    <span class="str">"weather-mcp-server"</span>  <span class="cm">// Package name — runs remotely!</span>
+  ],
+  <span class="key2">"env"</span>: {
+    <span class="key2">"ACCUWEATHER_API_KEY"</span>: <span class="str">"your_accuweather_api_key_here"</span>
+  }
+}
+<span class="cm">// Key insight: the GitHub URL means server code stays remote — not downloaded locally
+// uvx fetches and runs it each time — this IS a true remote server pattern</span></pre></div>
+
+      <div class="note na"><strong>Demo note:</strong> The weather server encountered an API error during the live demo on Nitish's machine. He recommends trying it yourself — if it doesn't work, he'll cover a different working weather MCP server in a future video. The setup process shown is correct even if the demo had issues.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 12 — JSON CONFIG REFERENCE -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 12</div>
+  <h2 class="st">JSON Config File — Complete Reference</h2>
+  <p class="bd">Here is the complete <code>claude_desktop_config.json</code> after adding all 4 servers (plus what connectors add automatically).</p>
+
+  <div class="code"><pre><span class="cm">// Full claude_desktop_config.json with all servers connected</span>
+{
+  <span class="key2">"mcpServers"</span>: {
+
+    <span class="cm">// ── CONNECTOR-ADDED (auto-managed, don't edit manually) ──</span>
+    <span class="key2">"filesystem"</span>: {
+      <span class="cm">// Added automatically by the Filesystem Connector
+      // Connector manages this entry — you only configure allowed directories in the UI</span>
+    },
+    <span class="key2">"drive-search"</span>: {
+      <span class="cm">// Added automatically by the Google Drive Connector
+      // OAuth tokens managed by Anthropic's connector system</span>
+    },
+
+    <span class="cm">// ── MANUALLY ADDED (JSON config method) ──</span>
+    <span class="key2">"manim"</span>: {
+      <span class="key2">"command"</span>: <span class="path">"/usr/local/bin/python3"</span>,
+      <span class="key2">"args"</span>: [<span class="path">"/Users/nitish/Desktop/manim-mcp-server/src/server.py"</span>],
+      <span class="key2">"env"</span>: {
+        <span class="key2">"MANIM_PATH"</span>: <span class="path">"/usr/local/bin/manim"</span>
+      }
+    },
+
+    <span class="key2">"twitter"</span>: {
+      <span class="key2">"command"</span>: <span class="str">"npx"</span>,
+      <span class="key2">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@anthropic-mcp/twitter-server"</span>],
+      <span class="key2">"env"</span>: {
+        <span class="key2">"TWITTER_API_KEY"</span>:            <span class="str">"YOUR_KEY_HERE"</span>,
+        <span class="key2">"TWITTER_API_SECRET"</span>:         <span class="str">"YOUR_SECRET_HERE"</span>,
+        <span class="key2">"TWITTER_ACCESS_TOKEN"</span>:       <span class="str">"YOUR_TOKEN_HERE"</span>,
+        <span class="key2">"TWITTER_ACCESS_TOKEN_SECRET"</span>:<span class="str">"YOUR_TOKEN_SECRET_HERE"</span>
+      }
+    },
+
+    <span class="key2">"weather"</span>: {
+      <span class="key2">"command"</span>: <span class="path">"/Users/nitish/.local/bin/uvx"</span>,
+      <span class="key2">"args"</span>: [
+        <span class="str">"--from"</span>,
+        <span class="path">"git+https://github.com/user/weather-mcp-server"</span>,
+        <span class="str">"weather-mcp-server"</span>
+      ],
+      <span class="key2">"env"</span>: {
+        <span class="key2">"ACCUWEATHER_API_KEY"</span>: <span class="str">"YOUR_ACCUWEATHER_KEY_HERE"</span>
+      }
+    }
+
+  }
+}</pre></div>
+
+  <h3 class="sh">JSON Config Fields Explained</h3>
+  <table class="mtable">
+    <thead><tr><th>Field</th><th>Type</th><th>Meaning</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td>command</td><td>String</td><td>The executable that runs the MCP server. Use ABSOLUTE paths — relative paths often fail.</td><td><code>/usr/local/bin/python3</code>, <code>npx</code>, <code>/path/to/uvx</code></td></tr>
+      <tr><td>args</td><td>Array</td><td>Command-line arguments passed to the command. For local servers: path to the server script. For npm servers: package name.</td><td><code>["/path/to/server.py"]</code>, <code>["-y", "package-name"]</code></td></tr>
+      <tr><td>env</td><td>Object</td><td>Environment variables passed to the server process. Used for API keys, secrets, configuration values.</td><td><code>{"API_KEY": "abc123"}</code></td></tr>
+    </tbody>
+  </table>
+  <div class="note np"><strong>Critical tip — Use absolute paths:</strong> Always use full absolute paths (not <code>python3</code> but <code>/usr/local/bin/python3</code>). Claude Desktop may not have the same PATH environment as your terminal, so relative commands or just executable names often fail to launch the server.</div>
+</div>
+
+<!-- SEC 13 — DISCOVERING MCP SERVERS -->
+<div class="sec alt">
+  <div class="eye"><span class="ed"></span> Section 13</div>
+  <h2 class="st">Discovering New MCP Servers</h2>
+  <p class="bd">How do you find MCP servers for tools you want to integrate? Nitish recommends one primary resource:</p>
+  <div class="srv-card">
+    <div class="srv-head" style="background:linear-gradient(135deg,#1a1a2e,#2d2d5e);">
+      <div class="srv-icon">⭐</div>
+      <div>
+        <div>awesome-mcp-servers on GitHub</div>
+        <div style="font-size:12px;font-weight:400;opacity:.8;margin-top:3px;">The curated community list of MCP servers — searchable by category</div>
+      </div>
+    </div>
+    <div class="srv-body">
+      <p class="bd">Search <strong>"awesome mcp servers"</strong> on Google → find the GitHub repository. This is a community-maintained, always-updated list of MCP servers organized by category.</p>
+      <div class="g4">
+        <div class="card cp-t"><h4>🗄️ Databases</h4><p>PostgreSQL, MySQL, MongoDB, SQLite, Redis, Supabase, and more.</p></div>
+        <div class="card ct-t"><h4>🛠️ Dev Tools</h4><p>GitHub, GitLab, Linear, Jira, VS Code integrations, CI/CD tools.</p></div>
+        <div class="card ca-t"><h4>📱 Productivity</h4><p>Notion, Obsidian, Linear, Slack, Teams, Discord, Telegram.</p></div>
+        <div class="card cb-t"><h4>🌐 Web & API</h4><p>Browser automation, web scraping, REST APIs, weather, maps.</p></div>
+        <div class="card cg-t"><h4>🤖 AI & ML</h4><p>Hugging Face models, image generation, embedding services.</p></div>
+        <div class="card cp-t"><h4>☁️ Cloud</h4><p>AWS, GCP, Azure, Kubernetes, Terraform, deployment tools.</p></div>
+        <div class="card ct-t"><h4>💼 Business</h4><p>Salesforce, HubSpot, Stripe, QuickBooks, Shopify.</p></div>
+        <div class="card ca-t"><h4>📊 Data</h4><p>Spreadsheets, CSV tools, analytics, visualization libraries like Manim.</p></div>
+      </div>
+      <div class="note ng"><strong>How Nitish found the Manim server:</strong> He discovered it on this exact awesome-mcp-servers list. It's a hidden gem that wasn't widely known — and that's the point of the list: surfacing great community-built MCP servers that would otherwise be hard to find.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 14 — KEY TAKEAWAYS -->
+<div class="sec">
+  <div class="eye"><span class="ed"></span> Section 14</div>
+  <h2 class="st">Key Takeaways & What's Next</h2>
+
+  <div class="dbox">
+    <div class="dbox-label">// Summary: The 4 combinations you now know</div>
+    <svg width="100%" viewBox="0 0 680 280" role="img">
+      <title>Summary of four server connection combinations</title>
+      <defs>
+        <marker id="a4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- Matrix headers -->
+      <rect x="10" y="10" width="320" height="40" rx="6" fill="rgba(108,61,232,.15)" stroke="rgba(108,61,232,.4)" stroke-width="1"/>
+      <text x="170" y="36" text-anchor="middle" fill="#6c3de8" font-size="13" font-weight="700">LOCAL SERVER</text>
+      <rect x="350" y="10" width="320" height="40" rx="6" fill="rgba(11,196,168,.15)" stroke="rgba(11,196,168,.4)" stroke-width="1"/>
+      <text x="510" y="36" text-anchor="middle" fill="#0bc4a8" font-size="13" font-weight="700">REMOTE SERVER</text>
+
+      <!-- Row 1: Connector -->
+      <rect x="10" y="60" width="320" height="100" rx="8" fill="rgba(108,61,232,.06)" stroke="rgba(108,61,232,.2)" stroke-width="1"/>
+      <text x="40" y="85" fill="#15122e" font-size="13" font-weight="700">📁 Filesystem</text>
+      <text x="40" y="103" fill="rgba(108,61,232,.7)" font-size="12">Connected via Connector</text>
+      <text x="40" y="120" fill="var(--muted)" font-size="11">One-click install, auto-config</text>
+      <rect x="34" y="130" width="120" height="20" rx="10" fill="rgba(245,166,35,.15)" stroke="rgba(245,166,35,.4)" stroke-width="1"/>
+      <text x="94" y="145" text-anchor="middle" fill="#703d00" font-size="10" font-weight="700">✓ CONNECTOR</text>
+
+      <rect x="350" y="60" width="320" height="100" rx="8" fill="rgba(11,196,168,.06)" stroke="rgba(11,196,168,.2)" stroke-width="1"/>
+      <text x="380" y="85" fill="#15122e" font-size="13" font-weight="700">📂 Google Drive</text>
+      <text x="380" y="103" fill="rgba(11,196,168,.7)" font-size="12">Connected via Connector</text>
+      <text x="380" y="120" fill="var(--muted)" font-size="11">OAuth sign-in, no JSON needed</text>
+      <rect x="374" y="130" width="120" height="20" rx="10" fill="rgba(245,166,35,.15)" stroke="rgba(245,166,35,.4)" stroke-width="1"/>
+      <text x="434" y="145" text-anchor="middle" fill="#703d00" font-size="10" font-weight="700">✓ CONNECTOR</text>
+
+      <!-- CONNECTOR label left -->
+      <text x="0" y="120" fill="rgba(245,166,35,.8)" font-size="11" font-weight="700" transform="rotate(-90,0,120)">CONNECTOR METHOD</text>
+
+      <!-- Row 2: JSON Config -->
+      <rect x="10" y="170" width="320" height="100" rx="8" fill="rgba(45,128,239,.06)" stroke="rgba(45,128,239,.2)" stroke-width="1"/>
+      <text x="40" y="195" fill="#15122e" font-size="13" font-weight="700">🎬 Manim</text>
+      <text x="40" y="213" fill="rgba(45,128,239,.7)" font-size="12">JSON Config (git clone + paths)</text>
+      <text x="40" y="230" fill="var(--muted)" font-size="11">Clone repo, configure Python paths</text>
+      <rect x="34" y="240" width="100" height="20" rx="10" fill="rgba(45,128,239,.15)" stroke="rgba(45,128,239,.4)" stroke-width="1"/>
+      <text x="84" y="255" text-anchor="middle" fill="#0c3880" font-size="10" font-weight="700">JSON CONFIG</text>
+
+      <rect x="350" y="170" width="320" height="100" rx="8" fill="rgba(27,187,110,.06)" stroke="rgba(27,187,110,.2)" stroke-width="1"/>
+      <text x="380" y="195" fill="#15122e" font-size="13" font-weight="700">🌤️ Weather + 🐦 Twitter</text>
+      <text x="380" y="213" fill="rgba(27,187,110,.7)" font-size="12">JSON Config (uvx/npx remote)</text>
+      <text x="380" y="230" fill="var(--muted)" font-size="11">Server code stays on remote source</text>
+      <rect x="374" y="240" width="100" height="20" rx="10" fill="rgba(45,128,239,.15)" stroke="rgba(45,128,239,.4)" stroke-width="1"/>
+      <text x="424" y="255" text-anchor="middle" fill="#0c3880" font-size="10" font-weight="700">JSON CONFIG</text>
+
+      <!-- JSON label left -->
+      <text x="0" y="230" fill="rgba(45,128,239,.8)" font-size="11" font-weight="700" transform="rotate(-90,0,230)">JSON CONFIG METHOD</text>
+    </svg>
+  </div>
+
+  <h3 class="sh">Core Things You Learned</h3>
+  <div class="g2">
+    <div class="card cp-t">
+      <h4>🔌 Two Connection Methods</h4>
+      <p><strong>Connectors</strong> (one-click, for popular SaaS tools, managed by Anthropic) and <strong>JSON Config</strong> (manual editing, for any custom server, managed by you). Both add servers to the same <code>mcpServers</code> JSON object.</p>
+    </div>
+    <div class="card ct-t">
+      <h4>💻 Local vs Remote Servers</h4>
+      <p><strong>Local</strong>: runs on your machine (Filesystem, Manim, Twitter via npm). <strong>Remote</strong>: runs elsewhere — Google Drive (cloud), Weather (remote GitHub repo via uvx). Transport differs: local uses stdio, remote uses HTTP+SSE.</p>
+    </div>
+    <div class="card ca-t">
+      <h4>🔄 Always Restart After Adding</h4>
+      <p>Every time you add or edit an MCP server configuration (via JSON), close and relaunch Claude Desktop. Config is only read on startup.</p>
+    </div>
+    <div class="card cg-t">
+      <h4>🛡️ Security Best Practices</h4>
+      <p>Restrict Filesystem to specific directories. Never give Claude access to your root. Store API keys in the <code>env</code> field of JSON config — not hardcoded in prompts. Delete/rotate API keys after demo videos.</p>
+    </div>
+  </div>
+
+  <h3 class="sh">What's Coming Next in the MCP How Series</h3>
+  <div class="g2">
+    <div class="card cp-t" style="border:2px dashed var(--purple); border-top:2.5px solid var(--purple);">
+      <div style="font-size:28px;margin-bottom:10px;">⚙️</div>
+      <h4>How Part 2 — Build Your Own MCP Server</h4>
+      <p>Still using Claude Desktop as the client, but now you'll build your own custom MCP server from scratch using Python and the MCP SDK. Connect it to Claude Desktop via JSON config and see your custom tools appear.</p>
+    </div>
+    <div class="card ct-t" style="border:2px dashed var(--teal); border-top:2.5px solid var(--teal);">
+      <div style="font-size:28px;margin-bottom:10px;">🔨</div>
+      <h4>How Part 3 — Build Your Own MCP Client</h4>
+      <p>Build both a custom MCP client AND a custom MCP server. Full independence from Claude Desktop — your own client communicates with your own server using the full MCP lifecycle you learned earlier.</p>
+    </div>
+  </div>
+
+  <div class="note nt" style="margin-top:28px;"><strong>Nitish's challenge to you:</strong> After watching this video, go into exploration mode. Install Claude Desktop → think of a workflow you want to automate → find the MCP servers for it on awesome-mcp-servers → connect them → build something. Start with the AI Newsletter workflow he demonstrated earlier (connect Drive + web search + file system to auto-generate a newsletter).</div>
+</div>
+
+<footer>
+  <p>Study guide from <span>CampusX · MCP Trilogy · "The How: Connecting MCP Servers to Claude Desktop"</span></p>
+  <p style="margin-top:8px;color:rgba(255,255,255,.2);">youtube.com/watch?v=y-uPv3ltOTY · Presenter: Nitish · CampusX</p>
+</footer>
+</body>
+</html>
