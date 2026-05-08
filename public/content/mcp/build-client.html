@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How to Build MCP Clients | CampusX</title>
+<title>How to Build MCP Clients</title>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -123,11 +123,10 @@ svg text{font-family:'Manrope',sans-serif;}
 
 <div class="hero">
   <div class="hg1"></div><div class="hg2"></div><div class="hg3"></div><div class="hgrid"></div>
-  <div class="hbadge">▶ CampusX · MCP Trilogy · How to Build MCP Clients</div>
+  <div class="hbadge">▶ MCP Trilogy · How to Build MCP Clients</div>
   <h1>Build Your Own<br><span>MCP Client</span></h1>
   <p class="hdesc">A complete practical guide to building a custom MCP client using <code>langchain-mcp-adapters</code> — connecting to local and remote servers simultaneously, executing the full 6-step tool call flow, and packaging everything as a Streamlit GUI chatbot with three MCP servers attached.</p>
   <div class="hmeta">
-    <div class="hm"><div class="hml">Presenter</div><div class="hmv">Nitish · CampusX</div></div>
     <div class="hm"><div class="hml">Library</div><div class="hmv">langchain-mcp-adapters</div></div>
     <div class="hm"><div class="hml">Servers</div><div class="hmv">Math · Expense Tracker · Manim</div></div>
     <div class="hm"><div class="hml">UI</div><div class="hmv">Streamlit</div></div>
@@ -196,7 +195,7 @@ svg text{font-family:'Manrope',sans-serif;}
 <div class="sec">
   <div class="eye"><span class="ed"></span> Section 02</div>
   <h2 class="sh">Library Choice — langchain-mcp-adapters</h2>
-  <p class="bd">Three options exist for building MCP clients in Python. Nitish evaluated all three and chose <code>langchain-mcp-adapters</code> for the simplest and most practical path.</p>
+  <p class="bd">Three options exist for building MCP clients in Python. All three were evaluated and <code>langchain-mcp-adapters</code> was chosen for the simplest and most practical path.</p>
   <div class="g3">
     <div class="card cp">
       <div class="emo">📘</div>
@@ -226,7 +225,7 @@ svg text{font-family:'Manrope',sans-serif;}
     <div class="card ct">
       <div class="emo">🔢</div>
       <h4>Server 1 — Math MCP</h4>
-      <p><span class="badge bl2">Local</span> <span class="badge bl2">stdio</span><br>Built by Nitish. 6 arithmetic tools: add, subtract, multiply, divide, power, modulo. Runs as a subprocess on your machine.</p>
+      <p><span class="badge bl2">Local</span> <span class="badge bl2">stdio</span><br>Built for this demo. 6 arithmetic tools: add, subtract, multiply, divide, power, modulo. Runs as a subprocess on your machine.</p>
     </div>
     <div class="card cp">
       <div class="emo">💸</div>
@@ -272,7 +271,7 @@ OPENAI_API_KEY=<span class="str">"sk-your-key-here"</span></pre></div>
 <div class="sec alt">
   <div class="eye"><span class="ed"></span> Section 05</div>
   <h2 class="sh">The Math Server (Local) — Preview & Code</h2>
-  <p class="bd">Before building the client, Nitish tests the Math server in MCP Inspector to confirm it runs properly. The server has 6 tools built with fastmcp.</p>
+  <p class="bd">Before building the client, the Math server is tested in MCP Inspector to confirm it runs properly. The server has 6 tools built with fastmcp.</p>
   <div class="code"><pre><span class="cm"># mcp-math-server/main.py</span>
 <span class="kw">from</span> fastmcp <span class="kw">import</span> FastMCP
 
@@ -333,10 +332,10 @@ load_dotenv()
 servers = {
     <span class="str">"math"</span>: {
         <span class="str">"transport"</span>: <span class="str">"stdio"</span>,
-        <span class="str">"command"</span>: <span class="str">"/Users/nitish/.local/bin/uv"</span>,  <span class="cm"># abs path (which uv)</span>
+        <span class="str">"command"</span>: <span class="str">"/usr/local/bin/uv"</span>,  <span class="cm"># abs path (which uv)</span>
         <span class="str">"args"</span>: [
             <span class="str">"run"</span>, <span class="str">"fastmcp"</span>, <span class="str">"run"</span>,
-            <span class="str">"/Users/nitish/Desktop/mcp-math-server/main.py"</span>
+            <span class="str">"/home/user/Desktop/mcp-math-server/main.py"</span>
         ]
     }
 }
@@ -584,7 +583,7 @@ servers = {
 <div class="sec alt">
   <div class="eye"><span class="ed"></span> Section 11</div>
   <h2 class="sh">Adding Manim (Third-Party Community Server)</h2>
-  <p class="bd">Nitish adds the Manim server specifically to prove a point: <em>any</em> community MCP server — one you've never written — works with the exact same pattern.</p>
+  <p class="bd">The Manim server is added specifically to prove a point: <em>any</em> community MCP server — one you've never written — works with the exact same pattern.</p>
 
   <div class="sblock">
     <div class="sbh" style="background:linear-gradient(135deg,#e87a00,#f59e0b);">
@@ -837,12 +836,11 @@ llm    = ChatOpenAI().bind_tools(tools)      <span class="cm"># LLM sees all too
     </tbody>
   </table>
 
-  <div class="note nt" style="margin-top:24px;"><strong>What Nitish is doing next:</strong> Returning to the LangGraph playlist (which has been pending even longer than this video delay). The MCP advanced topics (Authentication, Sessions, Sampling, Elicitation) will be covered later. The Auth video is especially important — it solves the multi-user data isolation flaw identified in the remote server video. Nitish started MCP specifically because LangGraph needed it as a foundation.</div>
+  <div class="note nt" style="margin-top:24px;"><strong>What's next:</strong> Returning to the LangGraph playlist (which has been pending even longer than this video delay). The MCP advanced topics (Authentication, Sessions, Sampling, Elicitation) will be covered later. The Auth video is especially important — it solves the multi-user data isolation flaw identified in the remote server video. MCP was started specifically because LangGraph needed it as a foundation.</div>
 </div>
 
 <footer>
-  <p>Study guide from <span>CampusX · MCP Series · "How to Build MCP Clients"</span></p>
-  <p style="margin-top:8px;color:rgba(255,255,255,.2);">youtube.com/watch?v=o4ajsc-tSBc · Presenter: Nitish · CampusX</p>
+  <p>Study guide from <span>MCP Series · "How to Build MCP Clients"</span></p>
 </footer>
 </body>
 </html>

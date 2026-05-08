@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The MCP Lifecycle | CampusX MCP Trilogy</title>
+<title>The MCP Lifecycle | MCP Trilogy</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -166,11 +166,10 @@
   <div class="cover-glow2"></div>
   <div class="cover-ring r1"></div>
   <div class="cover-ring r2"></div>
-  <div class="cover-badge">▶ CampusX · MCP Trilogy · Video 2.2 of 3</div>
+  <div class="cover-badge">▶ MCP Trilogy · Video 2.2 of 3</div>
   <h1>The MCP<br><span class="ac">Lifecycle</span></h1>
   <p class="cover-desc">A complete study guide covering how an MCP session works from start to finish — Initialization handshake, Capability discovery, Normal Operation, and Shutdown — plus special cases: Pings, Error Handling, Timeouts, and Progress Notifications.</p>
   <div class="cover-meta">
-    <div class="cm"><div class="cm-l">Presenter</div><div class="cm-v">Nitish · CampusX</div></div>
     <div class="cm"><div class="cm-l">Topic</div><div class="cm-v">MCP Session Lifecycle</div></div>
     <div class="cm"><div class="cm-l">3 Main Phases</div><div class="cm-v">Init → Operation → Shutdown</div></div>
     <div class="cm"><div class="cm-l">Live Demo</div><div class="cm-v">Claude Desktop + Filesystem MCP</div></div>
@@ -280,7 +279,7 @@
           <p>Client sends a notification (no ID — fire and forget) called "notifications/initialized". No reply needed. Once server receives this, the session is LIVE and normal operations begin.</p>
         </div></div>
       </div>
-      <h3 class="sh">Actual JSON-RPC Messages (from Nitish's live demo)</h3>
+      <h3 class="sh">Actual JSON-RPC Messages (from the live demo)</h3>
       <div class="g2">
         <div>
           <p style="font-size:12px;color:var(--muted);margin-bottom:6px;">→ STEP 1: Client initialize request</p>
@@ -640,7 +639,7 @@
   <div class="pb">
     <div class="ph ph-s"><div class="pn">3</div>Phase 3 — Shutdown</div>
     <div class="pb-body">
-      <p class="bd">The session is terminated. <strong>No JSON-RPC messages are exchanged</strong> — confirmed by Nitish's live demo which showed only "Server Transport Closed" in logs, with zero JSON-RPC messages. The transport layer handles everything.</p>
+      <p class="bd">The session is terminated. <strong>No JSON-RPC messages are exchanged</strong> — confirmed by the live demo which showed only "Server Transport Closed" in logs, with zero JSON-RPC messages. The transport layer handles everything.</p>
       <h3 class="sh">Shutdown for Local Servers (stdio)</h3>
       <div class="cmp">
         <div class="cc ci"><h4>Client-Initiated (Most Common)</h4>
@@ -957,8 +956,7 @@
 </div>
 
 <footer>
-  <p>Study guide from <span>CampusX · MCP Trilogy · "The MCP Lifecycle"</span></p>
-  <p style="margin-top:8px;color:rgba(255,255,255,0.2);">youtube.com/watch?v=sBHeMcxupmE · Presenter: Nitish · CampusX</p>
+  <p>Study guide from <span>MCP Trilogy · "The MCP Lifecycle"</span></p>
 </footer>
 </body>
 </html>

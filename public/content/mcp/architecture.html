@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MCP Architecture | Model Context Protocol | CampusX</title>
+<title>MCP Architecture | Model Context Protocol</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -285,11 +285,10 @@
   <div class="cover-dots"></div>
   <div class="cover-blob1"></div>
   <div class="cover-blob2"></div>
-  <div class="cover-chip">▶ CampusX · MCP Trilogy · Video 2 of 3</div>
+  <div class="cover-chip">▶ MCP Trilogy · Video 2 of 3</div>
   <h1>MCP <span class="hl">Architecture</span><br>Deep Dive</h1>
   <p class="cover-sub">A complete technical study guide covering the full MCP architecture — from Host/Client/Server relationships through Primitives, JSON-RPC 2.0 Data Layer, and dual Transport mechanisms (stdio & HTTP+SSE).</p>
   <div class="cover-row">
-    <div class="cover-stat"><div class="cs-label">Presenter</div><div class="cs-val">Nitish · CampusX</div></div>
     <div class="cover-stat"><div class="cs-label">Video</div><div class="cs-val">The What — Architecture (2.1/3)</div></div>
     <div class="cover-stat"><div class="cs-label">Key Concepts</div><div class="cs-val">Host · Client · Server · Primitives</div></div>
     <div class="cover-stat"><div class="cs-label">Technical Layer</div><div class="cs-val">JSON-RPC 2.0 · stdio · HTTP+SSE</div></div>
@@ -323,7 +322,7 @@
 <div class="sec">
   <div class="eye"><span class="eye-dot"></span> Section 01</div>
   <h2 class="st">The Simplest MCP Architecture</h2>
-  <p class="bd">The architecture of MCP begins with just two entities. Everything else is built on top of this foundation. Nitish starts from first principles and gradually adds detail throughout the video.</p>
+  <p class="bd">The architecture of MCP begins with just two entities. Everything else is built on top of this foundation. Starting from first principles, detail is gradually added throughout the video.</p>
 
   <div class="g2">
     <div class="card v-t">
@@ -741,7 +740,7 @@
   </table>
 
   <h3 class="sh">The Prompts Primitive — Detailed Example</h3>
-  <p class="bd">Prompts are the trickiest to understand. Here's how Nitish explains them with a concrete scenario:</p>
+  <p class="bd">Prompts are the trickiest to understand. Here's how the concept is explained with a concrete scenario:</p>
 
   <div class="g2">
     <div class="card r-t">
@@ -865,7 +864,7 @@
   <span class="key2">"params"</span>: {
     <span class="key2">"name"</span>: <span class="str">"list_issues"</span>,
     <span class="key2">"arguments"</span>: {
-      <span class="key2">"owner"</span>: <span class="str">"campusx"</span>,
+      <span class="key2">"owner"</span>: <span class="str">"demo-user"</span>,
       <span class="key2">"repo"</span>: <span class="str">"mcp-demo"</span>
     }
   }
@@ -899,7 +898,7 @@
   <span class="key2">"params"</span>: {
     <span class="key2">"name"</span>: <span class="str">"list_issues"</span>,
     <span class="key2">"arguments"</span>: {
-      <span class="key2">"owner"</span>: <span class="str">"campusx"</span>
+      <span class="key2">"owner"</span>: <span class="str">"demo-user"</span>
       <span class="cm">// Missing: "repo" field!</span>
     }
   }
@@ -951,8 +950,8 @@
   <span class="cm">// No "id" field — this is a notification, not a request</span>
   <span class="key2">"method"</span>: <span class="str">"notifications/resources/updated"</span>,
   <span class="key2">"params"</span>: {
-    <span class="key2">"uri"</span>: <span class="str">"github://campusx/mcp-demo/README.md"</span>,
-    <span class="key2">"updated_by"</span>: <span class="str">"nitish"</span>,
+    <span class="key2">"uri"</span>: <span class="str">"github://demo-user/mcp-demo/README.md"</span>,
+    <span class="key2">"updated_by"</span>: <span class="str">"user"</span>,
     <span class="key2">"updated_at"</span>: <span class="str">"2025-04-20T10:30:00Z"</span>
   }
 }
@@ -983,7 +982,7 @@
 <div class="sec">
   <div class="eye"><span class="eye-dot"></span> Section 11</div>
   <h2 class="st">Why JSON-RPC over REST API? (5 Reasons)</h2>
-  <p class="bd">REST API could theoretically do the same job (fetching data from remote machines). Nitish explains exactly why Anthropic chose JSON-RPC 2.0 instead — and why this choice was architecturally brilliant.</p>
+  <p class="bd">REST API could theoretically do the same job (fetching data from remote machines). Here is exactly why Anthropic chose JSON-RPC 2.0 instead — and why this choice was architecturally brilliant.</p>
 
   <div class="reasons">
     <div class="reason-row">
@@ -1052,15 +1051,15 @@
   </div>
 
   <h3 class="sh">Live Demo Confirmed — Both Types in Action</h3>
-  <p class="bd">Nitish demonstrates both server types live on Claude Desktop:</p>
+  <p class="bd">Both server types are demonstrated live on Claude Desktop:</p>
   <div class="g2">
     <div class="card" style="border-left: 3px solid var(--violet);">
       <h4>Local Server Demo — File System</h4>
-      <p>Query: "Is there a Python file on my Desktop?"<br>→ Claude uses the local filesystem MCP server<br>→ Scans the actual Desktop folder on Nitish's laptop<br>→ Returns: "No Python file found" (one was found on second try: hello.py)<br><br><em style="color:var(--muted); font-size:12px;">This MUST be local — it reads private computer files that a remote server could never access.</em></p>
+      <p>Query: "Is there a Python file on my Desktop?"<br>→ Claude uses the local filesystem MCP server<br>→ Scans the actual Desktop folder on the local machine<br>→ Returns: "No Python file found" (one was found on second try: hello.py)<br><br><em style="color:var(--muted); font-size:12px;">This MUST be local — it reads private computer files that a remote server could never access.</em></p>
     </div>
     <div class="card" style="border-left: 3px solid var(--teal);">
       <h4>Remote Server Demo — GitHub</h4>
-      <p>Query: "List my top 5 most starred repositories"<br>→ Claude uses the GitHub remote MCP server<br>→ Queries the GitHub API over the internet<br>→ Returns: Top 5 repos with star counts<br><br><em style="color:var(--muted); font-size:12px;">This is remote — GitHub's servers are in the cloud, not on Nitish's laptop.</em></p>
+      <p>Query: "List my top 5 most starred repositories"<br>→ Claude uses the GitHub remote MCP server<br>→ Queries the GitHub API over the internet<br>→ Returns: Top 5 repos with star counts<br><br><em style="color:var(--muted); font-size:12px;">This is remote — GitHub's servers are in the cloud, not on the local machine.</em></p>
     </div>
   </div>
 </div>
@@ -1172,7 +1171,7 @@
 
   <h3 class="sh">Demo Proof — Hello.py Analogy</h3>
   <div class="note a">
-    <strong>Nitish's insight:</strong> When you run <code>python3 hello.py</code> in a terminal and type a name when prompted, you're already doing all 3 stdio steps: (1) Terminal launches Python as a subprocess, (2) Your keyboard input goes via stdin, (3) "Hello Nitish!" appears via stdout. This is EXACTLY how Claude Desktop communicates with local MCP servers — just with JSON-RPC messages instead of names.
+    <strong>Key insight:</strong> When you run <code>python3 hello.py</code> in a terminal and type a name when prompted, you're already doing all 3 stdio steps: (1) Terminal launches Python as a subprocess, (2) Your keyboard input goes via stdin, (3) "Hello World!" appears via stdout. This is EXACTLY how Claude Desktop communicates with local MCP servers — just with JSON-RPC messages instead of names.
   </div>
 </div>
 
@@ -1226,7 +1225,7 @@ data: {"jsonrpc":"2.0","id":1,"result":{"repos":[{"name":"repo1"...</span>}
 <div class="sec">
   <div class="eye"><span class="eye-dot"></span> Section 15</div>
   <h2 class="st">Complete MCP Architecture Diagram</h2>
-  <p class="bd">This is the full architecture as presented by Nitish at the end of the video — built layer by layer through the lecture. Every component, relationship, and communication pathway in one unified view.</p>
+  <p class="bd">This is the full architecture as presented at the end of the video — built layer by layer through the lecture. Every component, relationship, and communication pathway in one unified view.</p>
 
   <div class="dbox">
     <div class="dbox-label">// Complete MCP Architecture — All layers: Host, Clients, Servers, Primitives, Data Layer, Transport Layer</div>
@@ -1390,8 +1389,7 @@ data: {"jsonrpc":"2.0","id":1,"result":{"repos":[{"name":"repo1"...</span>}
 </div>
 
 <footer>
-  <p>Study guide generated from <span>CampusX · MCP Trilogy · "MCP Architecture" video</span></p>
-  <p style="margin-top:8px; color: rgba(255,255,255,0.2);">youtube.com/watch?v=nQa31xdXbGk · Presenter: Nitish · Channel: CampusX</p>
+  <p>Study guide generated from <span>MCP Trilogy · "MCP Architecture" video</span></p>
 </footer>
 
 </body>

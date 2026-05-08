@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MCP: The How — Connecting Servers to Claude Desktop | CampusX</title>
+<title>MCP: The How — Connecting Servers to Claude Desktop</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -181,11 +181,10 @@ svg text{font-family:'Sora',sans-serif;}
 <!-- COVER -->
 <div class="cover">
   <div class="c-glow1"></div><div class="c-glow2"></div><div class="c-grid"></div>
-  <div class="c-badge">▶ CampusX · MCP Trilogy · The How — Part 1 of 3</div>
+  <div class="c-badge">▶ MCP Trilogy · The How — Part 1 of 3</div>
   <h1>Connecting MCP Servers<br>to <span class="ac">Claude Desktop</span></h1>
   <p class="cover-desc">A practical, step-by-step guide to connecting Claude Desktop to 4 real MCP servers — Filesystem, Manim, Google Drive, and Twitter/X — covering both Connectors (one-click) and JSON config file approaches, local and remote servers.</p>
   <div class="cover-meta">
-    <div class="cm"><div class="cm-l">Presenter</div><div class="cm-v">Nitish · CampusX</div></div>
     <div class="cm"><div class="cm-l">Type</div><div class="cm-v">Hands-on Practical Demo</div></div>
     <div class="cm"><div class="cm-l">4 Servers</div><div class="cm-v">Filesystem · Manim · Drive · Twitter</div></div>
     <div class="cm"><div class="cm-l">Methods</div><div class="cm-v">Connectors + JSON Config</div></div>
@@ -574,7 +573,7 @@ svg text{font-family:'Sora',sans-serif;}
           <p>Query: "Write a Fibonacci numbers code in Python, then save the first version as a .py file on my Desktop."<br><br>Result: Claude generated 3 versions of Fibonacci code, then used the <code>write_file</code> tool to create and save <code>fibonacci.py</code> directly on the Desktop.</p>
         </div>
       </div>
-      <h3 class="sh">Creative Use Cases Nitish Suggests</h3>
+      <h3 class="sh">Creative Use Cases</h3>
       <div class="g3">
         <div class="card cp-t"><h4>Organize Downloads Folder</h4><p>Point Filesystem at your chaotic Downloads folder and ask Claude to organize everything into logical subfolders by file type, date, or project.</p></div>
         <div class="card cp-t"><h4>Summarize Code Projects</h4><p>Add your project directory and ask Claude to give you a quick summary of what the codebase does, what files exist, and how it's structured.</p></div>
@@ -599,7 +598,7 @@ svg text{font-family:'Sora',sans-serif;}
     </div>
     <div class="srv-body">
       <p class="bd"><strong>Manim</strong> is the Python library used by the famous <em>3Blue1Brown</em> YouTube channel to create stunning mathematical visualizations. The Manim MCP server lets Claude generate these animations from plain English prompts.</p>
-      <div class="note nb"><strong>The 3Blue1Brown connection:</strong> 3Blue1Brown makes complex math beautiful through animated visualizations. Nitish discovered they use Manim to code every visualization manually — a very hard skill. This MCP server removes that barrier: describe what you want in English → get a professional math animation video.</div>
+      <div class="note nb"><strong>The 3Blue1Brown connection:</strong> 3Blue1Brown makes complex math beautiful through animated visualizations. They use Manim to code every visualization manually — a very hard skill. This MCP server removes that barrier: describe what you want in English → get a professional math animation video.</div>
 
       <h3 class="sh">Prerequisites</h3>
       <div class="g3">
@@ -607,7 +606,7 @@ svg text{font-family:'Sora',sans-serif;}
         <div class="card cb-t"><h4>Manim Library</h4><p>Install with: <code>pip install manim</code></p></div>
         <div class="card cb-t"><h4>MCP Library</h4><p>Install with: <code>pip install mcp</code></p></div>
       </div>
-      <div class="note na"><strong>Optional — LaTeX:</strong> For perfect mathematical symbols (∫, Σ, matrices), install LaTeX (~10–15 GB). Without it, Manim will use fallback rendering — symbols may not look as polished. Nitish recommends skipping LaTeX unless you specifically need perfect symbols.</div>
+      <div class="note na"><strong>Optional — LaTeX:</strong> For perfect mathematical symbols (∫, Σ, matrices), install LaTeX (~10–15 GB). Without it, Manim will use fallback rendering — symbols may not look as polished. Recommended to skip LaTeX unless you specifically need perfect symbols.</div>
 
       <h3 class="sh">Setup Steps (JSON Config Method)</h3>
       <div class="sl">
@@ -668,7 +667,7 @@ Show the new transformed vectors. Add the title 'Linear Transformation'."</span>
 //    - The grid morphing/rotating per the transformation matrix
 //    - New vectors i' and j' after transformation</span></pre></div>
       </div>
-      <div class="note nt"><strong>Nitish's personal recommendation:</strong> He's been using this MCP server for ~1.5 months. Whenever he encounters a difficult concept in ML/DL, he: (1) goes to Claude/ChatGPT and asks it to write a Manim prompt for that concept, (2) pastes the prompt into Claude Desktop with Manim connected, (3) gets a visualization video in minutes. His learning output has improved significantly since using this workflow.</div>
+      <div class="note nt"><strong>Recommendation:</strong> This MCP server has been in use for ~1.5 months. Whenever a difficult concept in ML/DL comes up: (1) ask Claude/ChatGPT to write a Manim prompt for that concept, (2) paste the prompt into Claude Desktop with Manim connected, (3) get a visualization video in minutes. Learning output has improved significantly with this workflow.</div>
     </div>
   </div>
 </div>
@@ -739,7 +738,7 @@ Show the new transformed vectors. Add the title 'Linear Transformation'."</span>
     </div>
     <div class="srv-body">
       <p class="bd">The Twitter/X MCP server lets Claude read and post tweets. It runs locally on your machine (installed via npm behind the scenes) and connects to the Twitter API using your developer credentials.</p>
-      <div class="note na"><strong>Correction noted by Nitish:</strong> He initially planned to present this as a "remote" server, but discovered mid-video that it's actually a local server — the JSON config runs an <code>npx</code> command which installs and runs the server locally via npm. This is an important architectural detail.</div>
+      <div class="note na"><strong>Correction noted:</strong> Initially planned as a "remote" server, but discovered mid-video that it's actually a local server — the JSON config runs an <code>npx</code> command which installs and runs the server locally via npm. This is an important architectural detail.</div>
 
       <h3 class="sh">Prerequisites</h3>
       <div class="g2">
@@ -847,7 +846,7 @@ Show the new transformed vectors. Add the title 'Linear Transformation'."</span>
 <span class="cm">// Key insight: the GitHub URL means server code stays remote — not downloaded locally
 // uvx fetches and runs it each time — this IS a true remote server pattern</span></pre></div>
 
-      <div class="note na"><strong>Demo note:</strong> The weather server encountered an API error during the live demo on Nitish's machine. He recommends trying it yourself — if it doesn't work, he'll cover a different working weather MCP server in a future video. The setup process shown is correct even if the demo had issues.</div>
+      <div class="note na"><strong>Demo note:</strong> The weather server encountered an API error during the live demo. Try it yourself — if it doesn't work, a different working weather MCP server will be covered in a future video. The setup process shown is correct even if the demo had issues.</div>
     </div>
   </div>
 </div>
@@ -875,7 +874,7 @@ Show the new transformed vectors. Add the title 'Linear Transformation'."</span>
     <span class="cm">// ── MANUALLY ADDED (JSON config method) ──</span>
     <span class="key2">"manim"</span>: {
       <span class="key2">"command"</span>: <span class="path">"/usr/local/bin/python3"</span>,
-      <span class="key2">"args"</span>: [<span class="path">"/Users/nitish/Desktop/manim-mcp-server/src/server.py"</span>],
+      <span class="key2">"args"</span>: [<span class="path">"/home/user/Desktop/manim-mcp-server/src/server.py"</span>],
       <span class="key2">"env"</span>: {
         <span class="key2">"MANIM_PATH"</span>: <span class="path">"/usr/local/bin/manim"</span>
       }
@@ -893,7 +892,7 @@ Show the new transformed vectors. Add the title 'Linear Transformation'."</span>
     },
 
     <span class="key2">"weather"</span>: {
-      <span class="key2">"command"</span>: <span class="path">"/Users/nitish/.local/bin/uvx"</span>,
+      <span class="key2">"command"</span>: <span class="path">"/usr/local/bin/uvx"</span>,
       <span class="key2">"args"</span>: [
         <span class="str">"--from"</span>,
         <span class="path">"git+https://github.com/user/weather-mcp-server"</span>,
@@ -923,7 +922,7 @@ Show the new transformed vectors. Add the title 'Linear Transformation'."</span>
 <div class="sec alt">
   <div class="eye"><span class="ed"></span> Section 13</div>
   <h2 class="st">Discovering New MCP Servers</h2>
-  <p class="bd">How do you find MCP servers for tools you want to integrate? Nitish recommends one primary resource:</p>
+  <p class="bd">How do you find MCP servers for tools you want to integrate? One primary resource is recommended:</p>
   <div class="srv-card">
     <div class="srv-head" style="background:linear-gradient(135deg,#1a1a2e,#2d2d5e);">
       <div class="srv-icon">⭐</div>
@@ -944,7 +943,7 @@ Show the new transformed vectors. Add the title 'Linear Transformation'."</span>
         <div class="card ct-t"><h4>💼 Business</h4><p>Salesforce, HubSpot, Stripe, QuickBooks, Shopify.</p></div>
         <div class="card ca-t"><h4>📊 Data</h4><p>Spreadsheets, CSV tools, analytics, visualization libraries like Manim.</p></div>
       </div>
-      <div class="note ng"><strong>How Nitish found the Manim server:</strong> He discovered it on this exact awesome-mcp-servers list. It's a hidden gem that wasn't widely known — and that's the point of the list: surfacing great community-built MCP servers that would otherwise be hard to find.</div>
+      <div class="note ng"><strong>How the Manim server was found:</strong> It was discovered on this exact awesome-mcp-servers list. It's a hidden gem that wasn't widely known — and that's the point of the list: surfacing great community-built MCP servers that would otherwise be hard to find.</div>
     </div>
   </div>
 </div>
@@ -1042,12 +1041,11 @@ Show the new transformed vectors. Add the title 'Linear Transformation'."</span>
     </div>
   </div>
 
-  <div class="note nt" style="margin-top:28px;"><strong>Nitish's challenge to you:</strong> After watching this video, go into exploration mode. Install Claude Desktop → think of a workflow you want to automate → find the MCP servers for it on awesome-mcp-servers → connect them → build something. Start with the AI Newsletter workflow he demonstrated earlier (connect Drive + web search + file system to auto-generate a newsletter).</div>
+  <div class="note nt" style="margin-top:28px;"><strong>Challenge:</strong> After watching this video, go into exploration mode. Install Claude Desktop → think of a workflow you want to automate → find the MCP servers for it on awesome-mcp-servers → connect them → build something. Start with the AI Newsletter workflow demonstrated earlier (connect Drive + web search + file system to auto-generate a newsletter).</div>
 </div>
 
 <footer>
-  <p>Study guide from <span>CampusX · MCP Trilogy · "The How: Connecting MCP Servers to Claude Desktop"</span></p>
-  <p style="margin-top:8px;color:rgba(255,255,255,.2);">youtube.com/watch?v=y-uPv3ltOTY · Presenter: Nitish · CampusX</p>
+  <p>Study guide from <span>MCP Trilogy · "The How: Connecting MCP Servers to Claude Desktop"</span></p>
 </footer>
 </body>
 </html>

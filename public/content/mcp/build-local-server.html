@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How to Build Local MCP Servers | CampusX</title>
+<title>How to Build Local MCP Servers</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -177,11 +177,10 @@ svg text{font-family:'DM Sans',sans-serif;}
 <!-- COVER -->
 <div class="cover">
   <div class="cg1"></div><div class="cg2"></div><div class="cg3"></div><div class="cgrid"></div>
-  <div class="c-badge">▶ CampusX · MCP Series · How to Build Local MCP Servers</div>
+  <div class="c-badge">▶ MCP Series · How to Build Local MCP Servers</div>
   <h1>Build Your Own<br><span class="ac">Local MCP Server</span></h1>
   <p class="cover-desc">A complete hands-on guide to building a local MCP server from scratch using fastmcp — covering the MCP library ecosystem, a demo server, and an incremental Expense Tracker MCP server with Tools, Resources, and SQLite integration.</p>
   <div class="cover-meta">
-    <div class="cm"><div class="cm-l">Presenter</div><div class="cm-v">Nitish · CampusX</div></div>
     <div class="cm"><div class="cm-l">Library</div><div class="cm-v">fastmcp 2.0</div></div>
     <div class="cm"><div class="cm-l">Project Built</div><div class="cm-v">Expense Tracker MCP Server</div></div>
     <div class="cm"><div class="cm-l">Database</div><div class="cm-v">SQLite (sqlite3)</div></div>
@@ -262,7 +261,7 @@ svg text{font-family:'DM Sans',sans-serif;}
 <div class="sec">
   <div class="eye"><span class="ed"></span> Section 02</div>
   <h2 class="st">MCP Library Ecosystem — The Full Chronological Story</h2>
-  <p class="bd">Nitish spends 5 minutes clarifying a common confusion: why do two different libraries exist for building MCP servers? Here's the complete story in order.</p>
+  <p class="bd">About 5 minutes are spent clarifying a common confusion: why do two different libraries exist for building MCP servers? Here's the complete story in order.</p>
 
   <div class="timeline">
     <div class="tli">
@@ -279,7 +278,7 @@ svg text{font-family:'DM Sans',sans-serif;}
     </div>
     <div class="tli">
       <div class="tli-head">2025 — fastmcp goes independent as fastmcp 2.0</div>
-      <div class="tli-sub">fastmcp's creator realizes there's so much more potential beyond the MCP spec. The official SDK focuses strictly on the spec. They diverge: <code>pip install fastmcp</code> now installs the independent <strong>fastmcp 2.0</strong> (more features), while <code>pip install mcp[cli]</code> still includes fastmcp 1.0 inside the SDK. Today you can use either — but Nitish recommends fastmcp 2.0.</div>
+      <div class="tli-sub">fastmcp's creator realizes there's so much more potential beyond the MCP spec. The official SDK focuses strictly on the spec. They diverge: <code>pip install fastmcp</code> now installs the independent <strong>fastmcp 2.0</strong> (more features), while <code>pip install mcp[cli]</code> still includes fastmcp 1.0 inside the SDK. Today you can use either — but fastmcp 2.0 is recommended.</div>
     </div>
   </div>
 
@@ -363,7 +362,7 @@ mcp = FastMCP(<span class="str">"demo-server"</span>)
     <thead><tr><th>Command</th><th>What You Get</th><th>fastmcp Version</th><th>Recommended?</th></tr></thead>
     <tbody>
       <tr><td>pip install mcp[cli]</td><td>Official MCP SDK + fastmcp 1.0 inside it</td><td>1.0 (bundled)</td><td>Works, but older</td></tr>
-      <tr><td>pip install fastmcp</td><td>Standalone fastmcp 2.0 (independent library)</td><td>2.0 (latest)</td><td>✓ Nitish recommends this</td></tr>
+      <tr><td>pip install fastmcp</td><td>Standalone fastmcp 2.0 (independent library)</td><td>2.0 (latest)</td><td>✓ Recommended</td></tr>
       <tr><td>uv add fastmcp</td><td>Same as above but using uv package manager</td><td>2.0 (latest)</td><td>✓ Used in this video</td></tr>
     </tbody>
   </table>
@@ -434,7 +433,7 @@ mcp = FastMCP(<span class="str">"demo-server"</span>)
     </svg>
   </div>
 
-  <div class="note ng"><strong>Nitish's prediction:</strong> Just like Flask became THE way to build Python backends (even though WSGI is the spec), fastmcp will become THE way to build MCP servers. Developer-friendly abstractions win. That's why this entire video uses fastmcp 2.0.</div>
+  <div class="note ng"><strong>Prediction:</strong> Just like Flask became THE way to build Python backends (even though WSGI is the spec), fastmcp will become THE way to build MCP servers. Developer-friendly abstractions win. That's why this entire video uses fastmcp 2.0.</div>
 </div>
 
 <!-- SEC 5 — SETUP -->
@@ -451,7 +450,7 @@ mcp = FastMCP(<span class="str">"demo-server"</span>)
     </div></div>
     <div class="si"><div class="sn">02</div><div class="sb">
       <h5>Create a new project folder</h5>
-      <p>Create an empty folder anywhere on your machine (Nitish uses Desktop). Name it something descriptive like <code>expense-tracker-mcp-server</code>. Open it in VS Code.</p>
+      <p>Create an empty folder anywhere on your machine (e.g. Desktop). Name it something descriptive like <code>expense-tracker-mcp-server</code>. Open it in VS Code.</p>
     </div></div>
     <div class="si"><div class="sn">03</div><div class="sb">
       <h5>Initialize uv in the project folder</h5>
@@ -632,7 +631,7 @@ mcp = FastMCP(<span class="str">"demo-server"</span>)
 # → JSON-RPC: { "method": "tools/call", "params": {...} }
 # ← Response: { "result": { "content": [{ "text": "11" }] } }</span></pre></div>
 
-  <div class="note ng"><strong>Nitish's recommendation:</strong> Always test your server with MCP Inspector BEFORE adding it to Claude Desktop. It's much faster to catch issues here. Inspector is to MCP servers what Postman is to REST APIs.</div>
+  <div class="note ng"><strong>Recommendation:</strong> Always test your server with MCP Inspector BEFORE adding it to Claude Desktop. It's much faster to catch issues here. Inspector is to MCP servers what Postman is to REST APIs.</div>
 </div>
 
 <!-- SEC 8 — INTEGRATING WITH CLAUDE DESKTOP -->
@@ -672,7 +671,7 @@ mcp = FastMCP(<span class="str">"demo-server"</span>)
     </div>
   </div>
 
-  <div class="note nr"><strong>Common issue — absolute paths:</strong> After running the install command, Claude Desktop may fail to connect. The reason: the config file writes just <code>uv</code> as the command, but Claude Desktop can't find it without the full path. Fix: run <code>which uv</code> (Mac/Linux) or <code>where uv</code> (Windows) to get the absolute path. Edit the config file and replace <code>uv</code> with the full path like <code>/Users/nitish/.local/bin/uv</code>. Save → close → restart Claude Desktop.</div>
+  <div class="note nr"><strong>Common issue — absolute paths:</strong> After running the install command, Claude Desktop may fail to connect. The reason: the config file writes just <code>uv</code> as the command, but Claude Desktop can't find it without the full path. Fix: run <code>which uv</code> (Mac/Linux) or <code>where uv</code> (Windows) to get the absolute path. Edit the config file and replace <code>uv</code> with the full path like <code>/usr/local/bin/uv</code>. Save → close → restart Claude Desktop.</div>
 
   <h3 class="sh">Full Integration Workflow</h3>
   <div class="dbox">
@@ -1132,8 +1131,7 @@ mcp = FastMCP.from_fastapi(app, name=<span class="str">"expense-tracker-mcp"</sp
 </div>
 
 <footer>
-  <p>Study guide from <span>CampusX · MCP Series · "How to Build Local MCP Servers"</span></p>
-  <p style="margin-top:8px;color:rgba(255,255,255,.2);">youtube.com/watch?v=tc2oOznpdE0 · Presenter: Nitish · CampusX</p>
+  <p>Study guide from <span>MCP Series · "How to Build Local MCP Servers"</span></p>
 </footer>
 </body>
 </html>
