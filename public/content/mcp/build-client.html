@@ -117,6 +117,12 @@ p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
 footer{background:#080520;color:rgba(255,255,255,.32);text-align:center;padding:36px 72px;font-size:13px;}
 footer span{color:#c0acff;}
 svg text{font-family:'Manrope',sans-serif;}
+
+html.dark{
+  --bg:#0e0b22;--surface:#161228;--border:#2a2448;--border2:#3a3060;
+  --text:#e4e0ff;--text2:#c0b8f0;--muted:#9088c8;--dim:#504870;
+  --pp:#1e1640;--tealp:#0a2228;--orp:#201808;--redp:#200a10;--blp:#0a1828;--grp:#0a2018;
+}
 </style>
 </head>
 <body>
@@ -842,5 +848,19 @@ llm    = ChatOpenAI().bind_tools(tools)      <span class="cm"># LLM sees all too
 <footer>
   <p>Study guide from <span>MCP Series · "How to Build MCP Clients"</span></p>
 </footer>
+<script>
+(function(){
+  function applyTheme(t){
+    document.documentElement.classList.toggle('dark',t==='dark');
+  }
+  try{ applyTheme(localStorage.getItem('theme')||'light'); }catch(e){}
+  window.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='set-theme'){
+      try{ localStorage.setItem('theme',e.data.theme); }catch(e2){}
+      applyTheme(e.data.theme);
+    }
+  });
+})();
+</script>
 </body>
 </html>

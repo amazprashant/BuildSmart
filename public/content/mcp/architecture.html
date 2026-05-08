@@ -276,6 +276,18 @@
   footer span { color: var(--violet-light); }
 
   svg text { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+html:not(.dark){
+  --bg:#f5f4ff;--surface:#ffffff;--card:#f8f7ff;--border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.18);
+  --text:#1a1830;--muted:#5a5880;--dim:#9a98b8;
+  --violet:#6040e8;--violet-light:#8060f0;--violet-dim:rgba(96,64,232,.12);
+  --teal:#0aafb0;--teal-dim:rgba(10,175,176,.12);
+  --amber:#c07818;--amber-dim:rgba(192,120,24,.12);
+  --coral:#d04050;--coral-dim:rgba(208,64,80,.12);
+  --green:#18a060;--green-dim:rgba(24,160,96,.12);
+  --blue:#2880d8;--blue-dim:rgba(40,128,216,.12);
+}
+html:not(.dark) body{background:#f5f4ff;color:#1a1830;}
 </style>
 </head>
 <body>
@@ -1392,5 +1404,19 @@ data: {"jsonrpc":"2.0","id":1,"result":{"repos":[{"name":"repo1"...</span>}
   <p>Study guide generated from <span>MCP Trilogy · "MCP Architecture" video</span></p>
 </footer>
 
+<script>
+(function(){
+  function applyTheme(t){
+    document.documentElement.classList.toggle('dark',t==='dark');
+  }
+  try{ applyTheme(localStorage.getItem('theme')||'light'); }catch(e){}
+  window.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='set-theme'){
+      try{ localStorage.setItem('theme',e.data.theme); }catch(e2){}
+      applyTheme(e.data.theme);
+    }
+  });
+})();
+</script>
 </body>
 </html>

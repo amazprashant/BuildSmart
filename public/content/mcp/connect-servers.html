@@ -174,6 +174,12 @@ p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
 footer{background:#0e0c2a;color:rgba(255,255,255,.35);text-align:center;padding:36px 72px;font-size:13px;}
 footer span{color:#b8a0ff;}
 svg text{font-family:'Sora',sans-serif;}
+
+html.dark{
+  --bg:#0c0a1e;--surface:#141228;--card:#1a1630;--border:#2a2448;--border2:#3a3060;
+  --text:#e4e0ff;--text2:#c0b8f5;--muted:#9088c8;--dim:#504870;
+  --purple-p:#1e1640;--teal-p:#0a2228;--amber-p:#201808;--red-p:#200a12;--blue-p:#0a1828;--green-p:#0a2018;
+}
 </style>
 </head>
 <body>
@@ -1047,5 +1053,19 @@ Show the new transformed vectors. Add the title 'Linear Transformation'."</span>
 <footer>
   <p>Study guide from <span>MCP Trilogy · "The How: Connecting MCP Servers to Claude Desktop"</span></p>
 </footer>
+<script>
+(function(){
+  function applyTheme(t){
+    document.documentElement.classList.toggle('dark',t==='dark');
+  }
+  try{ applyTheme(localStorage.getItem('theme')||'light'); }catch(e){}
+  window.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='set-theme'){
+      try{ localStorage.setItem('theme',e.data.theme); }catch(e2){}
+      applyTheme(e.data.theme);
+    }
+  });
+})();
+</script>
 </body>
 </html>

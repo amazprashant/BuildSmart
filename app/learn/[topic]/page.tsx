@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { TOPICS, getTopicBySlug } from "@/lib/topics";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface Props {
   params: { topic: string };
@@ -26,35 +27,38 @@ export default function TopicPage({ params }: Props) {
   }, 0);
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-950 text-gray-900 dark:text-white">
       {/* ── Nav ── */}
-      <header className="sticky top-0 z-50 bg-gray-900/80 backdrop-blur border-b border-gray-800">
-        <div className="max-w-5xl mx-auto px-6 h-14 flex items-center gap-2 text-sm">
-          <Link href="/" className="text-gray-400 hover:text-white transition-colors font-medium">
-            LearnHub
-          </Link>
-          <span className="text-gray-700">/</span>
-          <span className="text-white font-medium">{topic.shortTitle}</span>
+      <header className="sticky top-0 z-50 bg-white/90 dark:bg-gray-900/80 backdrop-blur border-b border-slate-200 dark:border-gray-800">
+        <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between text-sm">
+          <div className="flex items-center gap-2">
+            <Link href="/" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors font-medium">
+              LearnHub
+            </Link>
+            <span className="text-slate-300 dark:text-gray-700">/</span>
+            <span className="text-gray-900 dark:text-white font-medium">{topic.shortTitle}</span>
+          </div>
+          <ThemeToggle />
         </div>
       </header>
 
       {/* ── Topic Header ── */}
-      <section className="py-16 px-6 border-b border-gray-800">
+      <section className="py-16 px-6 border-b border-slate-200 dark:border-gray-800">
         <div className="max-w-3xl mx-auto">
           <div className="text-5xl mb-5">{topic.icon}</div>
-          <h1 className="text-4xl font-bold mb-3">{topic.title}</h1>
-          <p className="text-xl text-gray-400 leading-relaxed mb-6 max-w-2xl">
+          <h1 className="text-4xl font-bold mb-3 text-gray-900 dark:text-white">{topic.title}</h1>
+          <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed mb-6 max-w-2xl">
             {topic.description}
           </p>
-          <div className="flex items-center gap-5 text-sm text-gray-500">
+          <div className="flex items-center gap-5 text-sm text-gray-500 dark:text-gray-500">
             <span>
-              <strong className="text-gray-300">{topic.lessons.length}</strong> lessons
+              <strong className="text-gray-800 dark:text-gray-300">{topic.lessons.length}</strong> lessons
             </span>
-            <span className="text-gray-700">|</span>
+            <span className="text-slate-300 dark:text-gray-700">|</span>
             <span>
-              <strong className="text-gray-300">~{totalMins} min</strong> total
+              <strong className="text-gray-800 dark:text-gray-300">~{totalMins} min</strong> total
             </span>
-            <span className="text-gray-700">|</span>
+            <span className="text-slate-300 dark:text-gray-700">|</span>
             <span>Beginner → Advanced</span>
           </div>
         </div>
@@ -62,7 +66,7 @@ export default function TopicPage({ params }: Props) {
 
       {/* ── Lessons List ── */}
       <section className="max-w-3xl mx-auto px-6 py-12">
-        <h2 className="text-sm font-semibold uppercase tracking-widest text-gray-500 mb-6">
+        <h2 className="text-sm font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-500 mb-6">
           Lessons
         </h2>
         <div className="space-y-3">
@@ -70,26 +74,26 @@ export default function TopicPage({ params }: Props) {
             <Link
               key={lesson.slug}
               href={`/learn/${topic.slug}/${lesson.slug}`}
-              className="group flex items-center gap-4 bg-gray-900 border border-gray-800 rounded-xl p-4 hover:border-blue-700/50 hover:shadow-lg hover:shadow-blue-950/20 transition-all"
+              className="group flex items-center gap-4 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-4 hover:border-blue-400/50 dark:hover:border-blue-700/50 hover:shadow-md hover:shadow-blue-100/50 dark:hover:shadow-blue-950/20 transition-all"
             >
-              <div className="w-10 h-10 rounded-full bg-blue-950 border border-blue-800/60 flex items-center justify-center text-blue-300 font-bold text-sm flex-shrink-0">
+              <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800/60 flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold text-sm flex-shrink-0">
                 {index + 1}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-white font-semibold group-hover:text-blue-300 transition-colors">
+                <div className="text-gray-900 dark:text-white font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
                   {lesson.title}
                 </div>
-                <div className="text-gray-500 text-sm mt-0.5 truncate">
+                <div className="text-gray-500 dark:text-gray-500 text-sm mt-0.5 truncate">
                   {lesson.description}
                 </div>
               </div>
               <div className="flex items-center gap-4 flex-shrink-0">
                 {lesson.duration && (
-                  <span className="text-xs text-gray-600 hidden sm:inline">
+                  <span className="text-xs text-gray-400 dark:text-gray-600 hidden sm:inline">
                     {lesson.duration}
                   </span>
                 )}
-                <span className="text-gray-600 group-hover:text-blue-400 group-hover:translate-x-1 transition-all inline-block">
+                <span className="text-gray-400 dark:text-gray-600 group-hover:text-blue-500 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all inline-block">
                   →
                 </span>
               </div>

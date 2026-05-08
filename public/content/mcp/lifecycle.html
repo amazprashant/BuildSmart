@@ -156,6 +156,12 @@
   footer{background:#12102a;color:rgba(255,255,255,0.35);text-align:center;padding:36px 72px;font-size:13px;}
   footer span{color:#a89aff;}
   svg text{font-family:'Inter',sans-serif;}
+
+html.dark{
+  --bg:#0f0d20;--surface:#16132a;--card:#1e1a36;--border:#2a2448;--border2:#3a3460;
+  --text:#e2deff;--text2:#c0b8f0;--muted:#9088c8;--dim:#504870;
+  --indigo-pale:#1e1640;--cyan-pale:#0a2228;--emerald-pale:#0a2018;--amber-pale:#201808;--rose-pale:#200a10;--violet-pale:#1a1030;
+}
 </style>
 </head>
 <body>
@@ -958,5 +964,19 @@
 <footer>
   <p>Study guide from <span>MCP Trilogy · "The MCP Lifecycle"</span></p>
 </footer>
+<script>
+(function(){
+  function applyTheme(t){
+    document.documentElement.classList.toggle('dark',t==='dark');
+  }
+  try{ applyTheme(localStorage.getItem('theme')||'light'); }catch(e){}
+  window.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='set-theme'){
+      try{ localStorage.setItem('theme',e.data.theme); }catch(e2){}
+      applyTheme(e.data.theme);
+    }
+  });
+})();
+</script>
 </body>
 </html>

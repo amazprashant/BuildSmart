@@ -170,6 +170,12 @@ p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
 footer{background:#0c0a20;color:rgba(255,255,255,.35);text-align:center;padding:36px 72px;font-size:13px;}
 footer span{color:#b0a0ff;}
 svg text{font-family:'DM Sans',sans-serif;}
+
+html.dark{
+  --bg:#0d0a20;--surface:#15122a;--card:#1c1836;--border:#2a2448;--border2:#3a3060;
+  --text:#e4e0ff;--text2:#c0b8f0;--muted:#9088c8;--dim:#504870;
+  --p-pale:#1e1640;--g-pale:#0a2218;--o-pale:#201808;--r-pale:#200a10;--b-pale:#0a1828;--y-pale:#1e1800;
+}
 </style>
 </head>
 <body>
@@ -1133,5 +1139,19 @@ mcp = FastMCP.from_fastapi(app, name=<span class="str">"expense-tracker-mcp"</sp
 <footer>
   <p>Study guide from <span>MCP Series · "How to Build Local MCP Servers"</span></p>
 </footer>
+<script>
+(function(){
+  function applyTheme(t){
+    document.documentElement.classList.toggle('dark',t==='dark');
+  }
+  try{ applyTheme(localStorage.getItem('theme')||'light'); }catch(e){}
+  window.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='set-theme'){
+      try{ localStorage.setItem('theme',e.data.theme); }catch(e2){}
+      applyTheme(e.data.theme);
+    }
+  });
+})();
+</script>
 </body>
 </html>

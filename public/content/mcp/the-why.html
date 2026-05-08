@@ -345,6 +345,13 @@
 
   /* ── SVG SHARED ── */
   text { font-family: 'Sora', sans-serif; }
+
+html.dark{
+  --ink:#ddd8ff;--ink2:#bab5e8;--muted:#9088c8;--border:#2a2448;--surface:#1a1630;--white:#201c3a;
+  --purple-light:#251a50;--teal-light:#0a2e28;--amber-light:#2a1e08;--red-light:#2a1010;--green-light:#0a2a18;--blue-light:#0a1828;
+}
+html.dark body{background:#141228;color:#ddd8ff;}
+html.dark .cover{background:#0d0d10!important;}
 </style>
 </head>
 <body>
@@ -1294,5 +1301,19 @@
   <p>Study guide generated from <span>MCP Trilogy · Video 1 "The Why"</span></p>
 </footer>
 
+<script>
+(function(){
+  function applyTheme(t){
+    document.documentElement.classList.toggle('dark',t==='dark');
+  }
+  try{ applyTheme(localStorage.getItem('theme')||'light'); }catch(e){}
+  window.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='set-theme'){
+      try{ localStorage.setItem('theme',e.data.theme); }catch(e2){}
+      applyTheme(e.data.theme);
+    }
+  });
+})();
+</script>
 </body>
 </html>

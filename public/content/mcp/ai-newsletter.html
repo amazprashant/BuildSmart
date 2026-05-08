@@ -272,6 +272,23 @@
     font-size: 13px;
   }
   footer span { color: #7F77DD; }
+
+html.dark body{background:#141228!important;color:#ddd8ff!important;}
+html.dark .toc{background:#1e1a36!important;border-color:#4a40a0!important;}
+html.dark .toc h2,html.dark .toc h3{color:#e2deff!important;}
+html.dark .toc li,html.dark .toc a{color:#c0b8f0!important;}
+html.dark .section{background:#141228!important;color:#ddd8ff!important;}
+html.dark .section h2,html.dark .section h3,html.dark .section h4{color:#e2deff!important;}
+html.dark .section p,html.dark .section li{color:#c0b8f0!important;}
+html.dark .card,html.dark .box,html.dark .highlight,html.dark .callout,html.dark .note,html.dark .tip,html.dark .warning,html.dark .info{background:#1e1a36!important;border-color:#3a3460!important;color:#c0b8f0!important;}
+html.dark table{background:#1e1a36!important;}
+html.dark th{background:#2a2448!important;color:#e2deff!important;border-color:#3a3460!important;}
+html.dark td{background:#1e1a36!important;color:#c0b8f0!important;border-color:#2a2448!important;}
+html.dark code,html.dark pre{background:#0d0a20!important;color:#a0d8ff!important;border-color:#2a2448!important;}
+html.dark h1,html.dark h2,html.dark h3,html.dark h4,html.dark h5{color:#e2deff!important;}
+html.dark p,html.dark li,html.dark span:not([class*="badge"]):not([class*="tag"]):not([class*="label"]){color:#c0b8f0;}
+html.dark a:not([class]){color:#7c70f0!important;}
+html.dark hr{border-color:#2a2448!important;}
 </style>
 </head>
 <body>
@@ -1110,5 +1127,19 @@
   <p style="margin-top:6px;">Topics covered: Model Context Protocol, Claude Desktop, AI Automation</p>
 </footer>
 
+<script>
+(function(){
+  function applyTheme(t){
+    document.documentElement.classList.toggle('dark',t==='dark');
+  }
+  try{ applyTheme(localStorage.getItem('theme')||'light'); }catch(e){}
+  window.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='set-theme'){
+      try{ localStorage.setItem('theme',e.data.theme); }catch(e2){}
+      applyTheme(e.data.theme);
+    }
+  });
+})();
+</script>
 </body>
 </html>
