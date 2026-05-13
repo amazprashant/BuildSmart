@@ -6,7 +6,7 @@
 <title>Model Context Protocol — AI Newsletter Automation</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: Arial, sans-serif; background: #f5f5f0; color: #1a1a18; line-height: 1.7; }
+  body { font-family: Arial, sans-serif; background: #f7f7f7; color: #1a1a18; line-height: 1.7; }
 
   .cover {
     background: linear-gradient(135deg, #1a1040 0%, #2d1b6e 50%, #1a3a5c 100%);
@@ -49,7 +49,7 @@
     border-radius: 0 12px 12px 0;
     box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   }
-  .toc h2 { font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #534AB7; margin-bottom: 20px; }
+  .toc h2 { font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #4a4a5a; margin-bottom: 20px; }
   .toc ol { padding-left: 20px; }
   .toc li { padding: 5px 0; font-size: 15px; color: #3a3a38; }
   .toc li strong { color: #1a1a18; }
@@ -59,7 +59,7 @@
   .section-label {
     display: inline-flex; align-items: center; gap: 8px;
     font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-    color: #7F77DD; margin-bottom: 12px;
+    color: #6b6b7b; margin-bottom: 12px;
   }
   .section-label .num {
     width: 22px; height: 22px;
@@ -68,8 +68,8 @@
     font-size: 11px;
   }
   h2.section-title { font-size: 30px; font-weight: 800; color: #1a1a18; margin-bottom: 16px; }
-  h3.subsection { font-size: 20px; font-weight: 700; color: #2d1b6e; margin: 32px 0 12px; }
-  p { font-size: 15px; color: #3d3d3a; margin-bottom: 14px; }
+  h3.subsection { font-size: 20px; font-weight: 700; color: #2d2d3a; margin: 32px 0 12px; }
+  p { font-size: 15px; color: #3a3a3a; margin-bottom: 14px; }
 
   .highlight-box {
     background: #eeedfe;
@@ -78,7 +78,7 @@
     border-radius: 0 8px 8px 0;
     margin: 22px 0;
   }
-  .highlight-box strong { color: #26215C; }
+  .highlight-box strong { color: #2a2a3a; }
 
   .info-box {
     background: #e1f5ee;
@@ -118,8 +118,8 @@
   }
   .newsletter-table tbody tr:nth-child(even) { background: #f8f7fd; }
   .newsletter-table tbody tr:hover { background: #eeedfe; }
-  .newsletter-table td { padding: 12px 16px; border-bottom: 1px solid #e8e6e0; color: #3d3d3a; }
-  .newsletter-table td:first-child { font-weight: 600; color: #534AB7; white-space: nowrap; }
+  .newsletter-table td { padding: 12px 16px; border-bottom: 1px solid #e8e6e0; color: #3a3a3a; }
+  .newsletter-table td:first-child { font-weight: 600; color: #4a4a5a; white-space: nowrap; }
 
   /* Tools grid */
   .tools-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 24px 0; }
@@ -131,11 +131,11 @@
     text-align: center;
     font-size: 13px;
     font-weight: 600;
-    color: #3d3d3a;
+    color: #3a3a3a;
     transition: all 0.2s;
   }
   .tool-chip .tool-icon { font-size: 22px; display: block; margin-bottom: 6px; }
-  .tool-chip.active { border-color: #534AB7; color: #26215C; background: #eeedfe; }
+  .tool-chip.active { border-color: #4a4a5a; color: #2a2a3a; background: #eeedfe; }
 
   /* Phase steps */
   .phase-block {
@@ -174,7 +174,7 @@
   .phase-step-dot.research { background: #534AB7; }
   .phase-step-dot.editing  { background: #0F6E56; }
   .phase-step-dot.design   { background: #854F0B; }
-  .phase-step p { margin: 0; font-size: 14px; color: #3d3d3a; }
+  .phase-step p { margin: 0; font-size: 14px; color: #3a3a3a; }
   .phase-step strong { color: #1a1a18; }
 
   /* Output files */
@@ -260,7 +260,7 @@
   .trilogy-card .vid-num { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7; margin-bottom: 8px; }
   .trilogy-card h4 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
   .trilogy-card p { font-size: 13px; margin: 0; opacity: 0.85; }
-  .trilogy-card.vid1 h4 { color: #26215C; }
+  .trilogy-card.vid1 h4 { color: #2a2a3a; }
   .trilogy-card.vid2 h4 { color: #04342C; }
   .trilogy-card.vid3 h4 { color: #412402; }
 
@@ -271,23 +271,23 @@
     padding: 28px;
     font-size: 13px;
   }
-  footer span { color: #7F77DD; }
+  footer span { color: #6b6b7b; }
 
 html.dark body{background:#141228!important;color:#ddd8ff!important;}
 html.dark .toc{background:#1e1a36!important;border-color:#4a40a0!important;}
-html.dark .toc h2,html.dark .toc h3{color:#e2deff!important;}
-html.dark .toc li,html.dark .toc a{color:#c0b8f0!important;}
+html.dark .toc h2,html.dark .toc h3{color:#e0e0e8!important;}
+html.dark .toc li,html.dark .toc a{color:#b8b8c8!important;}
 html.dark .section{background:#141228!important;color:#ddd8ff!important;}
-html.dark .section h2,html.dark .section h3,html.dark .section h4{color:#e2deff!important;}
-html.dark .section p,html.dark .section li{color:#c0b8f0!important;}
+html.dark .section h2,html.dark .section h3,html.dark .section h4{color:#e0e0e8!important;}
+html.dark .section p,html.dark .section li{color:#b8b8c8!important;}
 html.dark .card,html.dark .box,html.dark .highlight,html.dark .callout,html.dark .note,html.dark .tip,html.dark .warning,html.dark .info{background:#1e1a36!important;border-color:#3a3460!important;color:#c0b8f0!important;}
 html.dark table{background:#1e1a36!important;}
 html.dark th{background:#2a2448!important;color:#e2deff!important;border-color:#3a3460!important;}
 html.dark td{background:#1e1a36!important;color:#c0b8f0!important;border-color:#2a2448!important;}
 html.dark code,html.dark pre{background:#0d0a20!important;color:#a0d8ff!important;border-color:#2a2448!important;}
-html.dark h1,html.dark h2,html.dark h3,html.dark h4,html.dark h5{color:#e2deff!important;}
-html.dark p,html.dark li,html.dark span:not([class*="badge"]):not([class*="tag"]):not([class*="label"]){color:#c0b8f0;}
-html.dark a:not([class]){color:#7c70f0!important;}
+html.dark h1,html.dark h2,html.dark h3,html.dark h4,html.dark h5{color:#e0e0e8!important;}
+html.dark p,html.dark li,html.dark span:not([class*="badge"]):not([class*="tag"]):not([class*="label"]){color:#b8b8c8;}
+html.dark a:not([class]){color:#9090b0!important;}
 html.dark hr{border-color:#2a2448!important;}
 </style>
 </head>
@@ -478,52 +478,52 @@ html.dark hr{border-color:#2a2448!important;}
     <div class="tool-chip active">
       <span class="tool-icon">🤖</span>
       Claude Desktop
-      <br><small style="color:#534AB7;font-weight:400">Core AI Engine</small>
+      <br><small style="color:#4a4a5a;font-weight:400">Core AI Engine</small>
     </div>
     <div class="tool-chip active">
       <span class="tool-icon">🔍</span>
       Web Search
-      <br><small style="color:#534AB7;font-weight:400">News scraping</small>
+      <br><small style="color:#4a4a5a;font-weight:400">News scraping</small>
     </div>
     <div class="tool-chip active">
       <span class="tool-icon">📁</span>
       Google Drive
-      <br><small style="color:#534AB7;font-weight:400">Templates & data</small>
+      <br><small style="color:#4a4a5a;font-weight:400">Templates & data</small>
     </div>
     <div class="tool-chip active">
       <span class="tool-icon">📧</span>
       Gmail
-      <br><small style="color:#534AB7;font-weight:400">Feedback emails</small>
+      <br><small style="color:#4a4a5a;font-weight:400">Feedback emails</small>
     </div>
     <div class="tool-chip active">
       <span class="tool-icon">📅</span>
       Google Calendar
-      <br><small style="color:#534AB7;font-weight:400">Scheduling</small>
+      <br><small style="color:#4a4a5a;font-weight:400">Scheduling</small>
     </div>
     <div class="tool-chip active">
       <span class="tool-icon">📄</span>
       arXiv
-      <br><small style="color:#534AB7;font-weight:400">Research papers</small>
+      <br><small style="color:#4a4a5a;font-weight:400">Research papers</small>
     </div>
     <div class="tool-chip active">
       <span class="tool-icon">🐙</span>
       GitHub
-      <br><small style="color:#534AB7;font-weight:400">Trending repos</small>
+      <br><small style="color:#4a4a5a;font-weight:400">Trending repos</small>
     </div>
     <div class="tool-chip active">
       <span class="tool-icon">🚀</span>
       Product Hunt
-      <br><small style="color:#534AB7;font-weight:400">New AI products</small>
+      <br><small style="color:#4a4a5a;font-weight:400">New AI products</small>
     </div>
     <div class="tool-chip active">
       <span class="tool-icon">🐦</span>
       Twitter / X
-      <br><small style="color:#534AB7;font-weight:400">Trending opinions</small>
+      <br><small style="color:#4a4a5a;font-weight:400">Trending opinions</small>
     </div>
     <div class="tool-chip active">
       <span class="tool-icon">💻</span>
       Local File System
-      <br><small style="color:#534AB7;font-weight:400">Save outputs</small>
+      <br><small style="color:#4a4a5a;font-weight:400">Save outputs</small>
     </div>
     <div class="tool-chip active">
       <span class="tool-icon">🎨</span>
@@ -533,7 +533,7 @@ html.dark hr{border-color:#2a2448!important;}
     <div class="tool-chip active">
       <span class="tool-icon">📓</span>
       Notion
-      <br><small style="color:#534AB7;font-weight:400">Available</small>
+      <br><small style="color:#4a4a5a;font-weight:400">Available</small>
     </div>
   </div>
 

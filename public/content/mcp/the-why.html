@@ -8,10 +8,10 @@
 <style>
   :root {
     --ink: #0d0d10;
-    --ink2: #2a2a35;
-    --muted: #6b6b7a;
-    --border: #e2e0f0;
-    --surface: #f7f6fc;
+    --ink2: #2a2a2a;
+    --muted: #6b6b6b;
+    --border: #e5e5e5;
+    --surface: #f7f7f7;
     --white: #ffffff;
     --purple: #5b3ef5;
     --purple-light: #ede9fe;
@@ -132,7 +132,7 @@
   .toc-item:last-child { border-bottom: none; }
   .toc-num {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; color: var(--purple);
+    font-size: 11px; color: var(--muted);
     font-weight: 600; min-width: 28px;
   }
 
@@ -144,12 +144,12 @@
     display: inline-flex; align-items: center; gap: 8px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase;
-    color: var(--purple); margin-bottom: 14px;
+    color: var(--muted); margin-bottom: 14px;
   }
-  .sec-eyebrow .dot { width: 6px; height: 6px; background: var(--purple); border-radius: 50%; }
+  .sec-eyebrow .dot { width: 6px; height: 6px; background: var(--muted); border-radius: 50%; }
   h2.sec-title { font-size: 32px; font-weight: 800; color: var(--ink); margin-bottom: 18px; line-height: 1.2; }
   h3.sub { font-size: 20px; font-weight: 700; color: var(--ink); margin: 36px 0 12px; }
-  p.body { font-size: 15px; color: #3a3a4a; margin-bottom: 14px; line-height: 1.8; }
+  p.body { font-size: 15px; color: #3a3a3a; margin-bottom: 14px; line-height: 1.8; }
 
   /* ── CALLOUTS ── */
   .callout {
@@ -173,7 +173,7 @@
   .tl-year {
     font-family: 'JetBrains Mono', monospace;
     font-size: 13px; font-weight: 600;
-    color: var(--purple); text-align: right;
+    color: var(--muted); text-align: right;
     padding-top: 16px; line-height: 1.4;
   }
   .tl-spine {
@@ -218,7 +218,7 @@
   .card-icon { font-size: 26px; margin-bottom: 12px; }
   .card-num {
     font-family: 'JetBrains Mono', monospace; font-size: 28px;
-    font-weight: 700; color: var(--purple); margin-bottom: 4px;
+    font-weight: 700; color: var(--ink2); margin-bottom: 4px;
   }
 
   /* ── PROBLEM vs SOLUTION ── */
@@ -347,7 +347,7 @@
   text { font-family: 'Sora', sans-serif; }
 
 html.dark{
-  --ink:#ddd8ff;--ink2:#bab5e8;--muted:#9088c8;--border:#2a2448;--surface:#1a1630;--white:#201c3a;
+  --ink:#e8e8ec;--ink2:#b8b8c8;--muted:#8a8a9a;--border:#2a2448;--surface:#1a1a26;--white:#201c3a;
   --purple-light:#251a50;--teal-light:#0a2e28;--amber-light:#2a1e08;--red-light:#2a1010;--green-light:#0a2a18;--blue-light:#0a1828;
 }
 html.dark body{background:#141228;color:#ddd8ff;}

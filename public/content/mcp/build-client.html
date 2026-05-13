@@ -7,8 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f0eeff;--surface:#fff;--border:#dbd5ff;--border2:#c5bbff;
-  --text:#0e0828;--text2:#2e2458;--muted:#6a62a0;--dim:#afa8cc;
+  --bg:#f7f7f7;--surface:#fff;--border:#e5e5e5;--border2:#d0d0d0;
+  --text:#1a1a1a;--text2:#3a3a3a;--muted:#6b6b6b;--dim:#a0a0a0;
   --p:#4c1fe8;--pl:#7752f0;--pp:#ede9ff;--pm:rgba(76,31,232,.1);
   --teal:#00b8a0;--tealp:#e0faf6;--tealm:rgba(0,184,160,.1);
   --or:#e87a00;--orp:#fff3e0;
@@ -49,11 +49,11 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);lin
 .te{display:flex;align-items:center;gap:14px;padding:11px 24px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);font-size:13.5px;color:var(--text2);}
 .te:nth-child(even){border-right:none;}
 .te:last-child,.te:nth-last-child(2){border-bottom:none;}
-.tnm{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--p);font-weight:600;min-width:28px;}
+.tnm{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);font-weight:600;min-width:28px;} 
 .sec{padding:60px 72px;border-bottom:1px solid var(--border);}
 .sec.alt{background:var(--surface);}
-.eye{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--p);margin-bottom:12px;}
-.ed{width:5px;height:5px;background:var(--p);border-radius:50%;}
+.eye{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.ed{width:5px;height:5px;background:var(--muted);border-radius:50%;}
 h2.sh{font-size:31px;font-weight:800;color:var(--text);margin-bottom:14px;line-height:1.2;letter-spacing:-.5px;}
 h3.ss{font-size:19px;font-weight:700;color:var(--text);margin:30px 0 12px;}
 p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
@@ -87,14 +87,14 @@ p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
 .steps{display:flex;flex-direction:column;}
 .stp{display:grid;grid-template-columns:56px 1fr;border-bottom:1px solid var(--border);}
 .stp:last-child{border-bottom:none;}
-.sn{display:flex;align-items:flex-start;justify-content:center;padding-top:18px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--p);}
+.sn{display:flex;align-items:flex-start;justify-content:center;padding-top:18px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--muted);}
 .sb{padding:16px 6px 16px 0;}
 .sb h5{font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px;}
 .sb p{font-size:13.5px;color:var(--muted);margin:0;line-height:1.65;}
 .cmp{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-radius:14px;overflow:hidden;margin:24px 0;}
 .cl{background:var(--surface);padding:26px;}
 .cl h4{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
-.cl.c1 h4{color:var(--p);}
+.cl.c1 h4{color:var(--text2);}
 .cl.c2 h4{color:var(--teal);}
 .cr2{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--muted);}
 .cr2:last-child{border-bottom:none;}
@@ -108,14 +108,14 @@ p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
 .tbl tbody tr{border-bottom:1px solid var(--border);}
 .tbl tbody tr:hover{background:var(--pp);}
 .tbl td{padding:12px 16px;color:var(--text2);vertical-align:top;}
-.tbl td:first-child{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--p);font-weight:600;}
+.tbl td:first-child{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text2);font-weight:600;}
 .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
 .bl2{background:var(--pp);color:var(--p);}
 .bt2{background:var(--tealp);color:var(--teal);}
 .bo2{background:var(--orp);color:var(--or);}
 .bg2{background:var(--grp);color:var(--gr);}
 footer{background:#080520;color:rgba(255,255,255,.32);text-align:center;padding:36px 72px;font-size:13px;}
-footer span{color:#c0acff;}
+footer span{color:rgba(255,255,255,.5);}
 svg text{font-family:'Manrope',sans-serif;}
 
 html.dark{

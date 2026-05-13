@@ -7,8 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f9f8ff;--surface:#fff;--card:#fff;--border:#e2defd;--border2:#c8c2fc;
-  --text:#160f30;--text2:#3b3462;--muted:#7870a0;--dim:#b4b0d0;
+  --bg:#f8f8f8;--surface:#fff;--card:#fff;--border:#e5e5e5;--border2:#d0d0d0;
+  --text:#1a1a1a;--text2:#3a3a3a;--muted:#6b6b6b;--dim:#a0a0a0;
   --p:#5c30e8;--p-l:#8060f5;--p-pale:#f2efff;--p-m:rgba(92,48,232,.1);
   --g:#00c48a;--g-pale:#e6fdf5;--g-m:rgba(0,196,138,.1);
   --o:#ff8c00;--o-pale:#fff5e6;--o-m:rgba(255,140,0,.1);
@@ -69,13 +69,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);lin
 .te{display:flex;align-items:center;gap:14px;padding:12px 24px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);font-size:13.5px;color:var(--text2);}
 .te:nth-child(even){border-right:none;}
 .te:last-child,.te:nth-last-child(2){border-bottom:none;}
-.tn{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--p);font-weight:600;min-width:28px;}
+.tn{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);font-weight:600;min-width:28px;}
 
 /* SECTIONS */
 .sec{padding:60px 72px;border-bottom:1px solid var(--border);}
 .sec.alt{background:var(--surface);}
-.eye{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--p);margin-bottom:12px;}
-.ed{width:5px;height:5px;background:var(--p);border-radius:50%;}
+.eye{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.ed{width:5px;height:5px;background:var(--muted);border-radius:50%;}
 h2.st{font-size:32px;font-weight:800;color:var(--text);margin-bottom:14px;line-height:1.2;letter-spacing:-.5px;}
 h3.sh{font-size:19px;font-weight:700;color:var(--text);margin:30px 0 12px;}
 p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
@@ -119,7 +119,7 @@ p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
 .sl{display:flex;flex-direction:column;gap:0;}
 .si{display:grid;grid-template-columns:52px 1fr;border-bottom:1px solid var(--border);}
 .si:last-child{border-bottom:none;}
-.sn{display:flex;align-items:flex-start;justify-content:center;padding-top:18px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--p);}
+.sn{display:flex;align-items:flex-start;justify-content:center;padding-top:18px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--muted);}
 .sb{padding:16px 4px 16px 0;}
 .sb h5{font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px;}
 .sb p{font-size:13.5px;color:var(--muted);margin:0;line-height:1.65;}
@@ -139,7 +139,7 @@ p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
 .cmp{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-radius:14px;overflow:hidden;margin:24px 0;}
 .cc{background:var(--surface);padding:26px;}
 .cc h4{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
-.cc.c1 h4{color:var(--p);}
+.cc.c1 h4{color:var(--text2);}
 .cc.c2 h4{color:var(--g);}
 .crow{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--muted);}
 .crow:last-child{border-bottom:none;}
@@ -150,7 +150,7 @@ p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
 .vtable tbody tr{border-bottom:1px solid var(--border);}
 .vtable tbody tr:hover{background:var(--p-pale);}
 .vtable td{padding:12px 16px;color:var(--text2);vertical-align:top;}
-.vtable td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--p);font-weight:600;}
+.vtable td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2);font-weight:600;}
 .vtable td:nth-child(2){font-weight:600;color:var(--text);}
 
 /* FEATURE CARD */
@@ -168,7 +168,7 @@ p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
 .iter.v4{background:rgba(255,140,0,.12);color:var(--o);}
 
 footer{background:#0c0a20;color:rgba(255,255,255,.35);text-align:center;padding:36px 72px;font-size:13px;}
-footer span{color:#b0a0ff;}
+footer span{color:rgba(255,255,255,.5);}
 svg text{font-family:'DM Sans',sans-serif;}
 
 html.dark{

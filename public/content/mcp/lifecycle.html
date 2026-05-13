@@ -7,8 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:#f8f7ff;--surface:#fff;--card:#fff;--border:#e8e4ff;--border2:#d4ceff;
-    --text:#1a1730;--text2:#3d3860;--muted:#7a76a0;--dim:#b8b4d8;
+    --bg:#f8f8f8;--surface:#fff;--card:#fff;--border:#e5e5e5;--border2:#d0d0d0;
+    --text:#1a1a1a;--text2:#3a3a3a;--muted:#6b6b6b;--dim:#a0a0a0;
     --indigo:#4f35e8;--indigo-light:#7c65f5;--indigo-pale:#f0eeff;
     --cyan:#00b4cc;--cyan-pale:#e6faff;
     --emerald:#10b981;--emerald-pale:#ecfdf5;
@@ -60,13 +60,13 @@
   .te{display:flex;align-items:center;gap:14px;padding:12px 24px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);font-size:13.5px;color:var(--text2);}
   .te:nth-child(even){border-right:none;}
   .te:last-child,.te:nth-last-child(2){border-bottom:none;}
-  .tn{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--indigo);font-weight:600;min-width:28px;}
+  .tn{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);font-weight:600;min-width:28px;}
 
   /* SECTIONS */
   .sec{padding:64px 72px;border-bottom:1px solid var(--border);}
   .sec.alt{background:var(--surface);}
-  .eye{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--indigo);margin-bottom:12px;}
-  .ed{width:5px;height:5px;background:var(--indigo);border-radius:50%;}
+  .eye{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+  .ed{width:5px;height:5px;background:var(--muted);border-radius:50%;}
   h2.st{font-size:34px;font-weight:800;color:var(--text);margin-bottom:16px;line-height:1.2;letter-spacing:-0.5px;}
   h3.sh{font-size:20px;font-weight:700;color:var(--text);margin:32px 0 12px;}
   p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
@@ -94,7 +94,7 @@
   .sl{display:flex;flex-direction:column;gap:0;}
   .si{display:grid;grid-template-columns:48px 1fr;border-bottom:1px solid var(--border);}
   .si:last-child{border-bottom:none;}
-  .sn{display:flex;align-items:flex-start;justify-content:center;padding-top:18px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--indigo);}
+  .sn{display:flex;align-items:flex-start;justify-content:center;padding-top:18px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--muted);}
   .sb{padding:16px 4px 16px 0;}
   .sb h5{font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px;}
   .sb p{font-size:13.5px;color:var(--muted);margin:0;line-height:1.65;}
@@ -129,7 +129,7 @@
   .cap-t tbody tr{border-bottom:1px solid var(--border);}
   .cap-t tbody tr:hover{background:var(--indigo-pale);}
   .cap-t td{padding:12px 16px;color:var(--text2);vertical-align:top;line-height:1.6;}
-  .cap-t td:first-child{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--indigo);font-weight:600;white-space:nowrap;}
+  .cap-t td:first-child{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text2);font-weight:600;white-space:nowrap;}
   .cap-t td:nth-child(2){font-weight:600;color:var(--text);}
 
   .err-t{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;}
@@ -143,7 +143,7 @@
   .cmp{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-radius:14px;overflow:hidden;margin:24px 0;}
   .cc{background:var(--surface);padding:26px;}
   .cc h4{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
-  .cc.ci h4{color:var(--indigo);}
+  .cc.ci h4{color:var(--text2);}
   .cc.chttp h4{color:var(--cyan);}
   .crow{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--muted);}
   .crow:last-child{border-bottom:none;}
@@ -154,7 +154,7 @@
   .sc-b{padding:22px 24px;background:var(--surface);}
 
   footer{background:#12102a;color:rgba(255,255,255,0.35);text-align:center;padding:36px 72px;font-size:13px;}
-  footer span{color:#a89aff;}
+  footer span{color:rgba(255,255,255,.5);}
   svg text{font-family:'Inter',sans-serif;}
 
 html.dark{

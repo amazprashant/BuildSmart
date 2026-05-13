@@ -7,8 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f5f4fc;--surface:#ffffff;--card:#ffffff;--border:#e4e0ff;--border2:#ccc8ff;
-  --text:#15122e;--text2:#38345c;--muted:#7570a0;--dim:#b0acc8;
+  --bg:#f5f5f5;--surface:#ffffff;--card:#ffffff;--border:#e5e5e5;--border2:#d0d0d0;
+  --text:#1a1a1a;--text2:#3a3a3a;--muted:#6b6b6b;--dim:#a0a0a0;
   --purple:#6c3de8;--purple-l:#9570ff;--purple-p:#f0edff;--purple-m:rgba(108,61,232,.11);
   --teal:#0bc4a8;--teal-p:#e6fdf9;--teal-m:rgba(11,196,168,.11);
   --amber:#f5a623;--amber-p:#fff8ec;--amber-m:rgba(245,166,35,.11);
@@ -72,14 +72,14 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);line-h
   font-size:13.5px;color:var(--text2);}
 .te:nth-child(even){border-right:none;}
 .te:last-child,.te:nth-last-child(2){border-bottom:none;}
-.tn{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--purple);font-weight:600;min-width:28px;}
+.tn{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);font-weight:600;min-width:28px;}
 
 /* SECTIONS */
 .sec{padding:60px 72px;border-bottom:1px solid var(--border);}
 .sec.alt{background:var(--surface);}
 .eye{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;
-  font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--purple);margin-bottom:12px;}
-.ed{width:5px;height:5px;background:var(--purple);border-radius:50%;}
+  font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.ed{width:5px;height:5px;background:var(--muted);border-radius:50%;}
 h2.st{font-size:32px;font-weight:800;color:var(--text);margin-bottom:14px;line-height:1.2;letter-spacing:-.5px;}
 h3.sh{font-size:19px;font-weight:700;color:var(--text);margin:30px 0 12px;}
 p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
@@ -122,7 +122,7 @@ p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
 .si{display:grid;grid-template-columns:52px 1fr;border-bottom:1px solid var(--border);}
 .si:last-child{border-bottom:none;}
 .sn{display:flex;align-items:flex-start;justify-content:center;padding-top:18px;
-  font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--purple);}
+  font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--muted);}
 .sb{padding:16px 4px 16px 0;}
 .sb h5{font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px;}
 .sb p{font-size:13.5px;color:var(--muted);margin:0;line-height:1.65;}
@@ -145,7 +145,7 @@ p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
 .cc{background:var(--surface);padding:26px;}
 .cc h4{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;
   margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
-.cc.c1 h4{color:var(--purple);}
+.cc.c1 h4{color:var(--text2);}
 .cc.c2 h4{color:var(--teal);}
 .crow{display:flex;gap:10px;align-items:flex-start;padding:9px 0;
   border-bottom:1px solid var(--border);font-size:13.5px;color:var(--muted);}
@@ -155,7 +155,7 @@ p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
 /* STATUS BADGES */
 .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;
   font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
-.badge.local{background:rgba(108,61,232,.12);color:var(--purple);}
+.badge.local{background:rgba(108,61,232,.12);color:var(--text2);}
 .badge.remote{background:rgba(11,196,168,.12);color:var(--teal);}
 .badge.connector{background:rgba(245,166,35,.12);color:var(--amber);}
 .badge.json{background:rgba(45,128,239,.12);color:var(--blue);}
@@ -172,7 +172,7 @@ p.bd{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
 .mtable td:first-child{font-weight:700;color:var(--text);}
 
 footer{background:#0e0c2a;color:rgba(255,255,255,.35);text-align:center;padding:36px 72px;font-size:13px;}
-footer span{color:#b8a0ff;}
+footer span{color:rgba(255,255,255,.5);}
 svg text{font-family:'Sora',sans-serif;}
 
 html.dark{
