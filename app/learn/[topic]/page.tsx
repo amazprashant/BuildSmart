@@ -82,7 +82,7 @@ export default function TopicPage({ params }: Props) {
             <Link
               key={lesson.slug}
               href={`/learn/${topic.slug}/${lesson.slug}`}
-              className="group flex items-center gap-4 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-4 hover:border-blue-400/50 dark:hover:border-blue-700/50 hover:shadow-md hover:shadow-blue-100/50 dark:hover:shadow-blue-950/20 transition-all"
+              className="group flex items-center gap-4 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-4 hover:border-slate-300 dark:hover:border-gray-600 hover:shadow-md transition-all"
             >
               <div
                 className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
@@ -91,7 +91,7 @@ export default function TopicPage({ params }: Props) {
                 {index + 1}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-gray-900 dark:text-white font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
+                <div className="text-gray-900 dark:text-white font-semibold transition-colors">
                   {lesson.title}
                 </div>
                 <div className="text-gray-500 dark:text-gray-500 text-sm mt-0.5 truncate">
@@ -104,7 +104,7 @@ export default function TopicPage({ params }: Props) {
                     {lesson.duration}
                   </span>
                 )}
-                <span className="text-gray-400 dark:text-gray-600 group-hover:text-blue-500 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all inline-block">
+                <span className="text-gray-400 dark:text-gray-600 group-hover:text-gray-700 dark:group-hover:text-gray-300 group-hover:translate-x-1 transition-all inline-block">
                   →
                 </span>
               </div>

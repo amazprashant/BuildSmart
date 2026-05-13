@@ -53,7 +53,7 @@ export default function LessonViewer({ topic, lesson, lessonIndex }: Props) {
 
           <Link
             href="/"
-            className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 font-semibold transition-colors flex-shrink-0"
+            className="text-gray-900 dark:text-white hover:text-gray-600 dark:hover:text-gray-300 font-semibold transition-colors flex-shrink-0"
           >
             ⚡ LearnHub
           </Link>

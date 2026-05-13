@@ -58,13 +58,13 @@ export default function HomePage() {
           }}
         />
         <div className="relative max-w-3xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800/60 text-blue-700 dark:text-blue-300 text-xs font-medium px-3 py-1.5 rounded-full mb-6">
-            <span className="w-1.5 h-1.5 bg-blue-500 dark:bg-blue-400 rounded-full animate-pulse" />
+          <div className="inline-flex items-center gap-2 bg-slate-100 dark:bg-gray-800/80 border border-slate-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-xs font-medium px-3 py-1.5 rounded-full mb-6">
+            <span className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-400 rounded-full animate-pulse" />
             Growing library of AI &amp; Dev topics
           </div>
           <h1 className="text-5xl sm:text-6xl font-bold mb-5 leading-tight text-gray-900 dark:text-white">
             Learn by{" "}
-            <span className="text-blue-600 dark:text-blue-400">Understanding</span>
+            <span className="text-gray-900 dark:text-white">Understanding</span>
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
             Structured deep-dives into AI protocols, frameworks, and modern
