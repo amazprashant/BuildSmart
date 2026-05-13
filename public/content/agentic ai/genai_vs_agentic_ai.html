@@ -739,6 +739,14 @@
         // CSS handles the actual color flip via the @media block; nothing to do here.
       }
     });
+
+    // Respond to theme messages from parent iframe.
+    window.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'set-theme') {
+        root.setAttribute('data-theme', e.data.theme);
+        try { localStorage.setItem('theme', e.data.theme); } catch(e2) {}
+      }
+    });
   })();
 
   // ---------- TOC active-link highlighting via IntersectionObserver ----------

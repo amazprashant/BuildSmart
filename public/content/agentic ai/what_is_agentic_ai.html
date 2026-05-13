@@ -757,6 +757,14 @@
       root.setAttribute('data-theme', next);
       localStorage.setItem(KEY, next);
     });
+
+    // Respond to theme messages from parent iframe.
+    window.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'set-theme') {
+        root.setAttribute('data-theme', e.data.theme);
+        try { localStorage.setItem(KEY, e.data.theme); } catch(e2) {}
+      }
+    });
   })();
 
   // ---------- TOC active-link highlighting ----------
