@@ -84,6 +84,33 @@ export const TOPICS: Topic[] = [
       },
     ],
   },
+  {
+    slug: "agentic-ai",
+    title: "Agentic AI",
+    shortTitle: "Agentic AI",
+    description:
+      "Understand what Agentic AI really means — its six defining characteristics, core components, and how it fundamentally differs from traditional Generative AI.",
+    color: "#e8620a",
+    icon: "🧠",
+    lessons: [
+      {
+        slug: "what-is-agentic-ai",
+        title: "What is Agentic AI?",
+        description:
+          "A formal study of Agentic AI — its definition, six characteristics, and five core components.",
+        htmlFile: "/content/agentic%20ai/what_is_agentic_ai.html",
+        duration: "20 min",
+      },
+      {
+        slug: "genai-vs-agentic-ai",
+        title: "GenAI vs Agentic AI",
+        description:
+          "From a simple chatbot to an autonomous agent — understand the evolution and key distinctions.",
+        htmlFile: "/content/agentic%20ai/genai_vs_agentic_ai.html",
+        duration: "18 min",
+      },
+    ],
+  },
   // ── Add future topics here ──────────────────────────────────────────────────
   // {
   //   slug: "langchain",
