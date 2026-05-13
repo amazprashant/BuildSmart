@@ -43,9 +43,17 @@ export default function TopicPage({ params }: Props) {
       </header>
 
       {/* ── Topic Header ── */}
-      <section className="py-16 px-6 border-b border-slate-200 dark:border-gray-800">
+      <section
+        className="py-16 px-6 border-b border-slate-200 dark:border-gray-800"
+        style={{ background: `linear-gradient(135deg, ${topic.color}12 0%, transparent 60%)` }}
+      >
         <div className="max-w-3xl mx-auto">
-          <div className="text-5xl mb-5">{topic.icon}</div>
+          <div
+            className="w-16 h-16 flex items-center justify-center text-4xl rounded-2xl mb-5"
+            style={{ backgroundColor: `${topic.color}20` }}
+          >
+            {topic.icon}
+          </div>
           <h1 className="text-4xl font-bold mb-3 text-gray-900 dark:text-white">{topic.title}</h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed mb-6 max-w-2xl">
             {topic.description}
@@ -76,7 +84,10 @@ export default function TopicPage({ params }: Props) {
               href={`/learn/${topic.slug}/${lesson.slug}`}
               className="group flex items-center gap-4 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-4 hover:border-blue-400/50 dark:hover:border-blue-700/50 hover:shadow-md hover:shadow-blue-100/50 dark:hover:shadow-blue-950/20 transition-all"
             >
-              <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800/60 flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold text-sm flex-shrink-0">
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
+                style={{ backgroundColor: `${topic.color}18`, color: topic.color, border: `1px solid ${topic.color}40` }}
+              >
                 {index + 1}
               </div>
               <div className="flex-1 min-w-0">
@@ -104,7 +115,8 @@ export default function TopicPage({ params }: Props) {
         <div className="mt-10">
           <Link
             href={`/learn/${topic.slug}/${topic.lessons[0].slug}`}
-            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+            className="inline-flex items-center gap-2 text-white font-semibold px-6 py-3 rounded-lg transition-opacity hover:opacity-90"
+            style={{ backgroundColor: topic.color }}
           >
             Start Lesson 1 →
           </Link>

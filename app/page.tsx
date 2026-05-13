@@ -97,15 +97,21 @@ export default function HomePage() {
             <Link
               key={topic.slug}
               href={`/learn/${topic.slug}`}
-              className="group bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-6 hover:border-blue-400/60 dark:hover:border-blue-700/60 hover:shadow-lg hover:shadow-blue-100/60 dark:hover:shadow-blue-950/30 transition-all duration-200"
+              className="group bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-6 hover:shadow-lg transition-all duration-200"
+              style={{ borderTop: `3px solid ${topic.color}` }}
             >
               <div className="flex items-start justify-between mb-4">
-                <span className="text-3xl">{topic.icon}</span>
+                <span
+                  className="text-2xl w-11 h-11 flex items-center justify-center rounded-xl"
+                  style={{ backgroundColor: `${topic.color}18` }}
+                >
+                  {topic.icon}
+                </span>
                 <span className="text-xs bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-0.5 rounded-full font-medium">
                   Available
                 </span>
               </div>
-              <h3 className="text-gray-900 dark:text-white font-bold text-lg mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
+              <h3 className="text-gray-900 dark:text-white font-bold text-lg mb-2">
                 {topic.title}
               </h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-5 leading-relaxed">
@@ -115,7 +121,7 @@ export default function HomePage() {
                 <span className="text-xs text-gray-500">
                   {topic.lessons.length} lessons
                 </span>
-                <span className="text-blue-600 dark:text-blue-400 text-sm group-hover:translate-x-1 transition-transform inline-block">
+                <span className="text-sm group-hover:translate-x-1 transition-transform inline-block font-medium" style={{ color: topic.color }}>
                   Start →
                 </span>
               </div>

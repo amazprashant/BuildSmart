@@ -143,9 +143,10 @@ export default function LessonViewer({ topic, lesson, lessonIndex }: Props) {
               </div>
               <div className="h-1.5 bg-slate-200 dark:bg-gray-700 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-blue-500 rounded-full transition-all"
+                  className="h-full rounded-full transition-all"
                   style={{
                     width: `${((lessonIndex + 1) / topic.lessons.length) * 100}%`,
+                    backgroundColor: topic.color,
                   }}
                 />
               </div>
@@ -162,9 +163,10 @@ export default function LessonViewer({ topic, lesson, lessonIndex }: Props) {
                     href={`/learn/${topic.slug}/${l.slug}`}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                       isActive
-                        ? "bg-blue-600 text-white font-semibold shadow-sm"
+                        ? "text-white font-semibold shadow-sm"
                         : "text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800"
                     }`}
+                    style={isActive ? { backgroundColor: topic.color } : {}}
                   >
                     <span
                       className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
