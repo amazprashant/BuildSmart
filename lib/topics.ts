@@ -27,6 +27,14 @@ export const TOPICS: Topic[] = [
     icon: "🔌",
     lessons: [
       {
+        slug: "ai-newsletter",
+        title: "AI Newsletter Automation",
+        description:
+          "Real-world MCP project: automated AI newsletter pipeline using 8 MCP servers.",
+        htmlFile: "/content/mcp/ai-newsletter.html",
+        duration: "20 min",
+      },
+      {
         slug: "the-why",
         title: "The Why",
         description:
@@ -41,6 +49,14 @@ export const TOPICS: Topic[] = [
           "Deep dive into MCP's technical architecture: Hosts, Clients, and Servers, and how they interact.",
         htmlFile: "/content/mcp/architecture.html",
         duration: "20 min",
+      },
+      {
+        slug: "lifecycle",
+        title: "MCP Lifecycle",
+        description:
+          "Understand the complete lifecycle: initialization, tool discovery, request/response, and error handling.",
+        htmlFile: "/content/mcp/lifecycle.html",
+        duration: "15 min",
       },
       {
         slug: "connect-servers",
@@ -59,28 +75,12 @@ export const TOPICS: Topic[] = [
         duration: "25 min",
       },
       {
-        slug: "lifecycle",
-        title: "MCP Lifecycle",
-        description:
-          "Understand the complete lifecycle: initialization, tool discovery, request/response, and error handling.",
-        htmlFile: "/content/mcp/lifecycle.html",
-        duration: "15 min",
-      },
-      {
         slug: "build-client",
         title: "Build a Client",
         description:
           "Create custom MCP clients using langchain-mcp-adapters to go beyond Claude Desktop.",
         htmlFile: "/content/mcp/build-client.html",
         duration: "22 min",
-      },
-      {
-        slug: "ai-newsletter",
-        title: "AI Newsletter Automation",
-        description:
-          "Real-world MCP project: automated AI newsletter pipeline using 8 MCP servers.",
-        htmlFile: "/content/mcp/ai-newsletter.html",
-        duration: "20 min",
       },
     ],
   },
@@ -94,20 +94,20 @@ export const TOPICS: Topic[] = [
     icon: "🧠",
     lessons: [
       {
-        slug: "what-is-agentic-ai",
-        title: "What is Agentic AI?",
-        description:
-          "A formal study of Agentic AI — its definition, six characteristics, and five core components.",
-        htmlFile: "/content/agentic%20ai/what_is_agentic_ai.html",
-        duration: "20 min",
-      },
-      {
         slug: "genai-vs-agentic-ai",
         title: "GenAI vs Agentic AI",
         description:
           "From a simple chatbot to an autonomous agent — understand the evolution and key distinctions.",
         htmlFile: "/content/agentic%20ai/genai_vs_agentic_ai.html",
         duration: "18 min",
+      },
+      {
+        slug: "what-is-agentic-ai",
+        title: "What is Agentic AI?",
+        description:
+          "A formal study of Agentic AI — its definition, six characteristics, and five core components.",
+        htmlFile: "/content/agentic%20ai/what_is_agentic_ai.html",
+        duration: "20 min",
       },
     ],
   },
