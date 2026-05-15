@@ -192,8 +192,8 @@ html.dark .sec-count{background:#1c1f30;color:#a78bfa;border:1px solid #3a3060;}
   <h1>Agentic AI & GenAI<br><span>Interview Q&A</span></h1>
   <p class="hdesc">A comprehensive interview preparation guide covering Model Context Protocol (MCP), Agentic AI patterns, LLM integration, tool calling, async programming, and system design — derived from the complete CampusX MCP Trilogy. 100+ questions across 10 topics with detailed answers, code examples, and key insights.</p>
   <div class="hstats">
-    <div class="hs"><div class="hsn">110+</div><div class="hsl">Questions</div></div>
-    <div class="hs"><div class="hsn">11</div><div class="hsl">Topics</div></div>
+    <div class="hs"><div class="hsn">120+</div><div class="hsl">Questions</div></div>
+    <div class="hs"><div class="hsn">12</div><div class="hsl">Topics</div></div>
     <div class="hs"><div class="hsn">3</div><div class="hsl">Difficulty Levels</div></div>
     <div class="hs"><div class="hsn">7</div><div class="hsl">Videos Covered</div></div>
   </div>
@@ -212,6 +212,7 @@ html.dark .sec-count{background:#1c1f30;color:#a78bfa;border:1px solid #3a3060;}
   <div class="tab"><div class="tab-n">09</div><div class="tab-t">System Design</div><div class="tab-c">8 Qs</div></div>
   <div class="tab"><div class="tab-n">10</div><div class="tab-t">Behavioral</div><div class="tab-c">6 Qs</div></div>
   <div class="tab"><div class="tab-n">11</div><div class="tab-t">Prompt Eng & RAG</div><div class="tab-c">10 Qs</div></div>
+  <div class="tab"><div class="tab-n">12</div><div class="tab-t">Multi-Agent Systems</div><div class="tab-c">10 Qs</div></div>
 </div>
 
 <!-- TOC -->
@@ -229,6 +230,7 @@ html.dark .sec-count{background:#1c1f30;color:#a78bfa;border:1px solid #3a3060;}
     <div class="ti"><span class="ti-n">09</span> System Design with MCP</div>
     <div class="ti"><span class="ti-n">10</span> Behavioral & Project Discussion</div>
     <div class="ti"><span class="ti-n">11</span> Prompt Engineering & RAG</div>
+    <div class="ti"><span class="ti-n">12</span> Multi-Agent Systems & Orchestration</div>
   </div>
 </div>
 
@@ -2714,10 +2716,200 @@ A: Roger starts with 5 balls. 2 cans × 3 balls = 6 new balls.
 
 </div>
 
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 12: MULTI-AGENT SYSTEMS & ORCHESTRATION -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-head">
+    <div class="sec-titles">
+      <div class="eye"><span class="ed"></span> Section 12</div>
+      <h2 class="st">Multi-Agent Systems & Orchestration</h2>
+      <p class="sec-sub">Interview questions on designing, coordinating, and deploying systems where multiple AI agents collaborate — covering orchestration patterns, communication, failure handling, and real-world architectures.</p>
+    </div>
+    <div class="sec-count">10 QUESTIONS</div>
+  </div>
+
+  <div class="qa">
+    <div class="q"><div class="q-num">Q111</div><div class="q-text">What is a Multi-Agent System (MAS) and why is it used?</div><span class="diff diff-e">Easy</span></div>
+    <div class="a">
+      <p>A <strong>Multi-Agent System (MAS)</strong> is an architecture where multiple specialized AI agents work together to accomplish tasks that a single agent cannot handle efficiently on its own.</p>
+      <p><strong>Why use multiple agents instead of one?</strong></p>
+      <ul>
+        <li><strong>Context window limits</strong> — A single complex task may exceed one agent's context. Sub-agents handle isolated subtasks with their own fresh context.</li>
+        <li><strong>Specialization</strong> — A "Research Agent" using web search tools performs better than a generalist agent also juggling code execution and data analysis.</li>
+        <li><strong>Parallelism</strong> — Independent subtasks run simultaneously across agents, dramatically reducing total latency.</li>
+        <li><strong>Reliability</strong> — Isolated agents fail independently. One sub-agent's error doesn't crash the entire pipeline.</li>
+      </ul>
+      <div class="cal cal-p"><strong>Real example:</strong> An AI newsletter pipeline might have: Researcher Agent (web search) → Writer Agent (drafts content) → Editor Agent (refines tone) → Publisher Agent (formats & sends). Each specialized, each with its own MCP tools.</div>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="q"><div class="q-num">Q112</div><div class="q-text">What is the difference between an Orchestrator and a Sub-agent?</div><span class="diff diff-e">Easy</span></div>
+    <div class="a">
+      <table class="cmp-tbl">
+        <thead><tr><th>Role</th><th>Orchestrator</th><th>Sub-agent</th></tr></thead>
+        <tbody>
+          <tr><td>Responsibility</td><td>Plans, delegates, and synthesizes results</td><td>Executes a specific, bounded task</td></tr>
+          <tr><td>Tools used</td><td>Spawns/calls other agents</td><td>Uses domain tools (search, DB, APIs)</td></tr>
+          <tr><td>Scope</td><td>Sees the full goal</td><td>Sees only its subtask</td></tr>
+          <tr><td>Decision-making</td><td>High-level strategy</td><td>Tactical execution</td></tr>
+          <tr><td>Analogy</td><td>Project Manager</td><td>Specialist Engineer</td></tr>
+        </tbody>
+      </table>
+      <p>The orchestrator maintains the overall plan and state; sub-agents are stateless workers invoked on demand. In LangGraph, the orchestrator is typically the <strong>supervisor node</strong>.</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="q"><div class="q-num">Q113</div><div class="q-text">What are the main multi-agent orchestration patterns?</div><span class="diff diff-m">Medium</span></div>
+    <div class="a">
+      <p>Three fundamental patterns cover most multi-agent architectures:</p>
+      <ul>
+        <li>
+          <strong>Sequential (Pipeline)</strong> — Agents pass output to the next in a fixed chain. Simple, predictable. Best for structured workflows with clear stages (Research → Write → Review → Publish).
+        </li>
+        <li>
+          <strong>Parallel (Fan-out/Fan-in)</strong> — Orchestrator dispatches multiple agents simultaneously, then merges results. Best for independent subtasks where latency matters (e.g., analyze 10 documents at once).
+        </li>
+        <li>
+          <strong>Hierarchical (Supervisor)</strong> — A supervisor agent dynamically decides which specialist to call next based on intermediate results. Most flexible; handles complex, branching workflows. Used in LangGraph's <code>create_supervisor</code> pattern.
+        </li>
+      </ul>
+      <div class="cal cal-t"><strong>Hybrid approach:</strong> Production systems often combine all three — a supervisor orchestrates specialist agents that run in parallel pipelines, with sequential post-processing steps.</div>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="q"><div class="q-num">Q114</div><div class="q-text">How do agents communicate in a multi-agent system?</div><span class="diff diff-m">Medium</span></div>
+    <div class="a">
+      <p>Agent communication mechanisms, from simple to sophisticated:</p>
+      <ul>
+        <li><strong>Shared state / message passing</strong> — Agents read/write to a shared state object (e.g., LangGraph's <code>MessagesState</code>). Simple and reliable for same-process agents.</li>
+        <li><strong>Tool calls</strong> — One agent is exposed as a "tool" callable by another. The orchestrator invokes sub-agents the same way it invokes any other function. Clean and composable.</li>
+        <li><strong>Direct API calls</strong> — Agents in separate services communicate via HTTP/REST or gRPC. Necessary when agents run in different containers or machines.</li>
+        <li><strong>Message queues</strong> — For high-throughput, decoupled systems. Agent A publishes a task to Kafka/RabbitMQ; Agent B consumes and processes asynchronously.</li>
+        <li><strong>MCP servers</strong> — Agents share tools through MCP servers. One agent's output can be stored in a shared resource that another agent reads via <code>resources/read</code>.</li>
+      </ul>
+      <div class="cal cal-b"><strong>Design principle:</strong> Prefer message passing over direct function calls when agents may fail or run at different speeds — decoupling makes the system more resilient.</div>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="q"><div class="q-num">Q115</div><div class="q-text">How do you handle failures and retries in multi-agent systems?</div><span class="diff diff-m">Medium</span></div>
+    <div class="a">
+      <p>Failures in multi-agent systems are inevitable. A robust architecture handles them at multiple levels:</p>
+      <ul>
+        <li><strong>Tool-level retries</strong> — Wrap external tool calls with exponential backoff + jitter (e.g., <code>tenacity</code> library in Python). Handles transient network/API failures.</li>
+        <li><strong>Agent-level retries</strong> — If a sub-agent returns a malformed or low-quality result, the orchestrator can re-invoke it with clarifying instructions.</li>
+        <li><strong>Fallback agents</strong> — If the primary agent fails after N retries, route to a simpler fallback (e.g., a cheaper model or a rule-based system).</li>
+        <li><strong>Checkpointing</strong> — Persist agent state at each step. On failure, resume from the last checkpoint rather than restarting entirely. LangGraph supports this natively with its <code>MemorySaver</code> checkpointer.</li>
+        <li><strong>Dead-letter queues</strong> — Failed tasks go to a DLQ for manual inspection or later retry, preventing silent data loss.</li>
+      </ul>
+      <div class="cal cal-o"><strong>Key insight:</strong> Never let a sub-agent failure silently return an empty result to the orchestrator. Always propagate structured error messages so the orchestrator can decide whether to retry, fallback, or abort.</div>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="q"><div class="q-num">Q116</div><div class="q-text">What is LangGraph and how does it relate to multi-agent systems?</div><span class="diff diff-m">Medium</span></div>
+    <div class="a">
+      <p><strong>LangGraph</strong> is a framework by LangChain for building stateful, graph-based agent workflows. It models agent logic as a directed graph of nodes (functions) connected by edges (transitions).</p>
+      <p><strong>Key concepts:</strong></p>
+      <ul>
+        <li><strong>State</strong> — A typed dictionary shared across all nodes; each node reads and updates it</li>
+        <li><strong>Nodes</strong> — Functions that process state (can be LLM calls, tool executions, or sub-graphs)</li>
+        <li><strong>Edges</strong> — Define which node runs next; can be conditional (branching based on state)</li>
+        <li><strong>Supervisor pattern</strong> — A special node that routes between specialist agents based on the current goal</li>
+        <li><strong>Persistence</strong> — Built-in checkpointing enables long-running agents that survive restarts</li>
+      </ul>
+      <div class="cal cal-p"><strong>LangGraph + MCP:</strong> LangGraph orchestrates the agent loop; MCP servers supply the tools each agent uses. The two complement each other — LangGraph is the "brain" (orchestration), MCP is the "hands" (tool access).</div>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="q"><div class="q-num">Q117</div><div class="q-text">What is agent memory and what are the types of memory in multi-agent systems?</div><span class="diff diff-m">Medium</span></div>
+    <div class="a">
+      <p>Agent memory determines what information is available to an agent across time. Four types:</p>
+      <ul>
+        <li>
+          <strong>In-context (short-term)</strong> — The current conversation/message history within the active context window. Lost when context ends. Fast but limited.
+        </li>
+        <li>
+          <strong>External (long-term)</strong> — Stored outside the model in databases, vector stores, or key-value stores. Persists across sessions. Agents retrieve it on demand via RAG or direct lookup.
+        </li>
+        <li>
+          <strong>Episodic memory</strong> — Records of past agent interactions and outcomes. Used to learn from history ("last time I searched for X, source Y was unreliable").
+        </li>
+        <li>
+          <strong>Procedural memory</strong> — Encoded in system prompts or fine-tuning. Defines how the agent behaves — its skills and operating rules. Rarely updated at runtime.
+        </li>
+      </ul>
+      <div class="cal cal-t"><strong>Multi-agent memory sharing:</strong> In a MAS, agents can share external memory via a common vector DB or MCP resource server. One agent writes a summary; another reads it — enabling emergent collaboration.</div>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="q"><div class="q-num">Q118</div><div class="q-text">How do you prevent infinite loops and runaway agents?</div><span class="diff diff-h">Hard</span></div>
+    <div class="a">
+      <p>Runaway agents and infinite loops are real production risks in agentic systems. Mitigation strategies:</p>
+      <ul>
+        <li><strong>Max iteration limits</strong> — Hard cap on the number of agent steps (e.g., <code>max_iterations=10</code> in LangChain agents). Agent returns its best answer when the limit is hit.</li>
+        <li><strong>Budget/cost limits</strong> — Track total tokens consumed. Stop the agent if it exceeds a token or dollar budget. Critical for production cost control.</li>
+        <li><strong>Cycle detection</strong> — Detect when the agent is calling the same tool with the same args repeatedly. Break the loop and prompt the agent to try a different approach.</li>
+        <li><strong>Timeout guards</strong> — Set wall-clock time limits per sub-agent call and for the overall task. Use <code>asyncio.wait_for()</code> or similar.</li>
+        <li><strong>Human-in-the-loop (HITL)</strong> — For high-stakes actions, require human approval before proceeding. LangGraph supports interrupt nodes for exactly this pattern.</li>
+        <li><strong>Termination conditions</strong> — Define clear success/failure criteria in the system prompt. The agent should self-terminate when it recognizes it has reached a conclusion.</li>
+      </ul>
+      <div class="cal cal-o"><strong>Production rule:</strong> Every autonomous agent must have at least a max-iteration limit and a budget limit. Never deploy an agent with unconstrained execution in production.</div>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="q"><div class="q-num">Q119</div><div class="q-text">What are the key challenges in building reliable multi-agent systems?</div><span class="diff diff-h">Hard</span></div>
+    <div class="a">
+      <p>Building reliable MAS is harder than building reliable single agents. Key challenges:</p>
+      <ul>
+        <li><strong>Error propagation</strong> — A wrong result from Agent A becomes incorrect context for Agent B. Errors compound across the pipeline, making root cause analysis difficult.</li>
+        <li><strong>Observability</strong> — With multiple agents running concurrently, tracing which agent caused a bad output requires distributed tracing (LangSmith, Langfuse, or OpenTelemetry).</li>
+        <li><strong>Prompt coherence</strong> — Each sub-agent has its own system prompt and context. Ensuring consistent facts and style across agents requires careful shared-state design.</li>
+        <li><strong>Latency vs quality</strong> — More agents = higher quality but also higher latency and cost. Must profile and optimize critical paths.</li>
+        <li><strong>Non-determinism</strong> — LLM outputs are non-deterministic. The same input to Agent A may produce different outputs, leading to different agent B behaviors. Makes testing hard.</li>
+        <li><strong>Security</strong> — A compromised sub-agent (e.g., via prompt injection in external data) can manipulate the orchestrator. Agents must sanitize external inputs before passing to other agents.</li>
+      </ul>
+      <div class="cal cal-b"><strong>Interview tip:</strong> Mentioning prompt injection in multi-agent systems is a strong signal of senior-level awareness. Always validate/sanitize data retrieved from external sources before including it in agent context.</div>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="q"><div class="q-num">Q120</div><div class="q-text">Design a multi-agent system for an AI-powered customer support platform.</div><span class="diff diff-h">Hard</span></div>
+    <div class="a">
+      <p>A production-ready multi-agent customer support platform:</p>
+      <p><strong>Agents:</strong></p>
+      <ul>
+        <li><strong>Triage Agent</strong> — Classifies incoming ticket by intent (billing, technical, account, refund). Routes to the appropriate specialist agent.</li>
+        <li><strong>Knowledge Agent</strong> — Runs RAG over the product docs + past resolved tickets. Answers questions that have known solutions.</li>
+        <li><strong>Billing Agent</strong> — Has MCP tools to query billing DB, issue refunds, upgrade plans. Handles payment-related queries.</li>
+        <li><strong>Technical Agent</strong> — Has MCP tools to query system status, restart services, check logs. Handles product bugs and outages.</li>
+        <li><strong>Escalation Agent</strong> — Detects when no agent can resolve the issue and creates a human support ticket with full context summary.</li>
+        <li><strong>QA Agent</strong> — Reviews drafted responses before sending. Ensures tone, accuracy, and compliance with support policies.</li>
+      </ul>
+      <p><strong>Shared infrastructure:</strong></p>
+      <ul>
+        <li>LangGraph supervisor orchestrates routing decisions</li>
+        <li>All agents share an MCP resource server with product knowledge base</li>
+        <li>LangSmith for full trace visibility per ticket</li>
+        <li>Human-in-the-loop interrupt before any irreversible action (refund, account deletion)</li>
+      </ul>
+      <div class="cal cal-g"><strong>Key design decision:</strong> The QA Agent reviewing responses before delivery is what separates a prototype from a production system — it catches hallucinations, inappropriate tone, and policy violations before they reach customers.</div>
+    </div>
+  </div>
+
+</div>
+
 <footer>
-  <p><strong>Agentic AI & GenAI Interview Q&A · 110 Questions</strong></p>
+  <p><strong>Agentic AI & GenAI Interview Q&A · 120 Questions</strong></p>
   <p>Based on the complete CampusX MCP Trilogy by Nitish</p>
-  <p style="margin-top:14px;color:rgba(255,255,255,.25);">Study guide covering MCP fundamentals, architecture, lifecycle, server/client development, production concerns, agentic patterns, GenAI fundamentals, system design, behavioral interview prep, and prompt engineering & RAG.</p>
+  <p style="margin-top:14px;color:rgba(255,255,255,.25);">Study guide covering MCP fundamentals, architecture, lifecycle, server/client development, production concerns, agentic patterns, GenAI fundamentals, system design, behavioral interview prep, prompt engineering & RAG, and multi-agent orchestration.</p>
 </footer>
 
 <script>

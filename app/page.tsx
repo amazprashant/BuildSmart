@@ -2,6 +2,20 @@ import Link from "next/link";
 import { TOPICS } from "@/lib/topics";
 import ThemeToggle from "@/components/ThemeToggle";
 
+const QA_SECTIONS = [
+  {
+    title: "Agentic AI & GenAI Interview Q&A",
+    description:
+      "120+ interview questions covering MCP, Agentic AI, GenAI fundamentals, RAG, prompt engineering, multi-agent systems, and system design — with detailed answers and code examples.",
+    icon: "🎯",
+    color: "#5b21d6",
+    href: "/content/Agentic_AI_GenAI_Interview_QnA.html",
+    questionCount: 120,
+    topics: 12,
+    difficulty: "Easy → Hard",
+  },
+];
+
 const COMING_SOON = [
   {
     title: "LangChain",
@@ -39,6 +53,9 @@ export default function HomePage() {
             <nav className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
               <a href="#topics" className="hover:text-gray-900 dark:hover:text-white transition-colors">
                 Topics
+              </a>
+              <a href="#qa-sections" className="hover:text-gray-900 dark:hover:text-white transition-colors">
+                Q&amp;A
               </a>
             </nav>
             <ThemeToggle />
@@ -151,6 +168,117 @@ export default function HomePage() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ── Q&A Sections ── */}
+      <section id="qa-sections" className="max-w-7xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-800">
+        <div className="mb-10">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Q&amp;A Sections</h2>
+          <p className="text-gray-500 dark:text-gray-500 mt-1">
+            Structured interview question banks — practice with detailed answers, code examples, and difficulty levels.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {QA_SECTIONS.map((qa) => (
+            <a
+              key={qa.title}
+              href={qa.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-6 hover:shadow-lg transition-all duration-200 block"
+              style={{ borderTop: `3px solid ${qa.color}` }}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <span
+                  className="text-2xl w-11 h-11 flex items-center justify-center rounded-xl"
+                  style={{ backgroundColor: `${qa.color}18` }}
+                >
+                  {qa.icon}
+                </span>
+                <span
+                  className="text-xs px-2.5 py-0.5 rounded-full font-medium border"
+                  style={{
+                    backgroundColor: `${qa.color}12`,
+                    color: qa.color,
+                    borderColor: `${qa.color}40`,
+                  }}
+                >
+                  Q&amp;A
+                </span>
+              </div>
+
+              <h3 className="text-gray-900 dark:text-white font-bold text-lg mb-2">
+                {qa.title}
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-5 leading-relaxed">
+                {qa.description}
+              </p>
+
+              <div className="flex items-center gap-3 mb-4">
+                <span
+                  className="text-xs font-semibold px-2 py-1 rounded-md"
+                  style={{ backgroundColor: `${qa.color}12`, color: qa.color }}
+                >
+                  {qa.questionCount}+ Questions
+                </span>
+                <span className="text-xs font-semibold px-2 py-1 rounded-md bg-slate-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+                  {qa.topics} Topics
+                </span>
+                <span className="text-xs font-semibold px-2 py-1 rounded-md bg-slate-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+                  {qa.difficulty}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-gray-800">
+                <span className="text-xs text-gray-500">Interview Prep</span>
+                <span
+                  className="text-sm group-hover:translate-x-1 transition-transform inline-block font-medium"
+                  style={{ color: qa.color }}
+                >
+                  Open →
+                </span>
+              </div>
+            </a>
+          ))}
+
+          {/* Coming soon Q&A */}
+          <div className="bg-slate-100/60 dark:bg-gray-900/40 border border-slate-200/60 dark:border-gray-800/40 rounded-xl p-6 opacity-50 select-none">
+            <div className="flex items-start justify-between mb-4">
+              <span className="text-2xl w-11 h-11 flex items-center justify-center rounded-xl bg-slate-200 dark:bg-gray-800 grayscale">
+                🔗
+              </span>
+              <span className="text-xs bg-slate-100 dark:bg-gray-800 text-gray-500 border border-slate-200 dark:border-gray-700 px-2.5 py-0.5 rounded-full font-medium">
+                Coming Soon
+              </span>
+            </div>
+            <h3 className="text-gray-500 dark:text-gray-400 font-bold text-lg mb-2">LangChain & LangGraph Q&A</h3>
+            <p className="text-gray-500 dark:text-gray-600 text-sm mb-5 leading-relaxed">
+              Interview questions on chains, agents, memory, LangGraph state machines, and production deployment patterns.
+            </p>
+            <div className="pt-3 border-t border-slate-200/50 dark:border-gray-800/50">
+              <span className="text-xs text-gray-500 dark:text-gray-600">In progress</span>
+            </div>
+          </div>
+
+          <div className="bg-slate-100/60 dark:bg-gray-900/40 border border-slate-200/60 dark:border-gray-800/40 rounded-xl p-6 opacity-50 select-none">
+            <div className="flex items-start justify-between mb-4">
+              <span className="text-2xl w-11 h-11 flex items-center justify-center rounded-xl bg-slate-200 dark:bg-gray-800 grayscale">
+                🗄️
+              </span>
+              <span className="text-xs bg-slate-100 dark:bg-gray-800 text-gray-500 border border-slate-200 dark:border-gray-700 px-2.5 py-0.5 rounded-full font-medium">
+                Coming Soon
+              </span>
+            </div>
+            <h3 className="text-gray-500 dark:text-gray-400 font-bold text-lg mb-2">Vector Databases & RAG Q&A</h3>
+            <p className="text-gray-500 dark:text-gray-600 text-sm mb-5 leading-relaxed">
+              Deep-dive questions on embeddings, similarity search, chunking strategies, Pinecone, Qdrant, and evaluation with RAGAS.
+            </p>
+            <div className="pt-3 border-t border-slate-200/50 dark:border-gray-800/50">
+              <span className="text-xs text-gray-500 dark:text-gray-600">In progress</span>
+            </div>
+          </div>
         </div>
       </section>
 
