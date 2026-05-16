@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redis User Profile: JSON vs HASH</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--bg2:#f8fafc;--bg3:#f1f5f9;--border:#e2e8f0;--text:#0f172a;--text2:#475569;--text3:#94a3b8;--accent:#dc2626;--accent-soft:#fef2f2;--code-bg:#f8fafc;--code-text:#be123c;--radius:10px;}
+[data-theme="dark"]{--bg:#0d1117;--bg2:#161b22;--bg3:#1c2230;--border:#30363d;--text:#e6edf3;--text2:#8b949e;--text3:#484f58;--accent:#f87171;--accent-soft:#2d1515;--code-bg:#1c2230;--code-text:#fca5a5;}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.7;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+.hd{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.hd-brand{font-size:13px;font-weight:600;color:var(--text2)}.hd-brand span{color:var(--accent)}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;padding:6px 14px;border-radius:7px;text-decoration:none;transition:opacity .15s}.dl-btn:hover{opacity:.88}
+.hero{padding:48px 24px 32px;max-width:800px;margin:0 auto}
+.tag{display:inline-flex;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:clamp(26px,4vw,40px);font-weight:700;line-height:1.15;margin:0 0 12px}
+.hero p{font-size:17px;color:var(--text2);margin:0 0 24px;max-width:640px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--text3)}
+.content{max-width:800px;margin:0 auto;padding:0 24px 80px}
+.section{margin-bottom:40px}
+h2{font-size:20px;font-weight:700;color:var(--text);margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid var(--accent);display:inline-block}
+h3{font-size:16px;font-weight:600;color:var(--text);margin:20px 0 8px}
+p{margin:0 0 14px;color:var(--text2)}
+ul{margin:0 0 14px;padding-left:22px;color:var(--text2)}li{margin-bottom:5px}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;margin:0 0 16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:var(--text2)}
+code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--code-bg);color:var(--code-text);padding:2px 6px;border-radius:4px}
+.callout{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;border-left:4px solid}
+.callout.red{background:var(--accent-soft);border-color:var(--accent)}
+.callout.green{background:#f0fdf4;border-color:#16a34a}[data-theme="dark"] .callout.green{background:#0d2318;border-color:#4ade80}
+.callout.blue{background:#eff6ff;border-color:#3b82f6}[data-theme="dark"] .callout.blue{background:#0d1b2e;border-color:#60a5fa}
+.callout strong{color:var(--text)}.callout p{margin:0;color:var(--text2)}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+@media(max-width:600px){.compare{grid-template-columns:1fr}}
+.compare-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+.compare-box h3{font-size:14px;font-weight:700;margin:0 0 12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.compare-box.json h3{color:#1d4ed8}
+.compare-box.hash h3{color:#dc2626}
+[data-theme="dark"] .compare-box.json h3{color:#60a5fa}
+[data-theme="dark"] .compare-box.hash h3{color:#f87171}
+.compare-box ul{margin:0;padding-left:18px}
+.compare-box li{font-size:13px;color:var(--text2);margin-bottom:6px}
+table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:14px}
+th{background:var(--bg3);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border:1px solid var(--border)}
+td{padding:9px 14px;border:1px solid var(--border);color:var(--text2)}
+tr:hover td{background:var(--bg2)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
+.badge.good{background:#d1fae5;color:#065f46}
+.badge.bad{background:#fee2e2;color:#991b1b}
+[data-theme="dark"] .badge.good{background:#0d2318;color:#4ade80}
+[data-theme="dark"] .badge.bad{background:#2d0a0a;color:#fca5a5}
+.dl-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;align-items:center;gap:20px;margin-bottom:32px}
+.dl-card .file-icon{font-size:40px;flex-shrink:0}
+.dl-card h3{font-size:15px;font-weight:700;margin:0 0 4px}
+.dl-card p{font-size:13px;margin:0 0 12px;color:var(--text2)}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-brand"><span>⚡</span> Redis Track</div>
+  <a class="dl-btn" href="/content/Redis/Redis-User-Profile-JSON-vs-HASH-Notes.docx" download>⬇ Download Notes</a>
+</header>
+
+<div class="hero">
+  <div class="tag">Lesson 8 · Redis</div>
+  <h1>User Profile: JSON vs HASH</h1>
+  <p>Compare two Redis approaches for storing user profiles — serialized JSON strings vs native Redis Hashes. Understand the trade-offs and when to choose each.</p>
+  <div class="meta">
+    <span>⏱ 20 min read</span>
+    <span>🗃 Data Structures</span>
+    <span>⚖️ Design Trade-offs</span>
+  </div>
+</div>
+
+<div class="content">
+  <div class="dl-card">
+    <div class="file-icon">📄</div>
+    <div>
+      <h3>Redis-User-Profile-JSON-vs-HASH-Notes.docx</h3>
+      <p>Complete notes comparing JSON string vs Redis Hash storage for user profiles with benchmarks and recommendations.</p>
+      <a class="dl-btn" href="/content/Redis/Redis-User-Profile-JSON-vs-HASH-Notes.docx" download>⬇ Download Full Notes</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>The Two Approaches</h2>
+    <div class="compare">
+      <div class="compare-box json">
+        <h3>📄 JSON String</h3>
+        <ul>
+          <li>Store entire object serialized as a string</li>
+          <li>Single key: <code>user:123</code></li>
+          <li>Read/write the whole object at once</li>
+          <li>Nested objects supported natively</li>
+          <li>Requires parse/stringify on every operation</li>
+        </ul>
+      </div>
+      <div class="compare-box hash">
+        <h3>🗂 Redis Hash</h3>
+        <ul>
+          <li>Store each field as a hash field</li>
+          <li>Single key: <code>user:123</code> with fields</li>
+          <li>Read/write individual fields efficiently</li>
+          <li>Only flat key-value pairs (no nesting)</li>
+          <li>Native Redis type — no serialization</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>JSON String Approach</h2>
+    <pre>// Store
+const user = { id: '123', name: 'Alice', email: 'alice@example.com', plan: 'premium', loginCount: 47 };
+await redis.setex(`user:${user.id}`, 86400, JSON.stringify(user));
+
+// Read (entire object)
+const raw = await redis.get('user:123');
+const user = raw ? JSON.parse(raw) : null;
+
+// Update (must read-modify-write entire object)
+const raw = await redis.get('user:123');
+const user = JSON.parse(raw!);
+user.loginCount += 1;
+await redis.setex('user:123', 86400, JSON.stringify(user));
+
+// This is NOT atomic — race condition risk in concurrent updates!</pre>
+
+    <div class="callout red">
+      <strong>Race condition warning:</strong> <p>Read-modify-write with JSON strings is NOT atomic. Two simultaneous requests can overwrite each other's changes. Use Redis transactions (<code>MULTI/EXEC</code>) or HASH with <code>HINCRBY</code> for counters.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Redis Hash Approach</h2>
+    <pre>// Store (HSET accepts field-value pairs)
+await redis.hset('user:123', {
+  name: 'Alice',
+  email: 'alice@example.com',
+  plan: 'premium',
+  loginCount: '47',  // Redis stores all values as strings
+  createdAt: new Date().toISOString(),
+});
+await redis.expire('user:123', 86400);
+
+// Read all fields
+const user = await redis.hgetall('user:123');
+// user = { name: 'Alice', email: '...', loginCount: '47', ... }
+// Note: all values are strings — parse numbers as needed
+const loginCount = parseInt(user.loginCount);
+
+// Read single field (efficient — no serialization)
+const name = await redis.hget('user:123', 'name');
+const email = await redis.hget('user:123', 'email');
+
+// Update single field (atomic, no read-modify-write needed)
+await redis.hset('user:123', 'plan', 'enterprise');
+await redis.hset('user:123', 'updatedAt', new Date().toISOString());
+
+// Atomic counter increment (no race condition!)
+await redis.hincrby('user:123', 'loginCount', 1);
+
+// Check if user exists
+const exists = await redis.hexists('user:123', 'email');</pre>
+  </div>
+
+  <div class="section">
+    <h2>Comparison Table</h2>
+    <table>
+      <tr><th>Feature</th><th>JSON String</th><th>Redis Hash</th></tr>
+      <tr><td>Read entire profile</td><td><span class="badge good">Good</span> 1 GET</td><td><span class="badge good">Good</span> 1 HGETALL</td></tr>
+      <tr><td>Read single field</td><td><span class="badge bad">Bad</span> read all + parse</td><td><span class="badge good">Good</span> 1 HGET</td></tr>
+      <tr><td>Update single field</td><td><span class="badge bad">Bad</span> read-modify-write</td><td><span class="badge good">Good</span> 1 HSET</td></tr>
+      <tr><td>Atomic increment</td><td><span class="badge bad">Bad</span> not atomic</td><td><span class="badge good">Good</span> HINCRBY</td></tr>
+      <tr><td>Nested objects</td><td><span class="badge good">Good</span> native JSON</td><td><span class="badge bad">Bad</span> must serialize nested</td></tr>
+      <tr><td>Memory efficiency</td><td>Medium (string overhead)</td><td><span class="badge good">Good</span> compact encoding</td></tr>
+      <tr><td>Partial updates</td><td><span class="badge bad">Bad</span> overwrite all</td><td><span class="badge good">Good</span> field-level</td></tr>
+      <tr><td>Simplicity</td><td><span class="badge good">Good</span> familiar JS objects</td><td>Medium (string values)</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>When to Use Each</h2>
+    <div class="callout green">
+      <strong>Use Redis Hash when:</strong>
+      <p>Profile has many fields updated independently (status, counters, last-active). You need atomic field updates. Profile is queried frequently by individual fields. Memory efficiency matters at scale.</p>
+    </div>
+    <div class="callout blue">
+      <strong>Use JSON String when:</strong>
+      <p>Profile has nested objects (addresses, preferences object). You almost always read/write the whole object together. Profile is read-heavy and rarely updated. Simplicity matters more than partial-update efficiency.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Hybrid Approach (Best of Both)</h2>
+    <pre>// Store frequently-updated fields as Hash
+await redis.hset('user:123', {
+  name: 'Alice',
+  plan: 'premium',
+  loginCount: '0',
+  lastSeen: new Date().toISOString(),
+});
+
+// Store complex nested data separately as JSON
+await redis.setex('user:123:preferences', 86400, JSON.stringify({
+  theme: 'dark',
+  notifications: { email: true, push: false },
+  language: 'en',
+}));
+
+// Update counter atomically
+await redis.hincrby('user:123', 'loginCount', 1);
+await redis.hset('user:123', 'lastSeen', new Date().toISOString());
+
+// Read flat fields via HGETALL, complex data via separate GET
+const [profile, prefs] = await Promise.all([
+  redis.hgetall('user:123'),
+  redis.get('user:123:preferences').then(v => v ? JSON.parse(v) : {}),
+]);</pre>
+  </div>
+</div>
+
+<script>
+(function(){
+  function apply(t){ document.documentElement.setAttribute('data-theme', t==='dark'?'dark':'light'); }
+  try{ apply(localStorage.getItem('theme')||'light'); }catch(e){}
+  window.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='set-theme'){
+      try{ localStorage.setItem('theme',e.data.theme); }catch(e2){}
+      apply(e.data.theme);
+    }
+  });
+})();
+</script>
+</body>
+</html>

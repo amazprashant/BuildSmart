@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG Flow Diagram</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--bg2:#f8fafc;--bg3:#f1f5f9;--border:#e2e8f0;--text:#0f172a;--text2:#475569;--text3:#94a3b8;--accent:#0ea5e9;--accent-soft:#f0f9ff;--code-bg:#f8fafc;--code-text:#0369a1;--radius:10px;}
+[data-theme="dark"]{--bg:#0d1117;--bg2:#161b22;--bg3:#1c2230;--border:#30363d;--text:#e6edf3;--text2:#8b949e;--text3:#484f58;--accent:#38bdf8;--accent-soft:#0c1e2e;--code-bg:#1c2230;--code-text:#7dd3fc;}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.7;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+.hd{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.hd-brand{font-size:13px;font-weight:600;color:var(--text2)}.hd-brand span{color:var(--accent)}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;padding:6px 14px;border-radius:7px;text-decoration:none;transition:opacity .15s}.dl-btn:hover{opacity:.88}
+.hero{padding:48px 24px 32px;max-width:800px;margin:0 auto}
+.tag{display:inline-flex;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:clamp(26px,4vw,40px);font-weight:700;line-height:1.15;margin:0 0 12px}
+.hero p{font-size:17px;color:var(--text2);margin:0 0 24px;max-width:640px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--text3)}
+.content{max-width:800px;margin:0 auto;padding:0 24px 80px}
+.section{margin-bottom:40px}
+h2{font-size:20px;font-weight:700;color:var(--text);margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid var(--accent);display:inline-block}
+h3{font-size:15px;font-weight:600;color:var(--text);margin:16px 0 8px}
+p{margin:0 0 14px;color:var(--text2)}
+ul{margin:0 0 14px;padding-left:22px;color:var(--text2)}li{margin-bottom:5px}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;margin:0 0 16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:var(--text2)}
+code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--code-bg);color:var(--code-text);padding:2px 6px;border-radius:4px}
+.callout{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;border-left:4px solid}
+.callout.blue{background:var(--accent-soft);border-color:var(--accent)}
+.callout.amber{background:#fffbeb;border-color:#f59e0b}[data-theme="dark"] .callout.amber{background:#1c1a00;border-color:#fbbf24}
+.callout.green{background:#f0fdf4;border-color:#16a34a}[data-theme="dark"] .callout.green{background:#0d2318;border-color:#4ade80}
+.callout strong{color:var(--text)}.callout p{margin:0;color:var(--text2)}
+
+/* ── Visual Flow Diagram ── */
+.flow-diagram{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin:16px 0}
+.flow-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:12px}
+.flow-nodes{display:flex;flex-wrap:wrap;gap:0;align-items:center;margin-bottom:8px}
+.flow-node{background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--text);text-align:center;position:relative;flex-shrink:0}
+.flow-node.accent{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.flow-arrow{font-size:16px;color:var(--text3);padding:0 6px;flex-shrink:0}
+.flow-sep{width:100%;height:24px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:14px;position:relative}
+.flow-sep::before,.flow-sep::after{content:'';flex:1;height:1px;background:var(--border);margin:0 12px}
+
+/* ── Step-by-step ── */
+.steps{display:flex;flex-direction:column;gap:20px;margin:16px 0}
+.step{display:grid;grid-template-columns:auto 1fr;gap:16px}
+.step-num{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.step-body h3{font-size:15px;font-weight:700;color:var(--text);margin:0 0 6px}
+.step-body p{margin:0;font-size:14px;color:var(--text2)}
+.step-body code{font-size:12px}
+
+.dl-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;align-items:center;gap:20px;margin-bottom:32px}
+.dl-card .file-icon{font-size:40px;flex-shrink:0}
+.dl-card h3{font-size:15px;font-weight:700;margin:0 0 4px}
+.dl-card p{font-size:13px;margin:0 0 12px;color:var(--text2)}
+
+table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:14px}
+th{background:var(--bg3);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border:1px solid var(--border)}
+td{padding:9px 14px;border:1px solid var(--border);color:var(--text2)}
+tr:hover td{background:var(--bg2)}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-brand"><span>🔍</span> RAG Track</div>
+  <a class="dl-btn" href="/content/RAG/RAG_Flow_Diagram.docx" download>⬇ Download Diagram</a>
+</header>
+
+<div class="hero">
+  <div class="tag">Lesson 2 · RAG</div>
+  <h1>RAG Flow Diagram</h1>
+  <p>Visual walkthrough of the complete RAG pipeline — from raw documents to LLM-generated answers. Understand exactly what happens at every step, and where things can go wrong.</p>
+  <div class="meta">
+    <span>⏱ 20 min read</span>
+    <span>📊 Visual Pipeline</span>
+    <span>🔧 Step-by-Step</span>
+  </div>
+</div>
+
+<div class="content">
+  <div class="dl-card">
+    <div class="file-icon">📊</div>
+    <div>
+      <h3>RAG_Flow_Diagram.docx</h3>
+      <p>Original flow diagram with detailed annotations for each pipeline step.</p>
+      <a class="dl-btn" href="/content/RAG/RAG_Flow_Diagram.docx" download>⬇ Download Diagram</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Complete RAG Pipeline</h2>
+    <div class="flow-diagram">
+      <div class="flow-section-label">⬇ Indexing Pipeline (Offline — runs once or on data update)</div>
+      <div class="flow-nodes">
+        <div class="flow-node">📄 Raw Documents</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">✂️ Chunking</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">🔢 Embeddings</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node accent">🗄️ Vector Store</div>
+      </div>
+
+      <div class="flow-sep">Query Pipeline (Online — runs per user request)</div>
+
+      <div class="flow-nodes">
+        <div class="flow-node">💬 User Query</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">🔢 Embed Query</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">🔍 Similarity Search</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">📋 Top-K Chunks</div>
+      </div>
+      <div class="flow-nodes" style="margin-top:8px">
+        <div class="flow-node">📋 Top-K Chunks</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">📝 Prompt Assembly</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">🤖 LLM</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node accent">✅ Answer</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Indexing Pipeline — Step by Step</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Document Loading</h3>
+          <p>Read raw files and extract text. Support PDF, Word, HTML, Markdown, CSV, databases. Tools: LangChain <code>PyPDFLoader</code>, <code>UnstructuredLoader</code>, <code>DirectoryLoader</code>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Text Chunking</h3>
+          <p>Split documents into overlapping chunks. Typical: 500-1000 tokens per chunk, 10-15% overlap. Preserve sentence/paragraph boundaries where possible. Add metadata (source file, page number, section).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Embedding Generation</h3>
+          <p>Convert each chunk to a dense vector using an embedding model. The vector captures semantic meaning — similar content produces similar vectors. Dimensions: 384 to 3072 depending on model.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Vector Store Indexing</h3>
+          <p>Store <code>(chunk_text, embedding, metadata)</code> in a vector database. Common choices: Pinecone (managed), Qdrant (self-hosted), Chroma (local dev), pgvector (Postgres extension).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Query Pipeline — Step by Step</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Query Pre-processing (Optional)</h3>
+          <p>Improve retrieval by: <strong>query rewriting</strong> (expand to multiple questions), <strong>HyDE</strong> (generate a hypothetical answer and embed it), <strong>decomposition</strong> (break complex questions into sub-questions).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Query Embedding</h3>
+          <p>Embed the user's question with the <em>same model</em> used during indexing. This produces a query vector in the same semantic space as the stored chunks.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Similarity Search (Retrieval)</h3>
+          <p>Find the K most similar chunks using cosine similarity or dot product. Typical K=5 to 10. Optional: filter by metadata (date range, document type, department).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Re-ranking (Optional)</h3>
+          <p>Pass the top-20 candidates through a cross-encoder model to re-score and keep only the truly relevant top-5. Significantly improves precision. Models: Cohere Rerank, <code>cross-encoder/ms-marco-MiniLM-L-6-v2</code>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h3>Prompt Construction</h3>
+          <p>Assemble: system instructions + retrieved chunks (context) + conversation history + user question. Total must fit within LLM's context window.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <h3>LLM Generation</h3>
+          <p>The LLM synthesizes an answer using <em>only</em> the provided context. Well-designed prompts instruct the model to cite sources and say "I don't know" if the context doesn't contain the answer.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>The Prompt Template</h2>
+    <pre>SYSTEM:
+You are a helpful assistant. Answer questions based ONLY on the provided context.
+If the context doesn't contain the answer, say "I don't have enough information."
+Always cite the source document when providing facts.
+
+CONTEXT:
+[Retrieved chunk 1 — source: policy_document.pdf, page 3]
+"Refunds are processed within 7 business days of the return receipt..."
+
+[Retrieved chunk 2 — source: faq.html, section: returns]
+"Customers must initiate returns within 30 days of purchase..."
+
+USER QUESTION:
+How long do I have to return an item and how long will the refund take?
+
+ASSISTANT:
+Based on our policy (faq.html), you have 30 days from purchase to initiate a return.
+Once we receive the returned item, the refund is processed within 7 business days (policy_document.pdf, p.3).</pre>
+  </div>
+
+  <div class="section">
+    <h2>Where RAG Goes Wrong</h2>
+    <table>
+      <tr><th>Problem</th><th>Symptom</th><th>Fix</th></tr>
+      <tr><td>Bad chunking</td><td>Context cut mid-sentence; missing key info</td><td>Adjust chunk size/overlap, use semantic splitting</td></tr>
+      <tr><td>Wrong embedding model</td><td>Retrieval misses relevant docs</td><td>Evaluate on your domain; try multiple models</td></tr>
+      <tr><td>Low K (too few chunks)</td><td>Answer missing important details</td><td>Increase K; add re-ranker</td></tr>
+      <tr><td>High K (too many chunks)</td><td>Irrelevant noise in context; LLM confused</td><td>Use re-ranking; metadata filtering</td></tr>
+      <tr><td>Prompt too long</td><td>Context window exceeded; truncated chunks</td><td>Summarize retrieved docs before inserting</td></tr>
+      <tr><td>LLM hallucinates anyway</td><td>Adds facts not in context</td><td>Explicit system instructions + faithfulness check</td></tr>
+    </table>
+    <div class="callout green">
+      <strong>Evaluation is key:</strong> <p>Build a golden Q&A test set (20-50 examples) and measure RAGAS metrics (Faithfulness, Context Precision, Answer Relevancy) after every pipeline change. Don't optimize blindly.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  function apply(t){ document.documentElement.setAttribute('data-theme', t==='dark'?'dark':'light'); }
+  try{ apply(localStorage.getItem('theme')||'light'); }catch(e){}
+  window.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='set-theme'){
+      try{ localStorage.setItem('theme',e.data.theme); }catch(e2){}
+      apply(e.data.theme);
+    }
+  });
+})();
+</script>
+</body>
+</html>

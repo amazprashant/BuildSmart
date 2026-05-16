@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG Study Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--bg2:#f8fafc;--bg3:#f1f5f9;--border:#e2e8f0;--text:#0f172a;--text2:#475569;--text3:#94a3b8;--accent:#0ea5e9;--accent-soft:#f0f9ff;--accent-muted:#7dd3fc;--code-bg:#f8fafc;--code-text:#0369a1;--radius:10px;}
+[data-theme="dark"]{--bg:#0d1117;--bg2:#161b22;--bg3:#1c2230;--border:#30363d;--text:#e6edf3;--text2:#8b949e;--text3:#484f58;--accent:#38bdf8;--accent-soft:#0c1e2e;--code-bg:#1c2230;--code-text:#7dd3fc;}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.7;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+.hd{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.hd-brand{font-size:13px;font-weight:600;color:var(--text2)}.hd-brand span{color:var(--accent)}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;padding:6px 14px;border-radius:7px;text-decoration:none;transition:opacity .15s}.dl-btn:hover{opacity:.88}
+.hero{padding:48px 24px 32px;max-width:800px;margin:0 auto}
+.tag{display:inline-flex;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:clamp(26px,4vw,40px);font-weight:700;line-height:1.15;margin:0 0 12px}
+.hero p{font-size:17px;color:var(--text2);margin:0 0 24px;max-width:640px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--text3)}
+.content{max-width:800px;margin:0 auto;padding:0 24px 80px}
+.section{margin-bottom:40px}
+h2{font-size:20px;font-weight:700;color:var(--text);margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid var(--accent);display:inline-block}
+h3{font-size:15px;font-weight:600;color:var(--text);margin:16px 0 8px}
+p{margin:0 0 14px;color:var(--text2)}
+ul{margin:0 0 14px;padding-left:22px;color:var(--text2)}li{margin-bottom:5px}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;margin:0 0 16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:var(--text2)}
+code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--code-bg);color:var(--code-text);padding:2px 6px;border-radius:4px}
+.callout{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;border-left:4px solid}
+.callout.blue{background:var(--accent-soft);border-color:var(--accent)}
+.callout.amber{background:#fffbeb;border-color:#f59e0b}[data-theme="dark"] .callout.amber{background:#1c1a00;border-color:#fbbf24}
+.callout.green{background:#f0fdf4;border-color:#16a34a}[data-theme="dark"] .callout.green{background:#0d2318;border-color:#4ade80}
+.callout.purple{background:#faf5ff;border-color:#7c3aed}[data-theme="dark"] .callout.purple{background:#1a0d2e;border-color:#a78bfa}
+.callout strong{color:var(--text)}.callout p{margin:0;color:var(--text2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card-icon{font-size:20px;margin-bottom:8px}
+.card h3{font-size:14px;font-weight:700;color:var(--text);margin:0 0 4px}
+.card p{font-size:13px;margin:0;color:var(--text2)}
+table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:14px}
+th{background:var(--bg3);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border:1px solid var(--border)}
+td{padding:9px 14px;border:1px solid var(--border);color:var(--text2)}
+tr:hover td{background:var(--bg2)}
+.pipeline{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:16px 0;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2);line-height:2;overflow-x:auto}
+.dl-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;align-items:center;gap:20px;margin-bottom:32px}
+.dl-card .file-icon{font-size:40px;flex-shrink:0}
+.dl-card h3{font-size:15px;font-weight:700;margin:0 0 4px}
+.dl-card p{font-size:13px;margin:0 0 12px;color:var(--text2)}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-brand"><span>🔍</span> RAG Track</div>
+  <a class="dl-btn" href="/content/RAG/RAG_Study_Notes.docx" download>⬇ Download Notes</a>
+</header>
+
+<div class="hero">
+  <div class="tag">Lesson 1 · RAG</div>
+  <h1>RAG Study Notes</h1>
+  <p>Retrieval-Augmented Generation (RAG) combines the power of large language models with dynamic knowledge retrieval from your own data sources — eliminating hallucinations and knowledge cutoffs.</p>
+  <div class="meta">
+    <span>⏱ 30 min read</span>
+    <span>🧠 LLM + Retrieval</span>
+    <span>📚 Foundation Concepts</span>
+  </div>
+</div>
+
+<div class="content">
+  <div class="dl-card">
+    <div class="file-icon">📄</div>
+    <div>
+      <h3>RAG_Study_Notes.docx</h3>
+      <p>Complete study notes on RAG fundamentals, pipeline components, chunking strategies, retrieval techniques, and evaluation.</p>
+      <a class="dl-btn" href="/content/RAG/RAG_Study_Notes.docx" download>⬇ Download Full Notes</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>What is RAG?</h2>
+    <p><strong>Retrieval-Augmented Generation</strong> is a technique that enhances LLM responses by retrieving relevant documents from an external knowledge base at query time, then providing those documents as context to the model.</p>
+    <div class="callout blue">
+      <strong>Core idea:</strong> <p>Instead of relying solely on what the LLM learned during training, RAG retrieves up-to-date, domain-specific information and injects it into the prompt. The LLM then generates answers grounded in this retrieved context.</p>
+    </div>
+    <div class="grid">
+      <div class="card"><div class="card-icon">🚫</div><h3>Without RAG</h3><p>LLM answers from training data only. Hallucinations, stale information, no domain specificity.</p></div>
+      <div class="card"><div class="card-icon">✅</div><h3>With RAG</h3><p>LLM answers grounded in your documents. Accurate, up-to-date, citable sources.</p></div>
+      <div class="card"><div class="card-icon">⚙️</div><h3>vs. Fine-tuning</h3><p>RAG is cheaper, faster to update, and doesn't require retraining. Fine-tuning teaches style/format; RAG teaches facts.</p></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>RAG Pipeline</h2>
+    <p>RAG has two distinct pipelines that run at different times:</p>
+
+    <h3>Indexing Pipeline (offline — runs once)</h3>
+    <div class="pipeline">
+Raw Documents (PDFs, Word docs, web pages, databases)
+        │
+        ▼
+  1. Document Loading
+     Load and parse raw documents into text
+        │
+        ▼
+  2. Text Splitting / Chunking
+     Split into overlapping chunks (e.g., 500 tokens, 50-token overlap)
+        │
+        ▼
+  3. Embedding Generation
+     Convert each chunk to a vector using an embedding model
+     (OpenAI text-embedding-3-small, sentence-transformers, etc.)
+        │
+        ▼
+  4. Vector Store Indexing
+     Store &lt;chunk_text, embedding&gt; pairs in a vector database
+     (Pinecone, Qdrant, Chroma, pgvector, FAISS)
+    </div>
+
+    <h3>Query Pipeline (online — runs per user question)</h3>
+    <div class="pipeline">
+User Question: "What is our refund policy?"
+        │
+        ▼
+  1. Query Embedding
+     Embed the question using the same embedding model
+        │
+        ▼
+  2. Similarity Search
+     Find top-K most similar chunks in the vector store
+     (cosine similarity, dot product)
+        │
+        ▼
+  3. Context Assembly
+     Combine retrieved chunks into a context block
+        │
+        ▼
+  4. Prompt Construction
+     System prompt + context + user question
+        │
+        ▼
+  5. LLM Generation
+     LLM generates answer grounded in retrieved context
+        │
+        ▼
+  Answer: "According to our policy, refunds are processed within 7 days..."
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Chunking Strategies</h2>
+    <p>How you split documents significantly impacts retrieval quality. Chunks too large → irrelevant noise in context. Chunks too small → missing context for answering.</p>
+    <table>
+      <tr><th>Strategy</th><th>Description</th><th>Best For</th></tr>
+      <tr><td>Fixed-size</td><td>Split by token/character count with overlap</td><td>General purpose, simple docs</td></tr>
+      <tr><td>Sentence-based</td><td>Split at sentence boundaries</td><td>Prose, articles, Q&amp;A docs</td></tr>
+      <tr><td>Recursive</td><td>Split by paragraphs, then sentences, then words</td><td>Mixed-format docs (default LangChain)</td></tr>
+      <tr><td>Semantic</td><td>Split when topic changes (embedding-based)</td><td>Long docs with distinct sections</td></tr>
+      <tr><td>Document-specific</td><td>Respect markdown headers, code blocks, tables</td><td>Structured docs (MDX, Notion)</td></tr>
+    </table>
+    <div class="callout amber">
+      <strong>Chunk size rule of thumb:</strong> <p>Start with 500-1000 tokens per chunk, 10-15% overlap. Evaluate retrieval quality on your specific documents and adjust. There's no universal ideal.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Embedding Models</h2>
+    <table>
+      <tr><th>Model</th><th>Provider</th><th>Dimensions</th><th>Notes</th></tr>
+      <tr><td>text-embedding-3-small</td><td>OpenAI</td><td>1536</td><td>Best cost/performance for most use cases</td></tr>
+      <tr><td>text-embedding-3-large</td><td>OpenAI</td><td>3072</td><td>Highest accuracy, 5x more expensive</td></tr>
+      <tr><td>embed-english-v3</td><td>Cohere</td><td>1024</td><td>Strong for English, good compression</td></tr>
+      <tr><td>all-MiniLM-L6-v2</td><td>HuggingFace</td><td>384</td><td>Free, local, fast — good baseline</td></tr>
+      <tr><td>nomic-embed-text</td><td>Nomic</td><td>768</td><td>Strong open-source option</td></tr>
+    </table>
+    <div class="callout purple">
+      <strong>Critical:</strong> <p>Use the <em>same</em> embedding model for both indexing and querying. Mixing models will produce meaningless similarity scores.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Retrieval Techniques</h2>
+    <h3>1. Dense Retrieval (Vector Similarity)</h3>
+    <p>Embed query and find nearest chunks by cosine similarity. Captures semantic meaning — "automobile" matches "car". The standard RAG approach.</p>
+
+    <h3>2. Sparse Retrieval (BM25 / Keyword)</h3>
+    <p>Traditional TF-IDF based keyword matching. Works well for exact terms, product codes, proper nouns that embeddings might miss.</p>
+
+    <h3>3. Hybrid Retrieval</h3>
+    <p>Combine dense + sparse with Reciprocal Rank Fusion (RRF). Best of both worlds — recommended for production RAG.</p>
+
+    <h3>4. Re-ranking</h3>
+    <p>After initial retrieval (top-20), pass candidates through a cross-encoder re-ranker to get the truly relevant top-5. Significantly improves precision.</p>
+    <pre># LangChain hybrid retrieval example
+from langchain.retrievers import EnsembleRetriever, BM25Retriever
+from langchain_community.vectorstores import Chroma
+
+vector_retriever = vectorstore.as_retriever(search_kwargs={"k": 10})
+bm25_retriever = BM25Retriever.from_documents(docs)
+bm25_retriever.k = 10
+
+ensemble_retriever = EnsembleRetriever(
+    retrievers=[bm25_retriever, vector_retriever],
+    weights=[0.5, 0.5]
+)</pre>
+  </div>
+
+  <div class="section">
+    <h2>RAG Evaluation Metrics (RAGAS)</h2>
+    <table>
+      <tr><th>Metric</th><th>What It Measures</th><th>Range</th></tr>
+      <tr><td>Faithfulness</td><td>Are claims in the answer supported by the retrieved context?</td><td>0–1 (higher better)</td></tr>
+      <tr><td>Answer Relevancy</td><td>Does the answer address the user's question?</td><td>0–1</td></tr>
+      <tr><td>Context Precision</td><td>Are retrieved chunks relevant? (precision of retrieval)</td><td>0–1</td></tr>
+      <tr><td>Context Recall</td><td>Did retrieval find all necessary chunks?</td><td>0–1</td></tr>
+    </table>
+    <div class="callout green">
+      <strong>RAGAS library:</strong> <p>The open-source RAGAS framework automates all four metrics using an LLM as a judge. Run it on a golden dataset of 20-50 question-answer pairs to measure pipeline quality.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>RAG Types</h2>
+    <div class="grid">
+      <div class="card"><div class="card-icon">🔰</div><h3>Naive RAG</h3><p>Basic index → retrieve → generate pipeline. Good starting point.</p></div>
+      <div class="card"><div class="card-icon">⚙️</div><h3>Advanced RAG</h3><p>Adds query rewriting, re-ranking, hybrid search, metadata filtering.</p></div>
+      <div class="card"><div class="card-icon">🔀</div><h3>Modular RAG</h3><p>Swappable components. Mix and match retrievers, generators, feedback loops.</p></div>
+      <div class="card"><div class="card-icon">🤖</div><h3>Agentic RAG</h3><p>LLM decides when and how to retrieve. Multiple retrieval steps, tool use.</p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  function apply(t){ document.documentElement.setAttribute('data-theme', t==='dark'?'dark':'light'); }
+  try{ apply(localStorage.getItem('theme')||'light'); }catch(e){}
+  window.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='set-theme'){
+      try{ localStorage.setItem('theme',e.data.theme); }catch(e2){}
+      apply(e.data.theme);
+    }
+  });
+})();
+</script>
+</body>
+</html>

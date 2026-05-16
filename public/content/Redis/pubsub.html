@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redis Pub/Sub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--bg2:#f8fafc;--bg3:#f1f5f9;--border:#e2e8f0;--text:#0f172a;--text2:#475569;--text3:#94a3b8;--accent:#dc2626;--accent-soft:#fef2f2;--code-bg:#f8fafc;--code-text:#be123c;--radius:10px;}
+[data-theme="dark"]{--bg:#0d1117;--bg2:#161b22;--bg3:#1c2230;--border:#30363d;--text:#e6edf3;--text2:#8b949e;--text3:#484f58;--accent:#f87171;--accent-soft:#2d1515;--code-bg:#1c2230;--code-text:#fca5a5;}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.7;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+.hd{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.hd-brand{font-size:13px;font-weight:600;color:var(--text2)}.hd-brand span{color:var(--accent)}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;padding:6px 14px;border-radius:7px;text-decoration:none;transition:opacity .15s}.dl-btn:hover{opacity:.88}
+.hero{padding:48px 24px 32px;max-width:800px;margin:0 auto}
+.tag{display:inline-flex;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:clamp(26px,4vw,40px);font-weight:700;line-height:1.15;margin:0 0 12px}
+.hero p{font-size:17px;color:var(--text2);margin:0 0 24px;max-width:640px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--text3)}
+.content{max-width:800px;margin:0 auto;padding:0 24px 80px}
+.section{margin-bottom:40px}
+h2{font-size:20px;font-weight:700;color:var(--text);margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid var(--accent);display:inline-block}
+h3{font-size:15px;font-weight:600;color:var(--text);margin:16px 0 8px}
+p{margin:0 0 14px;color:var(--text2)}
+ul{margin:0 0 14px;padding-left:22px;color:var(--text2)}li{margin-bottom:5px}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;margin:0 0 16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:var(--text2)}
+code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--code-bg);color:var(--code-text);padding:2px 6px;border-radius:4px}
+.callout{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;border-left:4px solid}
+.callout.red{background:var(--accent-soft);border-color:var(--accent)}
+.callout.amber{background:#fffbeb;border-color:#f59e0b}[data-theme="dark"] .callout.amber{background:#1c1a00;border-color:#fbbf24}
+.callout.blue{background:#eff6ff;border-color:#3b82f6}[data-theme="dark"] .callout.blue{background:#0d1b2e;border-color:#60a5fa}
+.callout strong{color:var(--text)}.callout p{margin:0;color:var(--text2)}
+.diagram{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:16px 0;text-align:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text2);line-height:2}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:14px;font-weight:700;color:var(--text);margin:0 0 4px}
+.card p{font-size:13px;margin:0;color:var(--text2)}
+.dl-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;align-items:center;gap:20px;margin-bottom:32px}
+.dl-card .file-icon{font-size:40px;flex-shrink:0}
+.dl-card h3{font-size:15px;font-weight:700;margin:0 0 4px}
+.dl-card p{font-size:13px;margin:0 0 12px;color:var(--text2)}
+table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:14px}
+th{background:var(--bg3);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border:1px solid var(--border)}
+td{padding:9px 14px;border:1px solid var(--border);color:var(--text2)}
+tr:hover td{background:var(--bg2)}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-brand"><span>⚡</span> Redis Track</div>
+  <a class="dl-btn" href="/content/Redis/Redis-PubSub-Notes.docx" download>⬇ Download Notes</a>
+</header>
+
+<div class="hero">
+  <div class="tag">Lesson 4 · Redis</div>
+  <h1>Redis Pub/Sub</h1>
+  <p>Build real-time messaging between services using Redis's built-in Publish/Subscribe mechanism. Publishers send messages to channels; subscribers receive them instantly.</p>
+  <div class="meta">
+    <span>⏱ 20 min read</span>
+    <span>📡 Real-Time Messaging</span>
+    <span>🔀 Event-Driven</span>
+  </div>
+</div>
+
+<div class="content">
+  <div class="dl-card">
+    <div class="file-icon">📄</div>
+    <div>
+      <h3>Redis-PubSub-Notes.docx</h3>
+      <p>Complete notes covering Redis Pub/Sub commands, patterns, use cases, and Node.js implementation.</p>
+      <a class="dl-btn" href="/content/Redis/Redis-PubSub-Notes.docx" download>⬇ Download Full Notes</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>How Pub/Sub Works</h2>
+    <p>Redis Pub/Sub implements the <strong>observer pattern</strong> at the infrastructure level. Publishers send messages to named channels. Subscribers listen to channels and receive messages in real time.</p>
+    <div class="diagram">
+Publisher A ──→ PUBLISH notifications "{'type':'new_order'}" ──→ Redis Channel: notifications
+Publisher B ──→ PUBLISH notifications "{'type':'payment'}"  ──→ Redis Channel: notifications
+                                                                         │
+                                              ┌──────────────────────────┘
+                                              ▼
+                                   Subscriber 1 (email service)
+                                   Subscriber 2 (analytics service)
+                                   Subscriber 3 (push notification service)
+    </div>
+    <div class="callout red">
+      <strong>Fire-and-forget:</strong> <p>Redis Pub/Sub is <em>not</em> a message queue. If a subscriber is offline when a message is published, it misses that message. Use Redis Streams or BullMQ when you need guaranteed delivery.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Core Commands</h2>
+    <table>
+      <tr><th>Command</th><th>Role</th><th>Description</th></tr>
+      <tr><td><code>SUBSCRIBE channel</code></td><td>Subscriber</td><td>Listen to a specific channel</td></tr>
+      <tr><td><code>PSUBSCRIBE pattern</code></td><td>Subscriber</td><td>Listen using glob pattern (e.g. <code>user:*</code>)</td></tr>
+      <tr><td><code>PUBLISH channel message</code></td><td>Publisher</td><td>Send message to all channel subscribers</td></tr>
+      <tr><td><code>UNSUBSCRIBE channel</code></td><td>Subscriber</td><td>Stop listening to a channel</td></tr>
+      <tr><td><code>PUBSUB CHANNELS</code></td><td>Admin</td><td>List active channels with at least 1 subscriber</td></tr>
+      <tr><td><code>PUBSUB NUMSUB channel</code></td><td>Admin</td><td>Number of subscribers on a channel</td></tr>
+    </table>
+
+    <h3>CLI Example</h3>
+    <pre># Terminal 1 — Subscriber
+redis-cli
+SUBSCRIBE notifications
+# Reading messages...  (blocks here)
+
+# Terminal 2 — Publisher
+redis-cli
+PUBLISH notifications '{"type":"new_order","orderId":"ORD-123"}'
+# (integer) 1  ← number of subscribers that received it
+
+# Terminal 1 will print:
+# 1) "message"
+# 2) "notifications"
+# 3) "{\"type\":\"new_order\",\"orderId\":\"ORD-123\"}"</pre>
+  </div>
+
+  <div class="section">
+    <h2>Node.js Implementation</h2>
+    <div class="callout blue">
+      <strong>Important:</strong> <p>A connection in SUBSCRIBE mode can only run Pub/Sub commands. Create <strong>separate Redis connections</strong> for publishing and subscribing.</p>
+    </div>
+    <pre>import Redis from 'ioredis';
+
+const publisher = new Redis();
+const subscriber = new Redis();
+
+// ── Subscriber ──
+await subscriber.subscribe('notifications', 'alerts');
+
+subscriber.on('message', (channel, message) => {
+  console.log(`Channel: ${channel}`);
+  const payload = JSON.parse(message);
+
+  if (channel === 'notifications') handleNotification(payload);
+  if (channel === 'alerts') handleAlert(payload);
+});
+
+// ── Pattern Subscriber ──
+await subscriber.psubscribe('user:*');
+
+subscriber.on('pmessage', (pattern, channel, message) => {
+  console.log(`Pattern: ${pattern}, Channel: ${channel}`);
+  // channel might be "user:123:orders" or "user:456:profile"
+});
+
+// ── Publisher ──
+async function publishOrderEvent(orderId: string) {
+  const payload = JSON.stringify({ type: 'new_order', orderId, timestamp: Date.now() });
+  const receiverCount = await publisher.publish('notifications', payload);
+  console.log(`Message delivered to ${receiverCount} subscriber(s)`);
+}</pre>
+  </div>
+
+  <div class="section">
+    <h2>Common Use Cases</h2>
+    <div class="grid">
+      <div class="card"><h3>🔔 Real-time Notifications</h3><p>Push order updates, payment confirmations, or alert events to multiple services simultaneously.</p></div>
+      <div class="card"><h3>💬 Chat Systems</h3><p>Broadcast messages in a chat room to all connected users on the same channel.</p></div>
+      <div class="card"><h3>📊 Live Dashboards</h3><p>Push metrics updates to monitoring dashboards without polling.</p></div>
+      <div class="card"><h3>🔄 Cache Invalidation</h3><p>Notify all app instances to invalidate a cached key when the source data changes.</p></div>
+      <div class="card"><h3>🎮 Game Events</h3><p>Broadcast game state changes (score updates, player actions) to all participants.</p></div>
+      <div class="card"><h3>🔗 Microservice Events</h3><p>Decouple services — emit events on channels instead of direct API calls.</p></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Pub/Sub vs Streams vs BullMQ</h2>
+    <table>
+      <tr><th>Feature</th><th>Pub/Sub</th><th>Streams</th><th>BullMQ</th></tr>
+      <tr><td>Message persistence</td><td>❌ No</td><td>✅ Yes</td><td>✅ Yes</td></tr>
+      <tr><td>Replay missed messages</td><td>❌ No</td><td>✅ Yes</td><td>❌ No</td></tr>
+      <tr><td>Job retry on failure</td><td>❌ No</td><td>Partial</td><td>✅ Yes</td></tr>
+      <tr><td>Fan-out (1 → many)</td><td>✅ Yes</td><td>Partial</td><td>❌ No</td></tr>
+      <tr><td>Complexity</td><td>Low</td><td>Medium</td><td>Medium</td></tr>
+      <tr><td>Best for</td><td>Real-time broadcasts</td><td>Event sourcing</td><td>Job queues</td></tr>
+    </table>
+    <div class="callout amber">
+      <strong>Rule of thumb:</strong> <p>Use Pub/Sub for <em>ephemeral broadcasts</em> where it's OK to miss messages. Use BullMQ or Streams when delivery must be <em>guaranteed</em>.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  function apply(t){ document.documentElement.setAttribute('data-theme', t==='dark'?'dark':'light'); }
+  try{ apply(localStorage.getItem('theme')||'light'); }catch(e){}
+  window.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='set-theme'){
+      try{ localStorage.setItem('theme',e.data.theme); }catch(e2){}
+      apply(e.data.theme);
+    }
+  });
+})();
+</script>
+</body>
+</html>

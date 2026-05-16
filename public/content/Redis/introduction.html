@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction to Redis</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#fff; --bg2:#f8fafc; --bg3:#f1f5f9; --border:#e2e8f0;
+  --text:#0f172a; --text2:#475569; --text3:#94a3b8;
+  --accent:#dc2626; --accent-soft:#fef2f2; --accent-muted:#fca5a5;
+  --code-bg:#f8fafc; --code-text:#be123c;
+  --shadow:0 1px 3px rgba(15,23,42,.07),0 1px 2px rgba(15,23,42,.04);
+  --shadow-lg:0 8px 24px rgba(15,23,42,.08),0 2px 8px rgba(15,23,42,.04);
+  --radius:10px;
+}
+[data-theme="dark"] {
+  --bg:#0d1117; --bg2:#161b22; --bg3:#1c2230; --border:#30363d;
+  --text:#e6edf3; --text2:#8b949e; --text3:#484f58;
+  --accent:#f87171; --accent-soft:#2d1515; --accent-muted:#ef4444;
+  --code-bg:#1c2230; --code-text:#fca5a5;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.7;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ── header ── */
+.hd{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.hd-brand{font-size:13px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
+.hd-brand span{color:var(--accent)}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;padding:6px 14px;border-radius:7px;transition:opacity .15s}
+.dl-btn:hover{opacity:.88;text-decoration:none}
+
+/* ── hero ── */
+.hero{padding:48px 24px 32px;max-width:800px;margin:0 auto}
+.tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:clamp(26px,4vw,40px);font-weight:700;line-height:1.15;margin:0 0 12px;color:var(--text)}
+.hero p{font-size:17px;color:var(--text2);margin:0 0 24px;max-width:640px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--text3)}
+.meta span{display:flex;align-items:center;gap:4px}
+
+/* ── content ── */
+.content{max-width:800px;margin:0 auto;padding:0 24px 80px}
+.section{margin-bottom:40px}
+h2{font-size:20px;font-weight:700;color:var(--text);margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid var(--accent);display:inline-block}
+h3{font-size:16px;font-weight:600;color:var(--text);margin:0 0 8px}
+p{margin:0 0 14px;color:var(--text2)}
+ul{margin:0 0 14px;padding-left:22px;color:var(--text2)}
+li{margin-bottom:5px}
+
+/* ── cards ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.card-icon{font-size:22px;margin-bottom:8px}
+.card h3{font-size:14px;font-weight:700;color:var(--text);margin:0 0 4px}
+.card p{font-size:13px;margin:0;color:var(--text2)}
+
+/* ── callout ── */
+.callout{border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;border-left:4px solid}
+.callout.red{background:var(--accent-soft);border-color:var(--accent);color:var(--text2)}
+.callout.blue{background:#eff6ff;border-color:#3b82f6;color:var(--text2)}
+[data-theme="dark"] .callout.blue{background:#0d1b2e;border-color:#60a5fa}
+.callout strong{color:var(--text)}
+
+/* ── code ── */
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;margin:0 0 16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:var(--text2)}
+code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--code-bg);color:var(--code-text);padding:2px 6px;border-radius:4px}
+
+/* ── table ── */
+table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:14px}
+th{background:var(--bg3);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border:1px solid var(--border)}
+td{padding:9px 14px;border:1px solid var(--border);color:var(--text2)}
+tr:hover td{background:var(--bg2)}
+
+/* ── download hero ── */
+.dl-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;align-items:center;gap:20px;margin-bottom:32px;box-shadow:var(--shadow)}
+.dl-card .file-icon{font-size:40px;flex-shrink:0}
+.dl-card h3{font-size:15px;font-weight:700;margin:0 0 4px;color:var(--text)}
+.dl-card p{font-size:13px;margin:0 0 12px;color:var(--text2)}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-brand"><span>⚡</span> Redis Track</div>
+  <a class="dl-btn" href="/content/Redis/Redis-Introduction-Notes.docx" download>⬇ Download Notes</a>
+</header>
+
+<div class="hero">
+  <div class="tag">Lesson 1 · Redis</div>
+  <h1>Introduction to Redis</h1>
+  <p>Redis (Remote Dictionary Server) is an open-source, in-memory data structure store used as a database, cache, message broker, and queue. Known for its blazing-fast performance and versatile data types.</p>
+  <div class="meta">
+    <span>⏱ 20 min read</span>
+    <span>📦 In-Memory Database</span>
+    <span>⚡ Sub-millisecond latency</span>
+  </div>
+</div>
+
+<div class="content">
+  <div class="dl-card">
+    <div class="file-icon">📄</div>
+    <div>
+      <h3>Redis-Introduction-Notes.docx</h3>
+      <p>Complete study notes covering Redis fundamentals, architecture, data types, and core commands.</p>
+      <a class="dl-btn" href="/content/Redis/Redis-Introduction-Notes.docx" download>⬇ Download Full Notes</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>What is Redis?</h2>
+    <p>Redis is an <strong>in-memory key-value store</strong> that persists data on disk. Unlike traditional databases that read/write from disk, Redis keeps all data in RAM — making operations 10–100x faster than disk-based databases.</p>
+    <div class="callout red">
+      <strong>Core idea:</strong> Every operation in Redis is a key-value lookup. A key is always a string; a value can be one of many complex data types.
+    </div>
+    <div class="grid">
+      <div class="card"><div class="card-icon">⚡</div><h3>In-Memory Speed</h3><p>All data in RAM. Sub-millisecond read/write latency.</p></div>
+      <div class="card"><div class="card-icon">💾</div><h3>Persistence</h3><p>RDB snapshots + AOF logs for durability when needed.</p></div>
+      <div class="card"><div class="card-icon">🔀</div><h3>Rich Data Types</h3><p>Strings, Hashes, Lists, Sets, Sorted Sets, Streams.</p></div>
+      <div class="card"><div class="card-icon">📡</div><h3>Pub/Sub</h3><p>Built-in publish/subscribe messaging for real-time events.</p></div>
+      <div class="card"><div class="card-icon">⏳</div><h3>TTL Support</h3><p>Set expiry on any key — great for caching and sessions.</p></div>
+      <div class="card"><div class="card-icon">🔗</div><h3>Atomic Operations</h3><p>All operations are atomic. Pipelines for batching.</p></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Core Data Types</h2>
+    <table>
+      <tr><th>Type</th><th>Description</th><th>Common Use</th></tr>
+      <tr><td><code>String</code></td><td>Basic key-value, binary-safe up to 512 MB</td><td>Caching, counters, session tokens</td></tr>
+      <tr><td><code>Hash</code></td><td>Field-value pairs within a key</td><td>User profiles, object storage</td></tr>
+      <tr><td><code>List</code></td><td>Ordered linked list of strings</td><td>Queues, activity feeds</td></tr>
+      <tr><td><code>Set</code></td><td>Unordered unique strings</td><td>Tags, unique visitors, friends</td></tr>
+      <tr><td><code>Sorted Set</code></td><td>Set with a score per member</td><td>Leaderboards, time-series</td></tr>
+      <tr><td><code>Stream</code></td><td>Append-only log structure</td><td>Event sourcing, message queues</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Essential Commands</h2>
+    <pre># String operations
+SET user:1:name "Alice"
+GET user:1:name
+SETEX session:abc 3600 "token_xyz"   # set with 3600s TTL
+INCR page:views                      # atomic counter
+
+# Hash operations
+HSET user:1 name "Alice" age 28 city "Mumbai"
+HGET user:1 name
+HGETALL user:1
+
+# List operations (queue pattern)
+LPUSH queue:emails "job1"            # push to head
+RPOP queue:emails                    # pop from tail (FIFO)
+
+# Key management
+TTL session:abc                      # seconds remaining
+EXPIRE session:abc 7200              # reset TTL
+DEL user:1:name                      # delete key
+EXISTS user:1:name                   # 1 or 0</pre>
+  </div>
+
+  <div class="section">
+    <h2>Common Use Cases</h2>
+    <div class="grid">
+      <div class="card"><div class="card-icon">🗂</div><h3>Caching</h3><p>Cache DB query results, API responses, HTML fragments to reduce load.</p></div>
+      <div class="card"><div class="card-icon">🔐</div><h3>Session Store</h3><p>Store user sessions with automatic TTL expiry.</p></div>
+      <div class="card"><div class="card-icon">📬</div><h3>Job Queues</h3><p>LPUSH/BRPOP for task queues; BullMQ uses Redis underneath.</p></div>
+      <div class="card"><div class="card-icon">🏆</div><h3>Leaderboards</h3><p>Sorted Sets maintain ranked scores in real-time.</p></div>
+      <div class="card"><div class="card-icon">📡</div><h3>Pub/Sub</h3><p>Real-time notifications, chat, live updates.</p></div>
+      <div class="card"><div class="card-icon">🔢</div><h3>Rate Limiting</h3><p>INCR + TTL for simple, fast rate limiting per user.</p></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Persistence Modes</h2>
+    <div class="callout blue">
+      <strong>RDB (Redis Database):</strong> Point-in-time snapshots saved to disk at configured intervals. Compact, great for backups. Risk: data loss between snapshots.
+    </div>
+    <div class="callout blue">
+      <strong>AOF (Append-Only File):</strong> Logs every write operation. More durable (can be fsynced every second or on every write). Larger files, slower restarts.
+    </div>
+    <p>Most production setups use <strong>both RDB + AOF</strong> for the best balance of performance and durability.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  function apply(t){ document.documentElement.setAttribute('data-theme', t==='dark'?'dark':'light'); }
+  try{ apply(localStorage.getItem('theme')||'light'); }catch(e){}
+  window.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='set-theme'){
+      try{ localStorage.setItem('theme',e.data.theme); }catch(e2){}
+      apply(e.data.theme);
+    }
+  });
+})();
+</script>
+</body>
+</html>

@@ -35,6 +35,12 @@ const COMING_SOON = [
       "Design autonomous agents that plan, use tools, and iterate. ReAct, tool use, multi-agent orchestration.",
     icon: "🤖",
   },
+  {
+    title: "LangGraph",
+    description:
+      "Build stateful, multi-step LLM workflows with graphs. State machines, conditional edges, and human-in-the-loop patterns.",
+    icon: "🔀",
+  },
 ];
 
 export default function HomePage() {

@@ -111,6 +111,116 @@ export const TOPICS: Topic[] = [
       },
     ],
   },
+  {
+    slug: "rag",
+    title: "Retrieval-Augmented Generation",
+    shortTitle: "RAG",
+    description:
+      "Learn how RAG combines LLMs with your own knowledge base — eliminate hallucinations, build document Q&A systems, and understand chunking, embeddings, vector stores, and retrieval pipelines.",
+    color: "#0ea5e9",
+    icon: "🔍",
+    lessons: [
+      {
+        slug: "study-notes",
+        title: "RAG Study Notes",
+        description:
+          "Core concepts: what RAG is, why it beats fine-tuning, the indexing pipeline, chunking strategies, embedding models, and retrieval techniques.",
+        htmlFile: "/content/RAG/study-notes.html",
+        duration: "30 min",
+      },
+      {
+        slug: "flow-diagram",
+        title: "RAG Flow Diagram",
+        description:
+          "Visual step-by-step walkthrough of the complete RAG pipeline — from raw documents to LLM-generated answers, with failure modes and fixes.",
+        htmlFile: "/content/RAG/flow-diagram.html",
+        duration: "20 min",
+      },
+    ],
+  },
+  {
+    slug: "redis",
+    title: "Redis",
+    shortTitle: "Redis",
+    description:
+      "Master Redis from the ground up — in-memory data structures, caching patterns, OTP verification, Pub/Sub, job queues with BullMQ, leaderboards with Sorted Sets, and production patterns.",
+    color: "#dc2626",
+    icon: "⚡",
+    lessons: [
+      {
+        slug: "introduction",
+        title: "Introduction to Redis",
+        description:
+          "What Redis is, core data types (String, Hash, List, Set, Sorted Set), essential commands, use cases, and persistence modes.",
+        htmlFile: "/content/Redis/introduction.html",
+        duration: "20 min",
+      },
+      {
+        slug: "local-setup",
+        title: "Local Setup",
+        description:
+          "Install Redis on Linux, macOS, or Docker. Connect via redis-cli, explore the config file, and wire up ioredis in Node.js.",
+        htmlFile: "/content/Redis/local-setup.html",
+        duration: "15 min",
+      },
+      {
+        slug: "otp-verification",
+        title: "OTP Verification",
+        description:
+          "Build a secure OTP system using Redis TTL — automatic expiry, rate limiting, one-time use enforcement, and Node.js implementation.",
+        htmlFile: "/content/Redis/otp-verification.html",
+        duration: "18 min",
+      },
+      {
+        slug: "pubsub",
+        title: "Pub/Sub Messaging",
+        description:
+          "Real-time fan-out messaging with PUBLISH/SUBSCRIBE. Channels, pattern subscriptions, Node.js implementation, and comparison with Streams and BullMQ.",
+        htmlFile: "/content/Redis/pubsub.html",
+        duration: "20 min",
+      },
+      {
+        slug: "email-queue",
+        title: "Email Queue",
+        description:
+          "Decouple email sending with a Redis List queue. Producer/consumer pattern, LPUSH/BRPOP, dead-letter queue, and retry logic.",
+        htmlFile: "/content/Redis/email-queue.html",
+        duration: "22 min",
+      },
+      {
+        slug: "bullmq-infrastructure",
+        title: "BullMQ Queue Infrastructure",
+        description:
+          "Production job queues on Redis: Queue, Worker, automatic retries, delayed jobs, concurrency control, repeatable cron jobs, and Bull Board dashboard.",
+        htmlFile: "/content/Redis/bullmq-infrastructure.html",
+        duration: "25 min",
+      },
+      {
+        slug: "site-banner-apis",
+        title: "Site Banner APIs",
+        description:
+          "Cache banner configurations using the cache-aside pattern. Cache invalidation strategies, key naming conventions, and JSON vs Hash storage choice.",
+        htmlFile: "/content/Redis/site-banner-apis.html",
+        duration: "18 min",
+      },
+      {
+        slug: "user-profile-json-vs-hash",
+        title: "User Profile: JSON vs HASH",
+        description:
+          "Deep comparison of JSON string storage vs Redis Hash for user profiles — atomic updates, partial reads, memory efficiency, and the hybrid approach.",
+        htmlFile: "/content/Redis/user-profile-json-vs-hash.html",
+        duration: "20 min",
+      },
+      {
+        slug: "live-leaderboard",
+        title: "Live Leaderboard",
+        description:
+          "Build a real-time leaderboard with Redis Sorted Sets — ZADD, ZINCRBY, ZREVRANGE, ZREVRANK. REST API, multiple time-window boards, and WebSocket integration.",
+        htmlFile: "/content/Redis/live-leaderboard.html",
+        duration: "22 min",
+      },
+    ],
+  },
   // ── Add future topics here ──────────────────────────────────────────────────
   // {
   //   slug: "langchain",

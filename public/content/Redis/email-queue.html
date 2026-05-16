@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redis Email Queue</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--bg2:#f8fafc;--bg3:#f1f5f9;--border:#e2e8f0;--text:#0f172a;--text2:#475569;--text3:#94a3b8;--accent:#dc2626;--accent-soft:#fef2f2;--code-bg:#f8fafc;--code-text:#be123c;--radius:10px;}
+[data-theme="dark"]{--bg:#0d1117;--bg2:#161b22;--bg3:#1c2230;--border:#30363d;--text:#e6edf3;--text2:#8b949e;--text3:#484f58;--accent:#f87171;--accent-soft:#2d1515;--code-bg:#1c2230;--code-text:#fca5a5;}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.7;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+.hd{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.hd-brand{font-size:13px;font-weight:600;color:var(--text2)}.hd-brand span{color:var(--accent)}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;padding:6px 14px;border-radius:7px;text-decoration:none;transition:opacity .15s}.dl-btn:hover{opacity:.88}
+.hero{padding:48px 24px 32px;max-width:800px;margin:0 auto}
+.tag{display:inline-flex;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:clamp(26px,4vw,40px);font-weight:700;line-height:1.15;margin:0 0 12px}
+.hero p{font-size:17px;color:var(--text2);margin:0 0 24px;max-width:640px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--text3)}
+.content{max-width:800px;margin:0 auto;padding:0 24px 80px}
+.section{margin-bottom:40px}
+h2{font-size:20px;font-weight:700;color:var(--text);margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid var(--accent);display:inline-block}
+h3{font-size:15px;font-weight:600;color:var(--text);margin:16px 0 8px}
+p{margin:0 0 14px;color:var(--text2)}
+ul{margin:0 0 14px;padding-left:22px;color:var(--text2)}li{margin-bottom:5px}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;margin:0 0 16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:var(--text2)}
+code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--code-bg);color:var(--code-text);padding:2px 6px;border-radius:4px}
+.callout{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;border-left:4px solid}
+.callout.red{background:var(--accent-soft);border-color:var(--accent)}
+.callout.green{background:#f0fdf4;border-color:#16a34a}[data-theme="dark"] .callout.green{background:#0d2318;border-color:#4ade80}
+.callout.blue{background:#eff6ff;border-color:#3b82f6}[data-theme="dark"] .callout.blue{background:#0d1b2e;border-color:#60a5fa}
+.callout strong{color:var(--text)}.callout p{margin:0;color:var(--text2)}
+.diagram{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:16px 0;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2);line-height:1.8;overflow-x:auto}
+.dl-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;align-items:center;gap:20px;margin-bottom:32px}
+.dl-card .file-icon{font-size:40px;flex-shrink:0}
+.dl-card h3{font-size:15px;font-weight:700;margin:0 0 4px}
+.dl-card p{font-size:13px;margin:0 0 12px;color:var(--text2)}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-brand"><span>⚡</span> Redis Track</div>
+  <a class="dl-btn" href="/content/Redis/Redis-Email-Queue-Notes.docx" download>⬇ Download Notes</a>
+</header>
+
+<div class="hero">
+  <div class="tag">Lesson 5 · Redis</div>
+  <h1>Email Queue with Redis</h1>
+  <p>Decouple email sending from your request cycle using Redis Lists as a simple, reliable job queue. Process emails asynchronously without blocking user requests.</p>
+  <div class="meta">
+    <span>⏱ 22 min read</span>
+    <span>📬 Async Processing</span>
+    <span>🔀 Queue Pattern</span>
+  </div>
+</div>
+
+<div class="content">
+  <div class="dl-card">
+    <div class="file-icon">📄</div>
+    <div>
+      <h3>Redis-Email-Queue-Notes.docx</h3>
+      <p>Complete notes on building an email queue system using Redis Lists with retry logic and worker processes.</p>
+      <a class="dl-btn" href="/content/Redis/Redis-Email-Queue-Notes.docx" download>⬇ Download Full Notes</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>The Problem</h2>
+    <p>Sending emails synchronously in the request handler blocks the user's response and makes your app vulnerable to email provider outages. The solution: <strong>queue the job and process it in the background</strong>.</p>
+    <div class="callout red">
+      <strong>Don't do this:</strong> <p>API request → send email → wait → respond. If the email provider is slow, every user waits. If it's down, the entire request fails.</p>
+    </div>
+    <div class="callout green">
+      <strong>Do this instead:</strong> <p>API request → push job to Redis queue → respond immediately → background worker picks up job → sends email.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Architecture</h2>
+    <div class="diagram">
+HTTP Request (POST /register)
+        │
+        ▼
+   API Server
+   - Create user in DB
+   - LPUSH email:queue '{"to":"user@example.com","template":"welcome"}' ──→ Redis List
+   - Return 201 Created (fast!)
+                                                                              │
+                                                          ┌───────────────────┘
+                                                          ▼
+                                                   Email Worker (separate process)
+                                                   - BRPOP email:queue (blocking)
+                                                   - Parse job
+                                                   - Call Nodemailer / SendGrid
+                                                   - Log result
+                                                   - Loop
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Redis List as a Queue</h2>
+    <pre># FIFO Queue pattern:
+# - Producer: LPUSH (push to head)
+# - Consumer: BRPOP (blocking pop from tail)
+
+# Producer
+LPUSH email:queue '{"to":"alice@example.com","subject":"Welcome","template":"welcome"}'
+LPUSH email:queue '{"to":"bob@example.com","subject":"Reset","template":"reset_password"}'
+
+# Consumer (blocking — waits up to 30s for a job)
+BRPOP email:queue 30
+# Returns: 1) "email:queue"  2) '{"to":"alice@example.com",...}'
+
+# Check queue depth
+LLEN email:queue    # → 2
+
+# Peek without consuming
+LRANGE email:queue 0 4   # show first 5 items</pre>
+
+    <div class="callout blue">
+      <strong>BRPOP vs RPOP:</strong> <p><code>BRPOP</code> blocks the connection until a job arrives (up to the timeout). This avoids busy-polling and is more CPU-efficient than repeatedly calling <code>RPOP</code> in a loop.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Producer (API Server)</h2>
+    <pre>import Redis from 'ioredis';
+import nodemailer from 'nodemailer';
+
+const redis = new Redis();
+
+interface EmailJob {
+  to: string;
+  subject: string;
+  template: 'welcome' | 'reset_password' | 'order_confirm';
+  data?: Record&lt;string, unknown&gt;;
+}
+
+export async function queueEmail(job: EmailJob): Promise<void> {
+  await redis.lpush('email:queue', JSON.stringify(job));
+  console.log(`Email queued for: ${job.to}`);
+}
+
+// In your route handler:
+// app.post('/register', async (req, res) => {
+//   await createUser(req.body);
+//   await queueEmail({ to: req.body.email, subject: 'Welcome!', template: 'welcome' });
+//   res.status(201).json({ message: 'Registered successfully' });
+// });</pre>
+  </div>
+
+  <div class="section">
+    <h2>Worker Process</h2>
+    <pre>import Redis from 'ioredis';
+
+const redis = new Redis();
+
+async function processEmail(job: EmailJob): Promise<void> {
+  // Use Nodemailer, SendGrid, AWS SES, etc.
+  const transporter = nodemailer.createTransport({ /* config */ });
+  await transporter.sendMail({
+    to: job.to,
+    subject: job.subject,
+    html: renderTemplate(job.template, job.data),
+  });
+  console.log(`Email sent to ${job.to}`);
+}
+
+async function runWorker(): Promise<void> {
+  console.log('Email worker started. Waiting for jobs...');
+
+  while (true) {
+    try {
+      // Block for up to 30 seconds waiting for a job
+      const result = await redis.brpop('email:queue', 30);
+
+      if (!result) continue; // timeout, loop again
+
+      const [, rawJob] = result;
+      const job: EmailJob = JSON.parse(rawJob);
+
+      await processEmail(job);
+    } catch (err) {
+      console.error('Error processing email job:', err);
+      // Optional: push to a dead-letter queue for inspection
+      // await redis.lpush('email:failed', rawJob);
+      await new Promise(r => setTimeout(r, 1000)); // brief backoff
+    }
+  }
+}
+
+runWorker();</pre>
+  </div>
+
+  <div class="section">
+    <h2>Dead-Letter Queue (Failed Jobs)</h2>
+    <pre>// In the worker error handler:
+const MAX_RETRIES = 3;
+
+async function processWithRetry(rawJob: string): Promise<void> {
+  const job = JSON.parse(rawJob);
+  const retries = job._retries || 0;
+
+  try {
+    await processEmail(job);
+  } catch (err) {
+    if (retries < MAX_RETRIES) {
+      job._retries = retries + 1;
+      // Re-queue with retry count (RPUSH = lower priority, processed later)
+      await redis.rpush('email:queue', JSON.stringify(job));
+      console.log(`Retrying job (attempt ${job._retries})`);
+    } else {
+      // Give up — move to dead-letter queue for manual inspection
+      await redis.lpush('email:dead', rawJob);
+      console.error(`Job failed after ${MAX_RETRIES} retries. Moved to dead-letter queue.`);
+    }
+  }
+}</pre>
+    <div class="callout blue">
+      <strong>Upgrade path:</strong> <p>For production workloads, switch from raw Redis Lists to <strong>BullMQ</strong>. It gives you retries, delays, prioritization, concurrency, and a dashboard — all built on Redis.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Key Takeaways</h2>
+    <ul>
+      <li>Use <code>LPUSH</code> to enqueue, <code>BRPOP</code> to dequeue (FIFO).</li>
+      <li>Keep job payloads as small as possible — store just enough to process the task.</li>
+      <li>Run the worker as a separate process (pm2, Docker service, etc.).</li>
+      <li>Monitor queue depth with <code>LLEN email:queue</code> — alert if it grows unexpectedly.</li>
+      <li>Use a dead-letter queue to catch failed jobs for debugging.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+(function(){
+  function apply(t){ document.documentElement.setAttribute('data-theme', t==='dark'?'dark':'light'); }
+  try{ apply(localStorage.getItem('theme')||'light'); }catch(e){}
+  window.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='set-theme'){
+      try{ localStorage.setItem('theme',e.data.theme); }catch(e2){}
+      apply(e.data.theme);
+    }
+  });
+})();
+</script>
+</body>
+</html>
