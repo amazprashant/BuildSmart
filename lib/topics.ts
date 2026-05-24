@@ -221,6 +221,33 @@ export const TOPICS: Topic[] = [
       },
     ],
   },
+  {
+    slug: "system-design",
+    title: "System Design",
+    shortTitle: "System Design",
+    description:
+      "Master system design from fundamentals to real-world architectures — scalability, load balancing, caching, databases, CAP theorem, microservices, API design, message queues, and a full URL shortener case study.",
+    color: "#6366f1",
+    icon: "🏗",
+    lessons: [
+      {
+        slug: "fundamentals",
+        title: "Part 1: Fundamentals",
+        description:
+          "Core properties (scalability, availability, reliability), vertical vs horizontal scaling, load balancing algorithms, caching strategies, database sharding & replication, and the CAP theorem.",
+        htmlFile: "/content/system%20design/part1.html",
+        duration: "40 min",
+      },
+      {
+        slug: "patterns-and-case-studies",
+        title: "Part 2: Patterns & Case Studies",
+        description:
+          "Microservices vs monolith, REST/GraphQL/gRPC, message queues, rate limiting algorithms, consistent hashing, and a full end-to-end URL shortener design with architecture diagrams.",
+        htmlFile: "/content/system%20design/part2.html",
+        duration: "45 min",
+      },
+    ],
+  },
   // ── Add future topics here ──────────────────────────────────────────────────
   // {
   //   slug: "langchain",

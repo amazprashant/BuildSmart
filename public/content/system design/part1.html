@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Design — Part 1: Fundamentals</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════
+   THEME TOKENS
+══════════════════════════════════════ */
+:root {
+  --bg:#ffffff; --bg2:#f8fafc; --bg3:#f1f5f9; --border:#e2e8f0;
+  --text:#0f172a; --text2:#475569; --text3:#94a3b8;
+  --accent:#6366f1; --accent-soft:#eef2ff; --accent-dark:#4f46e5;
+  --green:#16a34a; --green-soft:#f0fdf4;
+  --amber:#d97706; --amber-soft:#fffbeb;
+  --red:#dc2626; --red-soft:#fef2f2;
+  --blue:#2563eb; --blue-soft:#eff6ff;
+  --purple:#7c3aed; --purple-soft:#faf5ff;
+  --code-bg:#f1f5f9; --code-text:#4f46e5;
+  --shadow:0 1px 3px rgba(15,23,42,.07),0 1px 2px rgba(15,23,42,.04);
+  --shadow-lg:0 8px 24px rgba(15,23,42,.08),0 2px 8px rgba(15,23,42,.04);
+  --radius:10px;
+}
+[data-theme="dark"] {
+  --bg:#0d1117; --bg2:#161b22; --bg3:#1c2230; --border:#30363d;
+  --text:#e6edf3; --text2:#8b949e; --text3:#484f58;
+  --accent:#818cf8; --accent-soft:#1e1b4b; --accent-dark:#6366f1;
+  --green:#4ade80; --green-soft:#0d2318;
+  --amber:#fbbf24; --amber-soft:#1c1a00;
+  --red:#f87171; --red-soft:#2d1515;
+  --blue:#60a5fa; --blue-soft:#0d1b2e;
+  --purple:#c4b5fd; --purple-soft:#1a0d2e;
+  --code-bg:#1c2230; --code-text:#818cf8;
+}
+
+/* ══════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.75;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+
+/* ══════════════════════════════════════
+   HEADER
+══════════════════════════════════════ */
+.hd{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow)}
+.hd-brand{font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px}
+.hd-brand .icon{width:28px;height:28px;background:var(--accent-soft);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:7px 14px;border-radius:7px;transition:all .15s;box-shadow:0 1px 3px rgba(99,102,241,.3);text-decoration:none}
+.dl-btn:hover{opacity:.9;transform:translateY(-1px);text-decoration:none}
+
+/* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
+.hero{padding:52px 24px 36px;max-width:860px;margin:0 auto}
+.tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-bottom:16px;border:1px solid var(--accent)}
+.hero h1{font-size:clamp(28px,4vw,44px);font-weight:800;line-height:1.1;margin:0 0 14px;color:var(--text);letter-spacing:-.02em}
+.hero h1 em{color:var(--accent);font-style:normal}
+.hero p{font-size:17px;color:var(--text2);margin:0 0 24px;max-width:660px;line-height:1.65}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:13px;color:var(--text3)}
+.meta span{display:flex;align-items:center;gap:5px}
+
+/* ══════════════════════════════════════
+   CONTENT LAYOUT
+══════════════════════════════════════ */
+.content{max-width:860px;margin:0 auto;padding:8px 24px 100px}
+.section{margin-bottom:52px}
+.section-hd{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.section-hd h2{font-size:22px;font-weight:800;color:var(--text);margin:0;letter-spacing:-.02em}
+.section-num{width:34px;height:34px;border-radius:9px;background:var(--accent);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+h3{font-size:15px;font-weight:700;color:var(--text);margin:24px 0 10px}
+p{margin:0 0 14px;color:var(--text2)}
+ul,ol{margin:0 0 14px;padding-left:22px;color:var(--text2)}
+li{margin-bottom:6px;line-height:1.6}
+strong{color:var(--text)}
+
+/* ══════════════════════════════════════
+   CARDS & GRID
+══════════════════════════════════════ */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin:16px 0 24px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0 24px}
+@media(max-width:600px){.grid-2{grid-template-columns:1fr}}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);transition:box-shadow .2s}
+.card:hover{box-shadow:var(--shadow-lg)}
+.card-icon{font-size:24px;margin-bottom:10px}
+.card h3{font-size:14px;font-weight:700;color:var(--text);margin:0 0 6px}
+.card p{font-size:13px;margin:0;color:var(--text2);line-height:1.55}
+.card.accent-border{border-top:3px solid var(--accent)}
+.card.green-border{border-top:3px solid var(--green)}
+.card.amber-border{border-top:3px solid var(--amber)}
+.card.blue-border{border-top:3px solid var(--blue)}
+.card.red-border{border-top:3px solid var(--red)}
+.card.purple-border{border-top:3px solid var(--purple)}
+
+/* ══════════════════════════════════════
+   CALLOUTS
+══════════════════════════════════════ */
+.callout{border-radius:var(--radius);padding:16px 20px;margin-bottom:18px;border-left:4px solid;box-shadow:var(--shadow)}
+.callout.indigo{background:var(--accent-soft);border-color:var(--accent)}
+.callout.green{background:var(--green-soft);border-color:var(--green)}
+.callout.amber{background:var(--amber-soft);border-color:var(--amber)}
+.callout.red{background:var(--red-soft);border-color:var(--red)}
+.callout.blue{background:var(--blue-soft);border-color:var(--blue)}
+.callout.purple{background:var(--purple-soft);border-color:var(--purple)}
+.callout-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;color:var(--text)}
+.callout p{margin:0;color:var(--text2);font-size:14px}
+.callout ul{margin:6px 0 0;padding-left:18px;color:var(--text2);font-size:14px}
+
+/* ══════════════════════════════════════
+   CODE
+══════════════════════════════════════ */
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:18px;overflow-x:auto;margin:0 0 16px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.65;color:var(--text2)}
+code{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--code-bg);color:var(--code-text);padding:2px 7px;border-radius:4px}
+
+/* ══════════════════════════════════════
+   TABLES
+══════════════════════════════════════ */
+.table-wrap{overflow-x:auto;margin:0 0 20px;border-radius:var(--radius);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{background:var(--bg3);color:var(--text);font-weight:700;padding:10px 16px;text-align:left;border-bottom:2px solid var(--border)}
+td{padding:10px 16px;border-bottom:1px solid var(--border);color:var(--text2)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg2)}
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:700}
+.badge.g{background:var(--green-soft);color:var(--green)}
+.badge.r{background:var(--red-soft);color:var(--red)}
+.badge.a{background:var(--amber-soft);color:var(--amber)}
+.badge.b{background:var(--blue-soft);color:var(--blue)}
+
+/* ══════════════════════════════════════
+   ARCHITECTURE DIAGRAMS
+══════════════════════════════════════ */
+.diagram{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;margin:16px 0 24px;overflow-x:auto;box-shadow:var(--shadow)}
+.diagram-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.diagram-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.d-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;margin:6px 0}
+.d-col{display:flex;flex-direction:column;gap:8px;align-items:center}
+.d-node{background:var(--bg);border:2px solid var(--border);border-radius:9px;padding:10px 18px;font-size:12.5px;font-weight:700;color:var(--text);text-align:center;min-width:90px;line-height:1.3;white-space:nowrap}
+.d-node small{display:block;font-size:10px;font-weight:400;color:var(--text3);margin-top:2px;white-space:normal}
+.d-node.accent{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.d-node.green{border-color:var(--green);background:var(--green-soft);color:var(--green)}
+.d-node.amber{border-color:var(--amber);background:var(--amber-soft);color:var(--amber)}
+.d-node.blue{border-color:var(--blue);background:var(--blue-soft);color:var(--blue)}
+.d-node.purple{border-color:var(--purple);background:var(--purple-soft);color:var(--purple)}
+.d-node.red{border-color:var(--red);background:var(--red-soft);color:var(--red)}
+.d-arrow{color:var(--text3);font-size:20px;padding:0 4px;flex-shrink:0;line-height:1;font-weight:300}
+.d-arrow.down{display:flex;justify-content:center;font-size:22px;margin:4px 0;color:var(--text3)}
+.d-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);text-align:center;margin-bottom:10px}
+.d-group{border:1.5px dashed var(--border);border-radius:10px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.d-group-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:4px}
+.d-spacer{width:100%;height:12px}
+
+/* ══════════════════════════════════════
+   COMPARISON SPLIT
+══════════════════════════════════════ */
+.vs-wrap{display:grid;grid-template-columns:1fr auto 1fr;gap:0;margin:16px 0 24px;align-items:stretch}
+@media(max-width:600px){.vs-wrap{grid-template-columns:1fr}}
+.vs-side{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.vs-side.left{border-radius:var(--radius) 0 0 var(--radius);border-right:none}
+.vs-side.right{border-radius:0 var(--radius) var(--radius) 0}
+@media(max-width:600px){.vs-side.left,.vs-side.right{border-radius:var(--radius);border:1px solid var(--border)}}
+.vs-center{display:flex;align-items:center;justify-content:center;background:var(--bg3);padding:0 10px;font-size:13px;font-weight:800;color:var(--text3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);min-width:38px}
+.vs-side h3{font-size:14px;font-weight:800;margin:0 0 12px;color:var(--text)}
+.vs-side ul{margin:0;padding-left:18px;color:var(--text2);font-size:13px}
+.vs-side li{margin-bottom:6px}
+
+/* ══════════════════════════════════════
+   CAP TRIANGLE
+══════════════════════════════════════ */
+.cap-wrap{display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:center;margin:20px 0}
+.cap-triangle{width:260px;height:220px;position:relative;flex-shrink:0}
+.cap-triangle svg{width:100%;height:100%}
+.cap-cards{display:flex;flex-direction:column;gap:12px;flex:1;min-width:220px}
+.cap-card{border-radius:var(--radius);padding:14px 16px;border:2px solid}
+.cap-card.c{border-color:var(--accent);background:var(--accent-soft)}
+.cap-card.a{border-color:var(--green);background:var(--green-soft)}
+.cap-card.p{border-color:var(--amber);background:var(--amber-soft)}
+.cap-card h4{font-size:13px;font-weight:800;margin:0 0 3px;color:var(--text)}
+.cap-card p{font-size:12px;margin:0;color:var(--text2)}
+
+/* ══════════════════════════════════════
+   PROCESS STEPS
+══════════════════════════════════════ */
+.steps{display:flex;flex-direction:column;gap:0;margin:16px 0 24px}
+.step{display:grid;grid-template-columns:40px 1fr;gap:16px;position:relative}
+.step:not(:last-child)::before{content:'';position:absolute;left:19px;top:42px;width:2px;background:var(--border);bottom:-4px}
+.step-dot{width:40px;height:40px;border-radius:50%;background:var(--accent-soft);border:2px solid var(--accent);color:var(--accent);font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1}
+.step-body{padding-bottom:24px}
+.step-body h3{font-size:14px;font-weight:700;color:var(--text);margin:10px 0 5px}
+.step-body p{font-size:13.5px;margin:0;color:var(--text2)}
+
+/* ══════════════════════════════════════
+   DOWNLOAD CARD
+══════════════════════════════════════ */
+.dl-card{background:linear-gradient(135deg,var(--accent-soft) 0%,var(--bg2) 100%);border:1px solid var(--accent);border-radius:var(--radius);padding:24px;display:flex;align-items:center;gap:20px;margin-bottom:36px;box-shadow:var(--shadow)}
+.dl-card .file-icon{font-size:44px;flex-shrink:0}
+.dl-card h3{font-size:16px;font-weight:800;margin:0 0 4px;color:var(--text)}
+.dl-card p{font-size:13px;margin:0 0 14px;color:var(--text2)}
+
+/* ══════════════════════════════════════
+   HIGHLIGHT BAND
+══════════════════════════════════════ */
+.highlight-band{background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--radius);padding:20px 24px;margin:16px 0 24px;display:flex;gap:16px;align-items:flex-start}
+.highlight-band .hb-icon{font-size:28px;flex-shrink:0;margin-top:2px}
+.highlight-band h3{font-size:15px;font-weight:700;color:var(--text);margin:0 0 6px}
+.highlight-band p{margin:0;font-size:14px;color:var(--text2)}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header class="hd">
+  <div class="hd-brand">
+    <div class="icon">🏗</div>
+    System Design Track
+  </div>
+  <a class="dl-btn" href="/content/system%20design/System_Design_Documentation.docx" download>⬇ Download Part 1</a>
+</header>
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+  <div class="tag">Part 1 of 2 · System Design</div>
+  <h1>System Design <em>Fundamentals</em></h1>
+  <p>Build a solid foundation in system design — scalability, load balancing, caching, databases, and the key trade-offs every engineer must understand before designing production systems.</p>
+  <div class="meta">
+    <span>⏱ 40 min read</span>
+    <span>📐 Architecture</span>
+    <span>⚖️ Trade-offs</span>
+    <span>🎯 Interview Ready</span>
+  </div>
+</div>
+
+<!-- ══ CONTENT ══ -->
+<div class="content">
+
+  <!-- Download card -->
+  <div class="dl-card">
+    <div class="file-icon">📄</div>
+    <div>
+      <h3>System_Design_Documentation.docx</h3>
+      <p>Original documentation covering system design fundamentals, architecture patterns, and design principles.</p>
+      <a class="dl-btn" href="/content/system%20design/System_Design_Documentation.docx" download>⬇ Download Full Notes</a>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 1: What is System Design ══ -->
+  <div class="section">
+    <div class="section-hd">
+      <div class="section-num">1</div>
+      <h2>What is System Design?</h2>
+    </div>
+
+    <div class="highlight-band">
+      <div class="hb-icon">💡</div>
+      <div>
+        <h3>Core Definition</h3>
+        <p>System design is the process of defining the architecture, components, modules, interfaces, and data flow of a system to satisfy specific functional and non-functional requirements. It answers: <em>how will this system work at scale?</em></p>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card accent-border">
+        <div class="card-icon">⚡</div>
+        <h3>Performance</h3>
+        <p>How fast does the system respond? Latency, throughput, and response times under load.</p>
+      </div>
+      <div class="card green-border">
+        <div class="card-icon">🏔</div>
+        <h3>Scalability</h3>
+        <p>Can the system handle 10x more users? Horizontal and vertical growth strategies.</p>
+      </div>
+      <div class="card blue-border">
+        <div class="card-icon">✅</div>
+        <h3>Reliability</h3>
+        <p>Will it keep working even when parts fail? Fault tolerance and graceful degradation.</p>
+      </div>
+      <div class="card amber-border">
+        <div class="card-icon">🛡</div>
+        <h3>Availability</h3>
+        <p>What percentage of time is the system up? 99.9% = 8.7 hrs/yr downtime.</p>
+      </div>
+      <div class="card purple-border">
+        <div class="card-icon">🔧</div>
+        <h3>Maintainability</h3>
+        <p>Can new engineers understand and modify the system? Clear abstractions, good docs.</p>
+      </div>
+      <div class="card red-border">
+        <div class="card-icon">🔒</div>
+        <h3>Security</h3>
+        <p>Is data protected? Authentication, authorization, encryption, and audit trails.</p>
+      </div>
+    </div>
+
+    <h3>System Design Interview Framework</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot">1</div>
+        <div class="step-body"><h3>Clarify Requirements</h3><p>Ask about scale (DAU, QPS), features (must-have vs nice-to-have), and constraints (latency SLAs, budget). Never jump to design without this.</p></div>
+      </div>
+      <div class="step">
+        <div class="step-dot">2</div>
+        <div class="step-body"><h3>Estimate Scale</h3><p>Back-of-envelope calculations: storage, bandwidth, QPS. Example: 1M DAU × 10 requests = 10M requests/day ≈ 115 QPS.</p></div>
+      </div>
+      <div class="step">
+        <div class="step-dot">3</div>
+        <div class="step-body"><h3>High-Level Design</h3><p>Sketch boxes and arrows. Client → API layer → services → databases. Identify core components first.</p></div>
+      </div>
+      <div class="step">
+        <div class="step-dot">4</div>
+        <div class="step-body"><h3>Deep Dive</h3><p>Zoom into the most critical or interesting components. Discuss data models, APIs, algorithms, and trade-offs.</p></div>
+      </div>
+      <div class="step">
+        <div class="step-dot">5</div>
+        <div class="step-body"><h3>Address Bottlenecks</h3><p>Where does the system break? Add caches, sharding, replication, CDNs. Discuss failure modes and recovery.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 2: Scalability ══ -->
+  <div class="section">
+    <div class="section-hd">
+      <div class="section-num">2</div>
+      <h2>Scalability</h2>
+    </div>
+
+    <p>Scalability is the system's ability to handle increased load without degrading performance. There are two fundamental approaches:</p>
+
+    <div class="vs-wrap">
+      <div class="vs-side left">
+        <h3>⬆ Vertical Scaling (Scale Up)</h3>
+        <ul>
+          <li>Add more CPU, RAM, or storage to <em>existing</em> server</li>
+          <li>Simple — no code changes required</li>
+          <li>Hard limit: largest available machine</li>
+          <li>Single point of failure remains</li>
+          <li>Downtime required for hardware upgrades</li>
+          <li>Best for: databases, quick wins</li>
+        </ul>
+      </div>
+      <div class="vs-center">VS</div>
+      <div class="vs-side right">
+        <h3>↔ Horizontal Scaling (Scale Out)</h3>
+        <ul>
+          <li>Add more <em>machines</em> to the pool</li>
+          <li>Requires stateless services or shared state</li>
+          <li>Theoretically unlimited scale</li>
+          <li>No single point of failure</li>
+          <li>Zero-downtime scaling</li>
+          <li>Best for: web servers, microservices</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">Vertical vs Horizontal Scaling</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start">
+        <div>
+          <div class="d-label">Before (1 server)</div>
+          <div class="d-row"><div class="d-node blue">🖥 Server<small>2 CPU, 4 GB</small></div></div>
+          <div class="d-arrow down">↓</div>
+          <div class="d-label">After Vertical Scale</div>
+          <div class="d-row"><div class="d-node accent">🖥 Bigger Server<small>16 CPU, 64 GB</small></div></div>
+          <div style="text-align:center;font-size:12px;color:var(--amber);margin-top:8px;font-weight:600">⚠ Still 1 server</div>
+        </div>
+        <div>
+          <div class="d-label">Before (1 server)</div>
+          <div class="d-row"><div class="d-node blue">🖥 Server<small>2 CPU, 4 GB</small></div></div>
+          <div class="d-arrow down">↓</div>
+          <div class="d-label">After Horizontal Scale</div>
+          <div class="d-col">
+            <div class="d-row">
+              <div class="d-node green">🖥 Server 1<small>2 CPU, 4 GB</small></div>
+              <div class="d-node green">🖥 Server 2<small>2 CPU, 4 GB</small></div>
+            </div>
+            <div class="d-row">
+              <div class="d-node green">🖥 Server 3<small>2 CPU, 4 GB</small></div>
+              <div class="d-node green">🖥 Server 4<small>2 CPU, 4 GB</small></div>
+            </div>
+          </div>
+          <div style="text-align:center;font-size:12px;color:var(--green);margin-top:8px;font-weight:600">✓ Resilient, scalable</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 3: Load Balancing ══ -->
+  <div class="section">
+    <div class="section-hd">
+      <div class="section-num">3</div>
+      <h2>Load Balancing</h2>
+    </div>
+
+    <p>A load balancer sits in front of your servers and distributes incoming traffic across them. It prevents any single server from becoming a bottleneck, and routes around failed servers automatically.</p>
+
+    <div class="diagram">
+      <div class="diagram-title">Load Balancer Architecture</div>
+      <div class="d-row">
+        <div class="d-col">
+          <div class="d-node blue">📱 Mobile Client</div>
+          <div class="d-node blue">🌐 Web Browser</div>
+          <div class="d-node blue">⚙ API Consumer</div>
+        </div>
+        <div class="d-arrow">→</div>
+        <div class="d-node accent" style="padding:16px 20px">⚖ Load Balancer<small>Nginx / HAProxy / AWS ALB</small></div>
+        <div class="d-arrow">→</div>
+        <div class="d-col">
+          <div class="d-node green">🖥 App Server 1<small>Active</small></div>
+          <div class="d-node green">🖥 App Server 2<small>Active</small></div>
+          <div class="d-node green">🖥 App Server 3<small>Active</small></div>
+          <div class="d-node" style="opacity:.5">🖥 App Server 4<small>Standby</small></div>
+        </div>
+        <div class="d-arrow">→</div>
+        <div class="d-node purple">🗄 Database<small>Primary</small></div>
+      </div>
+    </div>
+
+    <h3>Load Balancing Algorithms</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Algorithm</th><th>How it works</th><th>Best for</th></tr>
+        <tr><td><strong>Round Robin</strong></td><td>Requests go to each server in turn: 1→2→3→1→2→3…</td><td>Servers with equal capacity, stateless requests</td></tr>
+        <tr><td><strong>Weighted Round Robin</strong></td><td>Servers get requests proportional to their weight (capacity)</td><td>Heterogeneous server fleet</td></tr>
+        <tr><td><strong>Least Connections</strong></td><td>Send to the server with the fewest active connections</td><td>Long-lived connections (WebSockets, streaming)</td></tr>
+        <tr><td><strong>IP Hash</strong></td><td>Hash client IP to always route to same server</td><td>Session affinity / sticky sessions</td></tr>
+        <tr><td><strong>Least Response Time</strong></td><td>Route to server with lowest latency + fewest connections</td><td>Heterogeneous workloads</td></tr>
+      </table>
+    </div>
+
+    <div class="callout indigo">
+      <div class="callout-title">Layer 4 vs Layer 7 Load Balancing</div>
+      <p><strong>L4 (Transport layer):</strong> Routes based on IP + TCP/UDP port only. Fast, no content inspection. Good for raw throughput.</p>
+      <p style="margin-top:6px"><strong>L7 (Application layer):</strong> Routes based on HTTP headers, URL paths, cookies. Enables path-based routing (<code>/api/*</code> → API servers, <code>/static/*</code> → CDN). More powerful, slightly more overhead.</p>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 4: Caching ══ -->
+  <div class="section">
+    <div class="section-hd">
+      <div class="section-num">4</div>
+      <h2>Caching</h2>
+    </div>
+
+    <div class="highlight-band">
+      <div class="hb-icon">⚡</div>
+      <div>
+        <h3>Cache Hit vs Miss</h3>
+        <p>A <strong>cache hit</strong> returns data from cache (fast, ~1ms). A <strong>cache miss</strong> fetches from the source (slow, ~100ms), then stores in cache for next time. Aim for 80%+ hit rate.</p>
+      </div>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">Caching Layers in a System</div>
+      <div class="d-row">
+        <div class="d-node blue">👤 User</div>
+        <div class="d-arrow">→</div>
+        <div class="d-node green">🌍 CDN Cache<small>Static assets, HTML</small></div>
+        <div class="d-arrow">→</div>
+        <div class="d-node accent">🖥 App Server</div>
+      </div>
+      <div class="d-spacer"></div>
+      <div class="d-row" style="justify-content:flex-end">
+        <div class="d-node amber">🧠 In-Memory Cache<small>Application-level (Node.js)</small></div>
+        <div class="d-arrow">→</div>
+        <div class="d-node accent" style="visibility:hidden">placeholder</div>
+      </div>
+      <div class="d-spacer"></div>
+      <div class="d-row">
+        <div class="d-node accent">🖥 App Server</div>
+        <div class="d-arrow">→</div>
+        <div class="d-node purple">⚡ Redis Cache<small>Distributed (shared)</small></div>
+        <div class="d-arrow">→</div>
+        <div class="d-node blue">🗄 Database<small>Source of truth</small></div>
+      </div>
+    </div>
+
+    <h3>Cache Strategies</h3>
+    <div class="grid">
+      <div class="card accent-border">
+        <h3>🔵 Cache-Aside (Lazy)</h3>
+        <p>App checks cache first. On miss, reads DB and writes to cache. Most common pattern.</p>
+      </div>
+      <div class="card green-border">
+        <h3>✍ Write-Through</h3>
+        <p>Write to cache AND DB simultaneously. Cache always fresh, but write latency increases.</p>
+      </div>
+      <div class="card amber-border">
+        <h3>📋 Write-Back (Write-Behind)</h3>
+        <p>Write to cache only, async to DB later. Fastest writes, risk of data loss on crash.</p>
+      </div>
+      <div class="card blue-border">
+        <h3>🔄 Read-Through</h3>
+        <p>Cache sits in front of DB. On miss, cache fetches and stores. App only talks to cache.</p>
+      </div>
+    </div>
+
+    <h3>Cache Eviction Policies</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Policy</th><th>Evicts</th><th>Best for</th></tr>
+        <tr><td><strong>LRU</strong> — Least Recently Used</td><td>Least recently accessed item</td><td>General purpose — most common</td></tr>
+        <tr><td><strong>LFU</strong> — Least Frequently Used</td><td>Item accessed fewest times</td><td>When access frequency matters</td></tr>
+        <tr><td><strong>FIFO</strong> — First In, First Out</td><td>Oldest added item</td><td>Simple, queue-like workloads</td></tr>
+        <tr><td><strong>TTL</strong> — Time To Live</td><td>Items past expiry time</td><td>Session data, OTPs, rate limits</td></tr>
+        <tr><td><strong>Random</strong></td><td>Random item</td><td>Approximating LRU at low cost</td></tr>
+      </table>
+    </div>
+
+    <div class="callout amber">
+      <div class="callout-title">⚠ Cache Invalidation — the hard problem</div>
+      <p>Phil Karlton famously said: <em>"There are only two hard things in Computer Science: cache invalidation and naming things."</em> When data changes, you must decide: delete cache key immediately, update it, or let TTL expire it. Each choice has trade-offs between consistency and complexity.</p>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 5: CAP Theorem ══ -->
+  <div class="section">
+    <div class="section-hd">
+      <div class="section-num">5</div>
+      <h2>CAP Theorem</h2>
+    </div>
+
+    <p>In a distributed system, you can only guarantee <strong>two of three</strong> properties simultaneously. This is the CAP Theorem, proven by Eric Brewer.</p>
+
+    <div class="cap-wrap">
+      <div class="cap-triangle">
+        <svg viewBox="0 0 260 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Triangle -->
+          <polygon points="130,15 15,205 245,205" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>
+          <!-- Vertices -->
+          <circle cx="130" cy="15" r="22" fill="var(--accent)" opacity=".15"/>
+          <circle cx="15" cy="205" r="22" fill="var(--green)" opacity=".15"/>
+          <circle cx="245" cy="205" r="22" fill="var(--amber)" opacity=".15"/>
+          <!-- Vertex text -->
+          <text x="130" y="10" text-anchor="middle" font-size="11" font-weight="800" fill="var(--accent)" font-family="Inter,sans-serif">C</text>
+          <text x="130" y="22" text-anchor="middle" font-size="8" fill="var(--accent)" font-family="Inter,sans-serif">Consistency</text>
+          <text x="14" y="202" text-anchor="middle" font-size="11" font-weight="800" fill="var(--green)" font-family="Inter,sans-serif">A</text>
+          <text x="14" y="214" text-anchor="middle" font-size="8" fill="var(--green)" font-family="Inter,sans-serif">Availability</text>
+          <text x="246" y="202" text-anchor="middle" font-size="11" font-weight="800" fill="var(--amber)" font-family="Inter,sans-serif">P</text>
+          <text x="246" y="214" text-anchor="middle" font-size="8" fill="var(--amber)" font-family="Inter,sans-serif">Partition Tol.</text>
+          <!-- Inner labels -->
+          <text x="90" y="115" text-anchor="middle" font-size="9" font-weight="700" fill="var(--accent)" font-family="Inter,sans-serif">CP</text>
+          <text x="90" y="127" text-anchor="middle" font-size="8" fill="var(--text2)" font-family="Inter,sans-serif">HBase, Zookeeper</text>
+          <text x="170" y="115" text-anchor="middle" font-size="9" font-weight="700" fill="var(--amber)" font-family="Inter,sans-serif">AP</text>
+          <text x="170" y="127" text-anchor="middle" font-size="8" fill="var(--text2)" font-family="Inter,sans-serif">Cassandra, DynamoDB</text>
+          <text x="130" y="185" text-anchor="middle" font-size="9" font-weight="700" fill="var(--green)" font-family="Inter,sans-serif">CA</text>
+          <text x="130" y="197" text-anchor="middle" font-size="8" fill="var(--text2)" font-family="Inter,sans-serif">PostgreSQL, MySQL</text>
+        </svg>
+      </div>
+      <div class="cap-cards">
+        <div class="cap-card c">
+          <h4>C — Consistency</h4>
+          <p>Every read receives the most recent write or an error. All nodes see the same data at the same time.</p>
+        </div>
+        <div class="cap-card a">
+          <h4>A — Availability</h4>
+          <p>Every request receives a response (not necessarily the latest data). System stays operational even if some nodes fail.</p>
+        </div>
+        <div class="cap-card p">
+          <h4>P — Partition Tolerance</h4>
+          <p>System continues operating even if network packets are dropped between nodes. In real distributed systems, P is always required.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout indigo">
+      <div class="callout-title">Practical implication</div>
+      <p>Since network partitions <em>will happen</em> in any distributed system, P is non-negotiable. The real choice is: when a partition occurs, do you sacrifice <strong>Consistency</strong> (AP — return possibly stale data) or <strong>Availability</strong> (CP — return an error)?</p>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 6: Database Design ══ -->
+  <div class="section">
+    <div class="section-hd">
+      <div class="section-num">6</div>
+      <h2>Database Design &amp; Scaling</h2>
+    </div>
+
+    <div class="vs-wrap">
+      <div class="vs-side left">
+        <h3>🗂 SQL (Relational)</h3>
+        <ul>
+          <li>Structured schema, ACID guarantees</li>
+          <li>Strong consistency</li>
+          <li>Complex joins and queries</li>
+          <li>Vertical scaling primary</li>
+          <li>PostgreSQL, MySQL, SQLite</li>
+        </ul>
+      </div>
+      <div class="vs-center">VS</div>
+      <div class="vs-side right">
+        <h3>📦 NoSQL</h3>
+        <ul>
+          <li>Flexible/schema-less data models</li>
+          <li>Eventual consistency (usually)</li>
+          <li>Optimised for specific access patterns</li>
+          <li>Horizontal scaling built-in</li>
+          <li>MongoDB, Cassandra, DynamoDB, Redis</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Database Replication</h3>
+    <div class="diagram">
+      <div class="diagram-title">Primary-Replica Replication Pattern</div>
+      <div class="d-row">
+        <div class="d-node blue">✍ Write Request</div>
+        <div class="d-arrow">→</div>
+        <div class="d-node accent">🗄 Primary DB<small>Accepts all writes</small></div>
+      </div>
+      <div class="d-arrow down">↓ async replication</div>
+      <div class="d-row">
+        <div class="d-node green">🗄 Replica 1<small>Read-only</small></div>
+        <div class="d-node green">🗄 Replica 2<small>Read-only</small></div>
+        <div class="d-node green">🗄 Replica 3<small>Read-only</small></div>
+      </div>
+      <div class="d-arrow down">↑</div>
+      <div class="d-row">
+        <div class="d-node blue">📖 Read Requests</div>
+        <div class="d-arrow">→</div>
+        <div class="d-node" style="opacity:.6">Read distributed across replicas</div>
+      </div>
+    </div>
+
+    <h3>Database Sharding</h3>
+    <div class="diagram">
+      <div class="diagram-title">Horizontal Sharding — by User ID Range</div>
+      <div class="d-row">
+        <div class="d-node accent">⚖ Shard Router</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px;text-align:center">
+        <div>
+          <div class="d-arrow down">↓ ID 0–33M</div>
+          <div class="d-node purple">🗄 Shard 1<small>users 0 – 33M</small></div>
+        </div>
+        <div>
+          <div class="d-arrow down">↓ ID 33M–66M</div>
+          <div class="d-node purple">🗄 Shard 2<small>users 33M – 66M</small></div>
+        </div>
+        <div>
+          <div class="d-arrow down">↓ ID 66M+</div>
+          <div class="d-node purple">🗄 Shard 3<small>users 66M+</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout amber">
+      <div class="callout-title">⚠ Sharding trade-offs</div>
+      <p>Sharding eliminates the single-database bottleneck but adds complexity: cross-shard queries become hard, resharding requires data migration, and joins across shards are expensive. Choose your shard key carefully — user ID, geography, or tenant ID are common choices.</p>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 7: Availability Numbers ══ -->
+  <div class="section">
+    <div class="section-hd">
+      <div class="section-num">7</div>
+      <h2>Availability &amp; SLAs</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>Availability</th><th>Nines</th><th>Downtime / Year</th><th>Downtime / Month</th></tr>
+        <tr><td>90%</td><td>One nine</td><td>36.5 days</td><td>72 hours</td></tr>
+        <tr><td>99%</td><td>Two nines</td><td>3.65 days</td><td>7.2 hours</td></tr>
+        <tr><td>99.9%</td><td>Three nines</td><td>8.7 hours</td><td>43.8 min</td></tr>
+        <tr><td>99.99%</td><td>Four nines</td><td>52.6 minutes</td><td>4.4 min</td></tr>
+        <tr><td>99.999%</td><td>Five nines</td><td>5.26 minutes</td><td>26.3 sec</td></tr>
+      </table>
+    </div>
+
+    <div class="callout green">
+      <div class="callout-title">Availability = (Uptime / Total time) × 100</div>
+      <p>Most production SLAs target 99.9% (three nines). Achieving five nines requires active-active multi-region deployments, zero-downtime deploys, and automated failover — it's expensive and complex.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card green-border">
+        <h3>🔄 MTTR — Mean Time To Recover</h3>
+        <p>How quickly can the system recover from failure? Lower is better. Improve with runbooks, automated alerts, and on-call rotations.</p>
+      </div>
+      <div class="card blue-border">
+        <h3>⏱ MTBF — Mean Time Between Failures</h3>
+        <p>How long does the system run before failing? Higher is better. Improve with better hardware, testing, and redundancy.</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<script>
+(function(){
+  function apply(t){ document.documentElement.setAttribute('data-theme', t==='dark'?'dark':'light'); }
+  try{ apply(localStorage.getItem('theme')||'light'); }catch(e){}
+  window.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='set-theme'){
+      try{ localStorage.setItem('theme',e.data.theme); }catch(e2){}
+      apply(e.data.theme);
+    }
+  });
+})();
+</script>
+</body>
+</html>
