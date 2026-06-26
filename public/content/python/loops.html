@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loops in Python</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff;--bg2:#f8fafc;--bg3:#f1f5f9;--border:#e2e8f0;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --accent:#2563eb;--accent-soft:#eff6ff;--accent-muted:#93c5fd;
+  --code-bg:#f8fafc;--code-text:#1d4ed8;
+  --shadow:0 1px 3px rgba(15,23,42,.07),0 1px 2px rgba(15,23,42,.04);
+  --radius:10px;
+}
+[data-theme="dark"]{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2230;--border:#30363d;
+  --text:#e6edf3;--text2:#8b949e;--text3:#484f58;
+  --accent:#60a5fa;--accent-soft:#0d1b2e;--accent-muted:#3b82f6;
+  --code-bg:#1c2230;--code-text:#93c5fd;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.7;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.hd{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.hd-brand{font-size:13px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
+.hd-brand span{color:var(--accent)}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;padding:6px 14px;border-radius:7px;transition:opacity .15s}
+.dl-btn:hover{opacity:.88;text-decoration:none}
+.hero{padding:48px 24px 32px;max-width:800px;margin:0 auto}
+.tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:clamp(26px,4vw,40px);font-weight:700;line-height:1.15;margin:0 0 12px;color:var(--text)}
+.hero p{font-size:17px;color:var(--text2);margin:0 0 24px;max-width:640px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--text3)}
+.meta span{display:flex;align-items:center;gap:4px}
+.content{max-width:800px;margin:0 auto;padding:0 24px 80px}
+.section{margin-bottom:40px}
+h2{font-size:20px;font-weight:700;color:var(--text);margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid var(--accent);display:inline-block}
+h3{font-size:16px;font-weight:600;color:var(--text);margin:16px 0 8px}
+p{margin:0 0 14px;color:var(--text2)}
+ul{margin:0 0 14px;padding-left:22px;color:var(--text2)}
+li{margin-bottom:5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.card-icon{font-size:22px;margin-bottom:8px}
+.card h3{font-size:14px;font-weight:700;color:var(--text);margin:0 0 4px}
+.card p{font-size:13px;margin:0;color:var(--text2)}
+.callout{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;border-left:4px solid}
+.callout.core{background:var(--accent-soft);border-color:var(--accent)}
+.callout.violet{background:#f5f3ff;border-color:#8b5cf6}
+[data-theme="dark"] .callout.violet{background:#1e1b3a;border-color:#a78bfa}
+.callout.green{background:#f0fdf4;border-color:#16a34a}
+[data-theme="dark"] .callout.green{background:#0d2318;border-color:#4ade80}
+.callout.amber{background:#fffbeb;border-color:#f59e0b}
+[data-theme="dark"] .callout.amber{background:#1c1a00;border-color:#fbbf24}
+.callout strong{color:var(--text)}
+.callout p{margin:0;color:var(--text2)}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;margin:0 0 16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:var(--text2)}
+code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--code-bg);color:var(--code-text);padding:2px 6px;border-radius:4px}
+table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:14px}
+th{background:var(--bg3);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border:1px solid var(--border)}
+td{padding:9px 14px;border:1px solid var(--border);color:var(--text2)}
+tr:hover td{background:var(--bg2)}
+.dl-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;align-items:center;gap:20px;margin-bottom:32px;box-shadow:var(--shadow)}
+.dl-card .file-icon{font-size:40px;flex-shrink:0}
+.dl-card h3{font-size:15px;font-weight:700;margin:0 0 4px;color:var(--text)}
+.dl-card p{font-size:13px;margin:0 0 12px;color:var(--text2)}
+.summary-list{margin:0;padding-left:0;list-style:none}
+.summary-list li{padding:8px 0 8px 28px;position:relative;border-bottom:1px solid var(--border);color:var(--text2);font-size:14px}
+.summary-list li:last-child{border-bottom:none}
+.summary-list li::before{content:'✓';position:absolute;left:0;color:var(--accent);font-weight:700}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-brand"><span>🐍</span> Python Track</div>
+  <a class="dl-btn" href="/content/python/Python_Lecture5_Study_Notes.docx" download>⬇ Download Notes</a>
+</header>
+
+<div class="hero">
+  <div class="tag">Lesson 5 · Python</div>
+  <h1>Loops in Python</h1>
+  <p>Loops let you repeat a task without copy-pasting code 100 times. Python gives you two flavors — <code>while</code> for condition-based repetition, and <code>for</code> for iterating over a sequence.</p>
+  <div class="meta">
+    <span>⏱ 24 min read</span>
+    <span>🔁 while / for</span>
+    <span>🛑 break · continue · pass</span>
+  </div>
+</div>
+
+<div class="content">
+  <div class="dl-card">
+    <div class="file-icon">📄</div>
+    <div>
+      <h3>Python_Lecture5_Study_Notes.docx</h3>
+      <p>Full notes on while/for loops, break/continue/pass, range(), nested loops, and the linear search algorithm — with practice questions.</p>
+      <a class="dl-btn" href="/content/python/Python_Lecture5_Study_Notes.docx" download>⬇ Download Full Notes</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Why Loops?</h2>
+    <p>Printing "Hello" 5 times manually doesn't scale to 100,000 times. A loop solves it in 3 lines, however many repetitions are needed.</p>
+    <pre># Without a loop — does not scale
+print("Hello"); print("Hello"); print("Hello")
+
+# With a loop — works for 5 or 100,000 repetitions
+i = 1
+while i <= 5:
+    print("Hello")
+    i += 1</pre>
+  </div>
+
+  <div class="section">
+    <h2>The while Loop</h2>
+    <p>Keeps running as long as its condition is <code>True</code>. The moment it becomes <code>False</code>, the loop stops.</p>
+    <pre>i = 1                   # 1. Initialization
+while i <= 5:           # 2. Condition check
+    print(i)              # 3. Task
+    i += 1                  # 4. Update
+# Output: 1  2  3  4  5
+
+# Counting down
+i = 5
+while i >= 1:
+    print(i)
+    i -= 1</pre>
+    <div class="callout amber">
+      <strong>Infinite loop danger:</strong> If the condition never becomes False, the loop never stops and crashes your program. Always make sure the iterator moves toward the stopping condition.
+    </div>
+    <h3>Traversing a List/Tuple with while</h3>
+    <pre>nums = [1, 4, 9, 16, 25]
+index = 0
+while index < len(nums):
+    print(nums[index])
+    index += 1</pre>
+  </div>
+
+  <div class="section">
+    <h2>break and continue</h2>
+    <table>
+      <tr><th>Keyword</th><th>Effect</th><th>Loop Continues?</th></tr>
+      <tr><td><code>break</code></td><td>Exits the entire loop immediately</td><td>No</td></tr>
+      <tr><td><code>continue</code></td><td>Skips the rest of the current iteration</td><td>Yes — next iteration begins</td></tr>
+    </table>
+    <pre># break — stop searching once found
+nums = (1, 4, 9, 16, 25, 36)
+i = 0
+while i < len(nums):
+    if nums[i] == 36:
+        print('Found at index', i)
+        break          # stop immediately, no further checking
+    i += 1
+
+# continue — skip even numbers, print only odd
+i = 1
+while i <= 10:
+    if i % 2 == 0:
+        i += 1
+        continue       # jump back to condition check
+    print(i)
+    i += 1
+# Output: 1  3  5  7  9</pre>
+    <div class="callout amber">
+      <strong>Watch out:</strong> With <code>continue</code> in a <code>while</code> loop, update the iterator <em>before</em> the <code>continue</code> — otherwise you create an infinite loop.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>The for Loop</h2>
+    <p>A <code>for</code> loop iterates over a sequence automatically — no manual index tracking needed.</p>
+    <pre>numbers = [1, 2, 3, 4, 5]
+for value in numbers:
+    print(value)
+
+for char in "Apna College":     # works on strings too
+    print(char)
+
+for num in (10, 20, 30):          # and tuples
+    print(num)</pre>
+    <h3>Optional else with Loops</h3>
+    <p>The <code>else</code> block runs only if the loop finishes <em>without</em> hitting a <code>break</code>.</p>
+    <pre>for char in "Apna College":
+    if char == 'z':
+        print("Found z!")
+        break
+else:
+    print("z not found")     # runs — no break occurred
+# Output: z not found</pre>
+  </div>
+
+  <div class="section">
+    <h2>The range() Function</h2>
+    <table>
+      <tr><th>Usage</th><th>Syntax</th><th>Example Output</th></tr>
+      <tr><td>Stop only</td><td><code>range(stop)</code></td><td>range(5) → 0,1,2,3,4</td></tr>
+      <tr><td>Start + Stop</td><td><code>range(start, stop)</code></td><td>range(2,6) → 2,3,4,5</td></tr>
+      <tr><td>+ Step</td><td><code>range(start, stop, step)</code></td><td>range(2,10,2) → 2,4,6,8</td></tr>
+    </table>
+    <pre>for i in range(1, 101):       # 1 to 100 — stop is exclusive, so 101 is needed
+    print(i)
+
+for i in range(100, 0, -1):     # counting down
+    print(i)
+
+for i in range(2, 11, 2):         # even numbers
+    print(i)</pre>
+    <div class="callout amber">
+      <strong>Watch out:</strong> The stop value in <code>range()</code> is always <strong>exclusive</strong>. <code>range(5)</code> gives 0-4, never 5.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>The pass Statement</h2>
+    <p><code>pass</code> does nothing — it's a placeholder when Python requires a statement but you don't want any action yet.</p>
+    <pre>for i in range(5):
+    pass    # TODO: add logic here later
+print("After loop")   # works fine — no IndentationError</pre>
+  </div>
+
+  <div class="section">
+    <h2>Nested Loops &amp; Linear Search</h2>
+    <pre># Nested loop — inner loop completes fully for EACH outer iteration
+for i in range(1, 4):
+    for j in range(1, 4):
+        print(i, j)
+# Total: 3 × 3 = 9 lines printed
+
+# Linear Search — check each element one by one
+nums = (1, 4, 9, 16, 25, 36, 49)
+x = 36
+for index, num in enumerate(nums):
+    if num == x:
+        print('Found at index', index)
+        break</pre>
+    <div class="callout green">
+      <strong>Tip:</strong> Sum of n numbers: accumulate with <code>sum += i</code>. Factorial: accumulate with <code>factorial *= i</code> — but start <code>factorial</code> at <strong>1</strong>, never 0!
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Quick Reference Cheat Sheet</h2>
+    <table>
+      <tr><th>Expression</th><th>Output</th></tr>
+      <tr><td><code>range(5)</code></td><td>0, 1, 2, 3, 4</td></tr>
+      <tr><td><code>range(1, 6)</code></td><td>1, 2, 3, 4, 5</td></tr>
+      <tr><td><code>range(0, 10, 2)</code></td><td>0, 2, 4, 6, 8</td></tr>
+      <tr><td><code>range(10, 0, -1)</code></td><td>10, 9, … 1</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Chapter Summary</h2>
+    <ul class="summary-list">
+      <li><code>while</code> repeats as long as a condition stays True — manual init/condition/update</li>
+      <li><code>for</code> automatically iterates over lists, tuples, strings, dicts, sets, and <code>range()</code></li>
+      <li><code>break</code> exits the entire loop; <code>continue</code> skips only the current iteration</li>
+      <li><code>range(stop)</code>, <code>range(start, stop)</code>, and <code>range(start, stop, step)</code> — stop is always exclusive</li>
+      <li><code>pass</code> is a null statement used as a placeholder for empty blocks</li>
+      <li>Nested loops: the inner loop fully completes for every single outer iteration</li>
+      <li>Linear Search checks each element one by one until a match or the list ends</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+(function(){
+  function apply(t){ document.documentElement.setAttribute('data-theme', t==='dark'?'dark':'light'); }
+  try{ apply(localStorage.getItem('theme')||'light'); }catch(e){}
+  window.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='set-theme'){
+      try{ localStorage.setItem('theme',e.data.theme); }catch(e2){}
+      apply(e.data.theme);
+    }
+  });
+})();
+</script>
+</body>
+</html>

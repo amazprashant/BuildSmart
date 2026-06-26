@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OOP in Python (Part 2) — Python</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff;--bg2:#f8fafc;--bg3:#f1f5f9;--border:#e2e8f0;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --accent:#2563eb;--accent-soft:#eff6ff;--accent-muted:#93c5fd;
+  --code-bg:#f8fafc;--code-text:#1d4ed8;
+  --shadow:0 1px 3px rgba(15,23,42,.07),0 1px 2px rgba(15,23,42,.04);
+  --radius:10px;
+}
+[data-theme="dark"]{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2230;--border:#30363d;
+  --text:#e6edf3;--text2:#8b949e;--text3:#484f58;
+  --accent:#60a5fa;--accent-soft:#0d1b2e;--accent-muted:#3b82f6;
+  --code-bg:#1c2230;--code-text:#93c5fd;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.7;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.hd{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.hd-brand{font-size:13px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
+.hd-brand span{color:var(--accent)}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;padding:6px 14px;border-radius:7px;transition:opacity .15s}
+.dl-btn:hover{opacity:.88;text-decoration:none}
+.hero{padding:48px 24px 32px;max-width:800px;margin:0 auto}
+.tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:clamp(26px,4vw,40px);font-weight:700;line-height:1.15;margin:0 0 12px;color:var(--text)}
+.hero p{font-size:17px;color:var(--text2);margin:0 0 24px;max-width:640px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--text3)}
+.meta span{display:flex;align-items:center;gap:4px}
+.content{max-width:800px;margin:0 auto;padding:0 24px 80px}
+.section{margin-bottom:40px}
+h2{font-size:20px;font-weight:700;color:var(--text);margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid var(--accent);display:inline-block}
+h3{font-size:16px;font-weight:600;color:var(--text);margin:16px 0 8px}
+p{margin:0 0 14px;color:var(--text2)}
+ul{margin:0 0 14px;padding-left:22px;color:var(--text2)}
+li{margin-bottom:5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.card-icon{font-size:22px;margin-bottom:8px}
+.card h3{font-size:14px;font-weight:700;color:var(--text);margin:0 0 4px}
+.card p{font-size:13px;margin:0;color:var(--text2)}
+.callout{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;border-left:4px solid}
+.callout.core{background:var(--accent-soft);border-color:var(--accent)}
+.callout.violet{background:#f5f3ff;border-color:#8b5cf6}
+[data-theme="dark"] .callout.violet{background:#1e1b3a;border-color:#a78bfa}
+.callout.green{background:#f0fdf4;border-color:#16a34a}
+[data-theme="dark"] .callout.green{background:#0d2318;border-color:#4ade80}
+.callout.amber{background:#fffbeb;border-color:#f59e0b}
+[data-theme="dark"] .callout.amber{background:#1c1a00;border-color:#fbbf24}
+.callout strong{color:var(--text)}
+.callout p{margin:0;color:var(--text2)}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;margin:0 0 16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:var(--text2)}
+code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--code-bg);color:var(--code-text);padding:2px 6px;border-radius:4px}
+table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:14px}
+th{background:var(--bg3);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border:1px solid var(--border)}
+td{padding:9px 14px;border:1px solid var(--border);color:var(--text2)}
+tr:hover td{background:var(--bg2)}
+.dl-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;align-items:center;gap:20px;margin-bottom:32px;box-shadow:var(--shadow)}
+.dl-card .file-icon{font-size:40px;flex-shrink:0}
+.dl-card h3{font-size:15px;font-weight:700;margin:0 0 4px;color:var(--text)}
+.dl-card p{font-size:13px;margin:0 0 12px;color:var(--text2)}
+.summary-list{margin:0;padding-left:0;list-style:none}
+.summary-list li{padding:8px 0 8px 28px;position:relative;border-bottom:1px solid var(--border);color:var(--text2);font-size:14px}
+.summary-list li:last-child{border-bottom:none}
+.summary-list li::before{content:'✓';position:absolute;left:0;color:var(--accent);font-weight:700}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-brand"><span>🐍</span> Python Track</div>
+  <a class="dl-btn" href="/content/python/Python_Lecture9_Study_Notes.docx" download>⬇ Download Notes</a>
+</header>
+
+<div class="hero">
+  <div class="tag">Lesson 9 · Python</div>
+  <h1>OOP in Python — Part 2</h1>
+  <p>The final two pillars of OOP: Inheritance and Polymorphism — plus private attributes, super(), class methods, @property, and the dunder functions that power Python's operators.</p>
+  <div class="meta">
+    <span>⏱ 24 min read</span>
+    <span>🧬 Inheritance</span>
+    <span>🔀 Polymorphism</span>
+  </div>
+</div>
+
+<div class="content">
+  <div class="dl-card">
+    <div class="file-icon">📄</div>
+    <div>
+      <h3>Python_Lecture9_Study_Notes.docx</h3>
+      <p>Full notes on private attributes, all three types of inheritance, super(), class methods, @property, polymorphism, and dunder functions.</p>
+      <a class="dl-btn" href="/content/python/Python_Lecture9_Study_Notes.docx" download>⬇ Download Full Notes</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Private Attributes &amp; Methods</h2>
+    <p>Prefix a name with two underscores (<code>__</code>) to make it private — accessible only from inside the class.</p>
+    <pre>class Account:
+    def __init__(self, account_no, password):
+        self.account_no = account_no       # public
+        self.__password = password          # private
+
+acc1 = Account(12345, 'abc123')
+print(acc1.account_no)      # ✅ 12345
+print(acc1.__password)      # ❌ AttributeError</pre>
+    <div class="callout amber">
+      <strong>Watch out:</strong> Python implements privacy via "name mangling" (<code>_ClassName__attr</code>) — a strong convention, not a hard lock like Java/C++.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Inheritance</h2>
+    <p>A child class derives all properties and methods of a parent class — promoting code reuse.</p>
+    <pre>class Car:                       # Parent / Base / Super class
+    color = 'Black'
+
+    @staticmethod
+    def start():
+        print('Car Started!')
+
+class ToyotaCar(Car):             # Child / Derived / Sub class
+    def __init__(self, brand):
+        self.brand = brand
+
+car1 = ToyotaCar('Fortuner')
+car1.start()        # Car Started! (inherited)
+print(car1.color)     # Black (inherited)
+print(car1.brand)      # Fortuner (own attribute)</pre>
+    <h3>Three Types of Inheritance</h3>
+    <table>
+      <tr><th>Type</th><th>Structure</th><th>Example</th></tr>
+      <tr><td>Single</td><td>One parent → one child</td><td><code>class B(A):</code></td></tr>
+      <tr><td>Multi-level</td><td>Chain: A → B → C</td><td><code>class C(B):</code> where <code>B(A)</code></td></tr>
+      <tr><td>Multiple</td><td>One child, several parents</td><td><code>class C(A, B):</code></td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>super()</h2>
+    <p>When a child class defines its own <code>__init__</code>, it overrides the parent's. <code>super()</code> explicitly calls the parent's constructor (or any method) so its setup still runs.</p>
+    <pre>class Car:
+    def __init__(self, fuel_type):
+        self.fuel_type = fuel_type
+
+class ElectricCar(Car):
+    def __init__(self, car_type):
+        super().__init__('Electric')   # run Car's __init__ first
+        self.car_type = car_type        # then set own attribute
+
+car1 = ElectricCar('Prius')
+print(car1.fuel_type, car1.car_type)    # Electric Prius</pre>
+    <div class="callout green">
+      <strong>Tip:</strong> Always call <code>super().__init__()</code> at the <em>start</em> of the child's <code>__init__</code> — parent setup first, then child setup.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Three Types of Methods</h2>
+    <table>
+      <tr><th>Method Type</th><th>First Param</th><th>Decorator</th><th>Use When</th></tr>
+      <tr><td>Instance</td><td><code>self</code></td><td>None</td><td>Need this object's data</td></tr>
+      <tr><td>Class</td><td><code>cls</code></td><td><code>@classmethod</code></td><td>Need to modify a class attribute</td></tr>
+      <tr><td>Static</td><td>—</td><td><code>@staticmethod</code></td><td>Utility function, no data needed</td></tr>
+    </table>
+    <pre>class Person:
+    name = 'Anonymous'        # class attribute
+
+    @classmethod
+    def change_name(cls, new_name):
+        cls.name = new_name    # modifies the CLASS attribute directly
+
+Person.change_name('Rahul Kumar')
+print(Person.name)              # Rahul Kumar — changed for ALL objects</pre>
+    <div class="callout amber">
+      <strong>Watch out:</strong> <code>self.name = value</code> inside an instance method creates a new <em>instance</em> attribute — it does NOT change the class attribute. Use <code>cls.name = value</code> in a class method instead.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>The @property Decorator</h2>
+    <p>Turns a method into a computed attribute that recalculates fresh every time it's accessed — perfect for values that depend on other data.</p>
+    <pre>class Student:
+    def __init__(self, physics, chemistry, maths):
+        self.physics, self.chemistry, self.maths = physics, chemistry, maths
+
+    @property
+    def percentage(self):
+        return (self.physics + self.chemistry + self.maths) / 3
+
+s1 = Student(98, 97, 99)
+print(s1.percentage)    # 98.0 — accessed like an attribute, no parentheses!
+
+s1.physics = 86
+print(s1.percentage)    # 94.0 — automatically recalculated!</pre>
+  </div>
+
+  <div class="section">
+    <h2>Polymorphism &amp; Operator Overloading</h2>
+    <p>Polymorphism means the same operator or method name behaves differently depending on context. The <code>+</code> operator is the most familiar example:</p>
+    <pre>print(1 + 2)               # 3 — arithmetic addition
+print('Apna' + 'College')   # ApnaCollege — string concatenation
+print([1,2] + [3,4])          # [1, 2, 3, 4] — list merging
+# Same operator, three different behaviors!</pre>
+    <h3>Dunder (Magic) Functions</h3>
+    <p>Every operator maps to a "dunder" method. <code>a + b</code> internally calls <code>a.__add__(b)</code>.</p>
+    <pre>class ComplexNumber:
+    def __init__(self, real, imaginary):
+        self.real, self.imaginary = real, imaginary
+
+    def __add__(self, num2):              # defines what + means
+        return ComplexNumber(self.real + num2.real, self.imaginary + num2.imaginary)
+
+    def show(self):
+        print(f'{self.real}i + {self.imaginary}j')
+
+num1, num2 = ComplexNumber(1, 3), ComplexNumber(4, 6)
+result = num1 + num2     # calls num1.__add__(num2)
+result.show()              # 5i + 9j</pre>
+    <table>
+      <tr><th>Dunder</th><th>Triggered By</th></tr>
+      <tr><td><code>__add__</code> / <code>__sub__</code></td><td><code>a + b</code> / <code>a - b</code></td></tr>
+      <tr><td><code>__gt__</code> / <code>__lt__</code></td><td><code>a &gt; b</code> / <code>a &lt; b</code></td></tr>
+      <tr><td><code>__eq__</code></td><td><code>a == b</code></td></tr>
+      <tr><td><code>__str__</code></td><td><code>print(obj)</code> / <code>str(obj)</code></td></tr>
+      <tr><td><code>__len__</code></td><td><code>len(obj)</code></td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Complete OOP Cheat Sheet</h2>
+    <table>
+      <tr><th>Concept</th><th>Syntax</th></tr>
+      <tr><td>Private attribute</td><td><code>self.__attr = val</code></td></tr>
+      <tr><td>Inheritance</td><td><code>class Child(Parent):</code></td></tr>
+      <tr><td>Multiple inheritance</td><td><code>class C(A, B):</code></td></tr>
+      <tr><td>Call parent constructor</td><td><code>super().__init__(params)</code></td></tr>
+      <tr><td>Class method</td><td><code>@classmethod def m(cls):</code></td></tr>
+      <tr><td>Computed attribute</td><td><code>@property def attr(self):</code></td></tr>
+      <tr><td>Operator overload</td><td><code>def __add__(self, other):</code></td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Chapter Summary</h2>
+    <ul class="summary-list">
+      <li>Private members use a double-underscore prefix (<code>__attr</code>) — accessible only inside the class</li>
+      <li>Inheritance lets a child class reuse a parent's attributes and methods: <code>class Child(Parent):</code></li>
+      <li>Single, multi-level, and multiple inheritance are Python's three inheritance patterns</li>
+      <li><code>super().__init__()</code> runs the parent's constructor from inside the child's</li>
+      <li>Instance methods use <code>self</code>; class methods use <code>cls</code>; static methods use neither</li>
+      <li><code>@property</code> turns a method into an auto-recalculating computed attribute</li>
+      <li>Polymorphism means the same operator behaves differently per type — powered by dunder methods like <code>__add__</code> and <code>__gt__</code></li>
+    </ul>
+  </div>
+</div>
+
+<script>
+(function(){
+  function apply(t){ document.documentElement.setAttribute('data-theme', t==='dark'?'dark':'light'); }
+  try{ apply(localStorage.getItem('theme')||'light'); }catch(e){}
+  window.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='set-theme'){
+      try{ localStorage.setItem('theme',e.data.theme); }catch(e2){}
+      apply(e.data.theme);
+    }
+  });
+})();
+</script>
+</body>
+</html>

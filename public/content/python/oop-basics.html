@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OOP in Python (Part 1) — Python</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff;--bg2:#f8fafc;--bg3:#f1f5f9;--border:#e2e8f0;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --accent:#2563eb;--accent-soft:#eff6ff;--accent-muted:#93c5fd;
+  --code-bg:#f8fafc;--code-text:#1d4ed8;
+  --shadow:0 1px 3px rgba(15,23,42,.07),0 1px 2px rgba(15,23,42,.04);
+  --radius:10px;
+}
+[data-theme="dark"]{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2230;--border:#30363d;
+  --text:#e6edf3;--text2:#8b949e;--text3:#484f58;
+  --accent:#60a5fa;--accent-soft:#0d1b2e;--accent-muted:#3b82f6;
+  --code-bg:#1c2230;--code-text:#93c5fd;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.7;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.hd{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.hd-brand{font-size:13px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
+.hd-brand span{color:var(--accent)}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;padding:6px 14px;border-radius:7px;transition:opacity .15s}
+.dl-btn:hover{opacity:.88;text-decoration:none}
+.hero{padding:48px 24px 32px;max-width:800px;margin:0 auto}
+.tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:clamp(26px,4vw,40px);font-weight:700;line-height:1.15;margin:0 0 12px;color:var(--text)}
+.hero p{font-size:17px;color:var(--text2);margin:0 0 24px;max-width:640px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--text3)}
+.meta span{display:flex;align-items:center;gap:4px}
+.content{max-width:800px;margin:0 auto;padding:0 24px 80px}
+.section{margin-bottom:40px}
+h2{font-size:20px;font-weight:700;color:var(--text);margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid var(--accent);display:inline-block}
+h3{font-size:16px;font-weight:600;color:var(--text);margin:16px 0 8px}
+p{margin:0 0 14px;color:var(--text2)}
+ul{margin:0 0 14px;padding-left:22px;color:var(--text2)}
+li{margin-bottom:5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.card-icon{font-size:22px;margin-bottom:8px}
+.card h3{font-size:14px;font-weight:700;color:var(--text);margin:0 0 4px}
+.card p{font-size:13px;margin:0;color:var(--text2)}
+.callout{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;border-left:4px solid}
+.callout.core{background:var(--accent-soft);border-color:var(--accent)}
+.callout.violet{background:#f5f3ff;border-color:#8b5cf6}
+[data-theme="dark"] .callout.violet{background:#1e1b3a;border-color:#a78bfa}
+.callout.green{background:#f0fdf4;border-color:#16a34a}
+[data-theme="dark"] .callout.green{background:#0d2318;border-color:#4ade80}
+.callout.amber{background:#fffbeb;border-color:#f59e0b}
+[data-theme="dark"] .callout.amber{background:#1c1a00;border-color:#fbbf24}
+.callout strong{color:var(--text)}
+.callout p{margin:0;color:var(--text2)}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;margin:0 0 16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:var(--text2)}
+code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--code-bg);color:var(--code-text);padding:2px 6px;border-radius:4px}
+table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:14px}
+th{background:var(--bg3);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border:1px solid var(--border)}
+td{padding:9px 14px;border:1px solid var(--border);color:var(--text2)}
+tr:hover td{background:var(--bg2)}
+.dl-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;align-items:center;gap:20px;margin-bottom:32px;box-shadow:var(--shadow)}
+.dl-card .file-icon{font-size:40px;flex-shrink:0}
+.dl-card h3{font-size:15px;font-weight:700;margin:0 0 4px;color:var(--text)}
+.dl-card p{font-size:13px;margin:0 0 12px;color:var(--text2)}
+.summary-list{margin:0;padding-left:0;list-style:none}
+.summary-list li{padding:8px 0 8px 28px;position:relative;border-bottom:1px solid var(--border);color:var(--text2);font-size:14px}
+.summary-list li:last-child{border-bottom:none}
+.summary-list li::before{content:'✓';position:absolute;left:0;color:var(--accent);font-weight:700}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-brand"><span>🐍</span> Python Track</div>
+  <a class="dl-btn" href="/content/python/Python_Lecture8_Study_Notes.docx" download>⬇ Download Notes</a>
+</header>
+
+<div class="hero">
+  <div class="tag">Lesson 8 · Python</div>
+  <h1>OOP in Python — Part 1</h1>
+  <p>Object-Oriented Programming maps real-world entities to code using classes and objects. This lesson covers the building blocks: classes, objects, constructors, attributes, methods, and the first two pillars of OOP.</p>
+  <div class="meta">
+    <span>⏱ 22 min read</span>
+    <span>🏗 class / object</span>
+    <span>🧱 Abstraction · Encapsulation</span>
+  </div>
+</div>
+
+<div class="content">
+  <div class="dl-card">
+    <div class="file-icon">📄</div>
+    <div>
+      <h3>Python_Lecture8_Study_Notes.docx</h3>
+      <p>Full notes on classes, objects, constructors, self, attributes, methods, static methods, abstraction, and encapsulation — with practice questions.</p>
+      <a class="dl-btn" href="/content/python/Python_Lecture8_Study_Notes.docx" download>⬇ Download Full Notes</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Evolution of Programming Paradigms</h2>
+    <table>
+      <tr><th>Stage</th><th>Paradigm</th><th>Solves</th></tr>
+      <tr><td>1</td><td>Procedural</td><td>Basic top-to-bottom execution</td></tr>
+      <tr><td>2</td><td>Functional (<code>def</code>)</td><td>Redundancy ↓, reusability ↑</td></tr>
+      <tr><td>3</td><td>Object-Oriented (OOP)</td><td>Models real-world entities for large systems</td></tr>
+    </table>
+    <pre>class Calculator:
+    def add(self, a, b):
+        return a + b
+
+calc = Calculator()             # create an object
+print(calc.add(5, 10))           # use the object's method</pre>
+  </div>
+
+  <div class="section">
+    <h2>Class — The Blueprint</h2>
+    <p>A Class is a blueprint that defines what data an object will have and what it can do. The class itself does nothing until you create objects from it.</p>
+    <pre>class Student:        # class names start with a Capital letter
+    pass</pre>
+    <div class="grid">
+      <div class="card"><div class="card-icon">📐</div><h3>Class = Blueprint</h3><p>Like an architect's plan — defines the structure, builds nothing itself.</p></div>
+      <div class="card"><div class="card-icon">🏠</div><h3>Object = Instance</h3><p>The actual thing built from the blueprint.</p></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Object &amp; Instantiation</h2>
+    <pre>class Student:
+    name = 'Karan'      # class-level attribute
+
+s1 = Student()           # s1 is an object/instance of Student
+s2 = Student()            # s2 is a separate, independent object
+
+print(s1.name)             # Karan</pre>
+    <div class="callout violet">
+      <strong>Note:</strong> "Object" and "instance" mean the same thing. Creating an object from a class is called <strong>instantiation</strong>.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>The Constructor — __init__</h2>
+    <p><code>__init__</code> runs automatically every time an object is created. It sets up the object's initial data.</p>
+    <pre>class Student:
+    def __init__(self, name, marks):
+        self.name = name
+        self.marks = marks
+
+s1 = Student('Karan', 97)    # __init__ runs automatically
+print(s1.name)                 # Karan</pre>
+    <div class="callout amber">
+      <strong>Watch out:</strong> If you define two <code>__init__</code> methods in one class, Python only keeps the last one — there's no constructor overloading like in Java/C++.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>The self Parameter</h2>
+    <p><code>self</code> refers to the <em>current</em> object — the specific instance being created or used. It's not a keyword, just a universal convention.</p>
+    <pre>class Student:
+    def __init__(self, name):
+        self.name = name    # store name IN this specific object
+
+s1 = Student('Karan')
+# self inside __init__ IS s1 — same object, same memory address</pre>
+  </div>
+
+  <div class="section">
+    <h2>Instance vs Class Attributes</h2>
+    <pre>class Student:
+    college_name = 'ABC College'    # CLASS attribute — shared by ALL objects
+
+    def __init__(self, name, marks):
+        self.name = name              # INSTANCE attribute — unique per object
+        self.marks = marks
+
+s1 = Student('Karan', 97)
+s2 = Student('Arjun', 88)
+
+print(s1.college_name, s2.college_name)   # ABC College, ABC College (shared)
+print(s1.name, s2.name)                     # Karan, Arjun (independent)</pre>
+    <table>
+      <tr><th>Feature</th><th>Instance Attribute</th><th>Class Attribute</th></tr>
+      <tr><td>Defined with</td><td><code>self.attr = value</code> (in a method)</td><td><code>attr = value</code> (in class body)</td></tr>
+      <tr><td>Unique per object?</td><td>Yes</td><td>No — shared by all</td></tr>
+      <tr><td>Access via</td><td><code>object.attr</code></td><td><code>ClassName.attr</code> or <code>object.attr</code></td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Methods</h2>
+    <pre>class Student:
+    def __init__(self, name, marks):
+        self.name = name
+        self.marks = marks
+
+    def welcome(self):              # always takes self first
+        print('Welcome student:', self.name)
+
+    def get_marks(self):
+        return self.marks
+
+s1 = Student('Karan', 97)
+s1.welcome()              # Welcome student: Karan
+print(s1.get_marks())      # 97</pre>
+  </div>
+
+  <div class="section">
+    <h2>Static Methods</h2>
+    <p>Static methods don't take <code>self</code> and can't access object data — they're utility functions that just live inside a class for organization.</p>
+    <pre>class Student:
+    @staticmethod
+    def hello():
+        print('Hello from Student class!')
+
+Student.hello()     # call via class name — preferred</pre>
+    <table>
+      <tr><th>Aspect</th><th>Normal Method</th><th>Static Method</th></tr>
+      <tr><td>Has self?</td><td>Yes</td><td>No</td></tr>
+      <tr><td>Decorator</td><td>None</td><td><code>@staticmethod</code></td></tr>
+      <tr><td>Use case</td><td>Operations needing object data</td><td>Class-related utility/helper</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>The Four Pillars of OOP</h2>
+    <div class="grid">
+      <div class="card"><div class="card-icon">🎭</div><h3>1. Abstraction</h3><p>Hide internal details, show only what's needed. Covered below.</p></div>
+      <div class="card"><div class="card-icon">📦</div><h3>2. Encapsulation</h3><p>Bundle data + methods into one unit. Covered below.</p></div>
+      <div class="card"><div class="card-icon">🧬</div><h3>3. Inheritance</h3><p>Reuse a class's properties in another class. Part 2.</p></div>
+      <div class="card"><div class="card-icon">🔀</div><h3>4. Polymorphism</h3><p>Same name, different behavior. Part 2.</p></div>
+    </div>
+    <h3>Abstraction</h3>
+    <pre>class Car:
+    def __init__(self):
+        self.acc = False
+        self.clutch = False
+
+    def start(self):           # user only sees THIS method
+        self.clutch = True     # internal steps — HIDDEN from the user
+        self.acc = True
+        print('Car Started!')
+
+car1 = Car()
+car1.start()    # user never sees clutch/acc being set internally</pre>
+    <h3>Encapsulation</h3>
+    <div class="callout core">
+      <strong>Core idea:</strong> A class is a "capsule" wrapping data (attributes) together with the methods that operate on that data — into one single unit. Every class you write practices encapsulation by definition.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>OOP Cheat Sheet</h2>
+    <table>
+      <tr><th>Concept</th><th>Syntax</th></tr>
+      <tr><td>Define class</td><td><code>class MyClass:</code></td></tr>
+      <tr><td>Create object</td><td><code>obj = MyClass()</code></td></tr>
+      <tr><td>Constructor</td><td><code>def __init__(self, a, b):</code></td></tr>
+      <tr><td>Instance attribute</td><td><code>self.name = 'Karan'</code></td></tr>
+      <tr><td>Class attribute</td><td><code>college = 'ABC'</code> (in class body)</td></tr>
+      <tr><td>Static method</td><td><code>@staticmethod</code> then <code>def method():</code></td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Chapter Summary</h2>
+    <ul class="summary-list">
+      <li>Programming evolved: Procedural → Functional → Object-Oriented</li>
+      <li>A Class is a blueprint; an Object (instance) is the actual entity built from it</li>
+      <li><code>__init__</code> runs automatically on object creation to set up initial data</li>
+      <li><code>self</code> refers to the current object — always the first parameter of any method</li>
+      <li>Instance attributes are unique per object; class attributes are shared by all objects</li>
+      <li>Static methods (<code>@staticmethod</code>) skip <code>self</code> entirely — class-level utilities</li>
+      <li>Abstraction hides implementation details; Encapsulation bundles data + methods together</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+(function(){
+  function apply(t){ document.documentElement.setAttribute('data-theme', t==='dark'?'dark':'light'); }
+  try{ apply(localStorage.getItem('theme')||'light'); }catch(e){}
+  window.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='set-theme'){
+      try{ localStorage.setItem('theme',e.data.theme); }catch(e2){}
+      apply(e.data.theme);
+    }
+  });
+})();
+</script>
+</body>
+</html>

@@ -18,6 +18,89 @@ export interface Topic {
 
 export const TOPICS: Topic[] = [
   {
+    slug: "python",
+    title: "Python",
+    shortTitle: "Python",
+    description:
+      "Master Python from the ground up — variables & data types, strings, conditionals, lists, tuples, dictionaries, sets, loops, functions, recursion, file I/O, and complete Object-Oriented Programming.",
+    color: "#2563eb",
+    icon: "🐍",
+    lessons: [
+      {
+        slug: "variables-data-types",
+        title: "Variables & Data Types",
+        description:
+          "What programming is, how Python works under the hood, variables, the 5 primary data types, keywords, comments, operators, and type conversion.",
+        htmlFile: "/content/python/variables-data-types.html",
+        duration: "25 min",
+      },
+      {
+        slug: "strings-conditionals",
+        title: "Strings & Conditional Statements",
+        description:
+          "String creation, escape sequences, indexing, slicing, built-in string methods, and decision-making with if / elif / else and nested conditions.",
+        htmlFile: "/content/python/strings-conditionals.html",
+        duration: "28 min",
+      },
+      {
+        slug: "lists-tuples",
+        title: "Lists & Tuples",
+        description:
+          "Mutable vs immutable sequences — list indexing, slicing, all the key list methods, and everything about tuples and when to prefer them.",
+        htmlFile: "/content/python/lists-tuples.html",
+        duration: "26 min",
+      },
+      {
+        slug: "dictionary-set",
+        title: "Dictionary & Set",
+        description:
+          "Key-value storage with dictionaries, safe access with .get(), nested dictionaries, and unique unordered collections with sets.",
+        htmlFile: "/content/python/dictionary-set.html",
+        duration: "26 min",
+      },
+      {
+        slug: "loops",
+        title: "Loops in Python",
+        description:
+          "while and for loops, break / continue / pass, the range() function, nested loops, and the linear search algorithm.",
+        htmlFile: "/content/python/loops.html",
+        duration: "24 min",
+      },
+      {
+        slug: "functions-recursion",
+        title: "Functions & Recursion",
+        description:
+          "Defining and calling functions, parameters vs arguments, default parameters, and recursion — base cases, the call stack, and recursive patterns.",
+        htmlFile: "/content/python/functions-recursion.html",
+        duration: "24 min",
+      },
+      {
+        slug: "file-io",
+        title: "File Input/Output",
+        description:
+          "Opening files in r/w/a modes, reading and writing text, the with statement, deleting files with os.remove(), and modules.",
+        htmlFile: "/content/python/file-io.html",
+        duration: "20 min",
+      },
+      {
+        slug: "oop-basics",
+        title: "OOP in Python (Part 1)",
+        description:
+          "Classes, objects, the __init__ constructor, self, instance vs class attributes, methods, static methods, abstraction, and encapsulation.",
+        htmlFile: "/content/python/oop-basics.html",
+        duration: "22 min",
+      },
+      {
+        slug: "oop-advanced",
+        title: "OOP in Python (Part 2)",
+        description:
+          "Private attributes, inheritance (single, multi-level, multiple), super(), class methods, @property, polymorphism, and dunder functions.",
+        htmlFile: "/content/python/oop-advanced.html",
+        duration: "24 min",
+      },
+    ],
+  },
+  {
     slug: "mcp",
     title: "Model Context Protocol",
     shortTitle: "MCP",

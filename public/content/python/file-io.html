@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>File Input/Output — Python</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff;--bg2:#f8fafc;--bg3:#f1f5f9;--border:#e2e8f0;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --accent:#2563eb;--accent-soft:#eff6ff;--accent-muted:#93c5fd;
+  --code-bg:#f8fafc;--code-text:#1d4ed8;
+  --shadow:0 1px 3px rgba(15,23,42,.07),0 1px 2px rgba(15,23,42,.04);
+  --radius:10px;
+}
+[data-theme="dark"]{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2230;--border:#30363d;
+  --text:#e6edf3;--text2:#8b949e;--text3:#484f58;
+  --accent:#60a5fa;--accent-soft:#0d1b2e;--accent-muted:#3b82f6;
+  --code-bg:#1c2230;--code-text:#93c5fd;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.7;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.hd{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.hd-brand{font-size:13px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
+.hd-brand span{color:var(--accent)}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;padding:6px 14px;border-radius:7px;transition:opacity .15s}
+.dl-btn:hover{opacity:.88;text-decoration:none}
+.hero{padding:48px 24px 32px;max-width:800px;margin:0 auto}
+.tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:clamp(26px,4vw,40px);font-weight:700;line-height:1.15;margin:0 0 12px;color:var(--text)}
+.hero p{font-size:17px;color:var(--text2);margin:0 0 24px;max-width:640px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--text3)}
+.meta span{display:flex;align-items:center;gap:4px}
+.content{max-width:800px;margin:0 auto;padding:0 24px 80px}
+.section{margin-bottom:40px}
+h2{font-size:20px;font-weight:700;color:var(--text);margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid var(--accent);display:inline-block}
+h3{font-size:16px;font-weight:600;color:var(--text);margin:16px 0 8px}
+p{margin:0 0 14px;color:var(--text2)}
+ul{margin:0 0 14px;padding-left:22px;color:var(--text2)}
+li{margin-bottom:5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.card-icon{font-size:22px;margin-bottom:8px}
+.card h3{font-size:14px;font-weight:700;color:var(--text);margin:0 0 4px}
+.card p{font-size:13px;margin:0;color:var(--text2)}
+.callout{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;border-left:4px solid}
+.callout.core{background:var(--accent-soft);border-color:var(--accent)}
+.callout.violet{background:#f5f3ff;border-color:#8b5cf6}
+[data-theme="dark"] .callout.violet{background:#1e1b3a;border-color:#a78bfa}
+.callout.green{background:#f0fdf4;border-color:#16a34a}
+[data-theme="dark"] .callout.green{background:#0d2318;border-color:#4ade80}
+.callout.amber{background:#fffbeb;border-color:#f59e0b}
+[data-theme="dark"] .callout.amber{background:#1c1a00;border-color:#fbbf24}
+.callout strong{color:var(--text)}
+.callout p{margin:0;color:var(--text2)}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;margin:0 0 16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:var(--text2)}
+code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--code-bg);color:var(--code-text);padding:2px 6px;border-radius:4px}
+table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:14px}
+th{background:var(--bg3);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border:1px solid var(--border)}
+td{padding:9px 14px;border:1px solid var(--border);color:var(--text2)}
+tr:hover td{background:var(--bg2)}
+.dl-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;align-items:center;gap:20px;margin-bottom:32px;box-shadow:var(--shadow)}
+.dl-card .file-icon{font-size:40px;flex-shrink:0}
+.dl-card h3{font-size:15px;font-weight:700;margin:0 0 4px;color:var(--text)}
+.dl-card p{font-size:13px;margin:0 0 12px;color:var(--text2)}
+.summary-list{margin:0;padding-left:0;list-style:none}
+.summary-list li{padding:8px 0 8px 28px;position:relative;border-bottom:1px solid var(--border);color:var(--text2);font-size:14px}
+.summary-list li:last-child{border-bottom:none}
+.summary-list li::before{content:'✓';position:absolute;left:0;color:var(--accent);font-weight:700}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-brand"><span>🐍</span> Python Track</div>
+  <a class="dl-btn" href="/content/python/Python_Lecture7_Study_Notes.docx" download>⬇ Download Notes</a>
+</header>
+
+<div class="hero">
+  <div class="tag">Lesson 7 · Python</div>
+  <h1>File Input/Output</h1>
+  <p>Variables live in RAM and vanish when your program ends. To persist data permanently, you read from and write to files on disk — Python makes this simple with <code>open()</code>.</p>
+  <div class="meta">
+    <span>⏱ 20 min read</span>
+    <span>📂 open / read / write</span>
+    <span>🗑 os.remove()</span>
+  </div>
+</div>
+
+<div class="content">
+  <div class="dl-card">
+    <div class="file-icon">📄</div>
+    <div>
+      <h3>Python_Lecture7_Study_Notes.docx</h3>
+      <p>Full notes on file modes, reading/writing methods, the with statement, deleting files, and modules — with practice questions.</p>
+      <a class="dl-btn" href="/content/python/Python_Lecture7_Study_Notes.docx" download>⬇ Download Full Notes</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>RAM vs Persistent Storage</h2>
+    <table>
+      <tr><th>Storage Type</th><th>Speed</th><th>Persistent?</th><th>Used For</th></tr>
+      <tr><td>RAM</td><td>Fast</td><td>No — lost on shutdown</td><td>Running programs, variables</td></tr>
+      <tr><td>SSD / HDD (Files)</td><td>Slower</td><td>Yes — persists forever</td><td>Photos, code, documents, logs</td></tr>
+    </table>
+    <p>File I/O — Open, Read, Write, Append, Close, Delete — is how Python moves data between RAM and permanent disk storage.</p>
+  </div>
+
+  <div class="section">
+    <h2>Opening a File &amp; Modes</h2>
+    <pre>f = open('demo.txt', 'r')      # default mode: read
+f = open('demo.txt')            # same as above</pre>
+    <table>
+      <tr><th>Mode</th><th>Description</th><th>Creates if Missing?</th></tr>
+      <tr><td><code>'r'</code></td><td>Read only (default)</td><td>No → FileNotFoundError</td></tr>
+      <tr><td><code>'w'</code></td><td>Write — TRUNCATES existing content first</td><td>Yes</td></tr>
+      <tr><td><code>'a'</code></td><td>Append — preserves existing content</td><td>Yes</td></tr>
+      <tr><td><code>'x'</code></td><td>Create — fails if file already exists</td><td>Yes</td></tr>
+    </table>
+    <div class="callout amber">
+      <strong>Watch out:</strong> <code>'w'</code> mode permanently <strong>erases</strong> existing content before writing. Use <code>'a'</code> if you want to add data without deleting what's already there.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Reading from a File</h2>
+    <pre>f = open('demo.txt', 'r')
+data = f.read()        # entire file as ONE string
+print(data)
+f.close()
+
+f = open('demo.txt', 'r')
+line = f.readline()      # one line at a time; '' when file ends
+f.close()
+
+f = open('demo.txt', 'r')
+lines = f.readlines()      # list of all lines, each ending in '\n'
+f.close()</pre>
+    <table>
+      <tr><th>Method</th><th>Returns</th><th>Best For</th></tr>
+      <tr><td><code>read()</code></td><td>All content as one string</td><td>Small files, need everything</td></tr>
+      <tr><td><code>readline()</code></td><td>One line at a time</td><td>Processing line by line</td></tr>
+      <tr><td><code>readlines()</code></td><td>List of all lines</td><td>Need all lines as a list</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Writing to a File</h2>
+    <pre># 'w' — overwrite everything
+f = open('demo.txt', 'w')
+f.write('Line 1: Hello World\n')
+f.write('Line 2: Learning Python\n')
+f.close()
+
+# 'a' — append without deleting existing data
+f = open('demo.txt', 'a')
+f.write('\nLine 3 appended')
+f.close()</pre>
+    <div class="callout violet">
+      <strong>Note:</strong> <code>write()</code> never adds a newline automatically — include <code>\n</code> yourself if you want a new line.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>The with Statement — Preferred Way</h2>
+    <p><code>with</code> auto-closes the file when the block ends — no manual <code>close()</code>, and cleanup still happens even if an error occurs.</p>
+    <pre>with open('demo.txt', 'r') as f:
+    data = f.read()
+    print(data)
+# file is automatically closed here
+
+with open('demo.txt', 'w') as f:
+    f.write('New content here')</pre>
+    <div class="callout green">
+      <strong>Tip:</strong> Always use <code>with open(...) as f:</code> in real Python code — it's the safer, industry-standard pattern.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Deleting Files — the os Module</h2>
+    <p>File methods alone can't delete a file — import the built-in <code>os</code> module.</p>
+    <pre>import os
+
+filename = 'sample.txt'
+if os.path.exists(filename):
+    os.remove(filename)
+    print("File deleted successfully")
+else:
+    print("File not found")</pre>
+    <div class="callout amber">
+      <strong>Watch out:</strong> <code>os.remove()</code> deletes permanently — there's no recycle bin or undo.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Common Pattern — Modify File Content</h2>
+    <p>You can't edit a file in place. Always: <strong>READ</strong> into a string → <strong>MODIFY</strong> the string in memory → <strong>WRITE</strong> it back.</p>
+    <pre>def replace_word(filename, old_word, new_word):
+    with open(filename, 'r') as f:
+        data = f.read()
+
+    new_data = data.replace(old_word, new_word)
+
+    with open(filename, 'w') as f:
+        f.write(new_data)
+
+replace_word('practice.txt', 'Java', 'Python')</pre>
+  </div>
+
+  <div class="section">
+    <h2>Quick Reference Cheat Sheet</h2>
+    <table>
+      <tr><th>Operation</th><th>Code</th></tr>
+      <tr><td>Open for reading</td><td><code>f = open('file.txt', 'r')</code></td></tr>
+      <tr><td>Open for writing</td><td><code>f = open('file.txt', 'w')</code></td></tr>
+      <tr><td>Open for appending</td><td><code>f = open('file.txt', 'a')</code></td></tr>
+      <tr><td>Read all / one line / all lines</td><td><code>f.read() / f.readline() / f.readlines()</code></td></tr>
+      <tr><td>Write</td><td><code>f.write('text')</code></td></tr>
+      <tr><td>With statement</td><td><code>with open('f','r') as f:</code></td></tr>
+      <tr><td>Delete file</td><td><code>os.remove('file.txt')</code></td></tr>
+      <tr><td>Check file exists</td><td><code>os.path.exists('file.txt')</code></td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Chapter Summary</h2>
+    <ul class="summary-list">
+      <li>RAM is temporary; files on disk persist data across program runs and restarts</li>
+      <li><code>open(filename, mode)</code> opens a file — default mode is <code>'r'</code></li>
+      <li><code>'w'</code> erases existing content first; <code>'a'</code> preserves it and appends</li>
+      <li><code>read()</code>, <code>readline()</code>, and <code>readlines()</code> each read content differently</li>
+      <li>Always prefer <code>with open(...) as f:</code> — it auto-closes the file safely</li>
+      <li>Deleting requires the built-in <code>os</code> module: <code>os.remove(filename)</code></li>
+      <li>To modify a file: read into a string, modify the string, write it back</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+(function(){
+  function apply(t){ document.documentElement.setAttribute('data-theme', t==='dark'?'dark':'light'); }
+  try{ apply(localStorage.getItem('theme')||'light'); }catch(e){}
+  window.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='set-theme'){
+      try{ localStorage.setItem('theme',e.data.theme); }catch(e2){}
+      apply(e.data.theme);
+    }
+  });
+})();
+</script>
+</body>
+</html>
