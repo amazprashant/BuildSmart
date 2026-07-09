@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Improving Your FastAPI App</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--bg2:#f8fafc;--bg3:#f1f5f9;--border:#e2e8f0;--text:#0f172a;--text2:#475569;--text3:#94a3b8;--accent:#0d9488;--accent-soft:#f0fdfa;--green:#16a34a;--green-soft:#f0fdf4;--amber:#d97706;--amber-soft:#fffbeb;--blue:#2563eb;--blue-soft:#eff6ff;--purple:#7c3aed;--purple-soft:#faf5ff;--red:#dc2626;--red-soft:#fef2f2;--code-bg:#f8fafc;--code-text:#0f766e;--radius:10px;}
+[data-theme="dark"]{--bg:#0d1117;--bg2:#161b22;--bg3:#1c2230;--border:#30363d;--text:#e6edf3;--text2:#8b949e;--text3:#484f58;--accent:#2dd4bf;--accent-soft:#0a2520;--green:#4ade80;--green-soft:#0d2318;--amber:#fbbf24;--amber-soft:#1c1a00;--blue:#60a5fa;--blue-soft:#0d1b2e;--purple:#c4b5fd;--purple-soft:#1a0d2e;--red:#f87171;--red-soft:#2d1515;--code-bg:#1c2230;--code-text:#4dd0c4;}
+*,*::before,*::after{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.75;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+.hd{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.hd-brand{font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px}
+.hd-icon{width:26px;height:26px;background:var(--accent-soft);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:7px 14px;border-radius:7px;text-decoration:none;transition:opacity .15s}.dl-btn:hover{opacity:.88}
+.hero{padding:48px 24px 32px;max-width:820px;margin:0 auto}
+.tag{display:inline-flex;background:var(--accent-soft);color:var(--accent);font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px;border:1px solid var(--accent)}
+.hero h1{font-size:clamp(26px,4vw,42px);font-weight:800;line-height:1.1;margin:0 0 12px;letter-spacing:-.02em}
+.hero h1 em{color:var(--accent);font-style:normal}
+.hero p{font-size:16px;color:var(--text2);margin:0 0 20px;max-width:640px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--text3)}
+.content{max-width:820px;margin:0 auto;padding:8px 24px 80px}
+.section{margin-bottom:44px}
+.sec-hd{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.sec-hd h2{font-size:20px;font-weight:800;color:var(--text);margin:0}
+.sec-num{width:32px;height:32px;border-radius:8px;background:var(--accent);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+h3{font-size:14px;font-weight:700;color:var(--text);margin:20px 0 8px}
+p{margin:0 0 12px;color:var(--text2)}ul,ol{margin:0 0 12px;padding-left:20px;color:var(--text2)}li{margin-bottom:5px}strong{color:var(--text)}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;margin:0 0 14px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.65;color:var(--text2)}
+code{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--code-bg);color:var(--code-text);padding:2px 6px;border-radius:4px}
+.callout{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;border-left:4px solid}
+.callout.teal{background:var(--accent-soft);border-color:var(--accent)}.callout.green{background:var(--green-soft);border-color:var(--green)}.callout.amber{background:var(--amber-soft);border-color:var(--amber)}.callout.blue{background:var(--blue-soft);border-color:var(--blue)}.callout.red{background:var(--red-soft);border-color:var(--red)}
+.callout-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;color:var(--text)}.callout p{margin:0;font-size:13.5px;color:var(--text2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:12px;margin:14px 0 20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card.t{border-top:3px solid var(--accent)}.card.g{border-top:3px solid var(--green)}.card.b{border-top:3px solid var(--blue)}.card.p{border-top:3px solid var(--purple)}.card.r{border-top:3px solid var(--red)}
+.card h3{font-size:13px;font-weight:700;margin:0 0 5px;color:var(--text)}
+.card p{font-size:12.5px;margin:0;color:var(--text2)}
+.dl-card{background:linear-gradient(135deg,var(--accent-soft),var(--bg2));border:1px solid var(--accent);border-radius:var(--radius);padding:22px;display:flex;align-items:center;gap:18px;margin-bottom:28px}
+.dl-card .fi{font-size:40px;flex-shrink:0}
+.dl-card h3{font-size:15px;font-weight:800;margin:0 0 4px}
+.dl-card p{font-size:12.5px;margin:0 0 12px;color:var(--text2)}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-brand"><div class="hd-icon">⚡</div>FastAPI Track</div>
+  <a class="dl-btn" href="/content/FastAPI/9%20Improving_FastAPI_API_Notes.docx" download>⬇ Download Notes</a>
+</header>
+<div class="hero">
+  <div class="tag">Lesson 9 of 13 · FastAPI</div>
+  <h1>Improving Your <em>FastAPI App</em></h1>
+  <p>Level up your API with error handling, middleware, CORS, background tasks, dependency injection, and production-ready patterns.</p>
+  <div class="meta"><span>⏱ 30 min</span><span>🛡 Error Handling</span><span>🔗 Middleware</span><span>⚙ Dependencies</span></div>
+</div>
+<div class="content">
+  <div class="dl-card">
+    <div class="fi">📄</div>
+    <div>
+      <h3>9 Improving_FastAPI_API_Notes.docx</h3>
+      <p>Notes on error handling, middleware, CORS, background tasks, and dependency injection patterns.</p>
+      <a class="dl-btn" href="/content/FastAPI/9%20Improving_FastAPI_API_Notes.docx" download>⬇ Download Full Notes</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">1</div><h2>Error Handling</h2></div>
+    <pre>from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
+
+app = FastAPI()
+
+# Standard HTTPException
+@app.get("/items/{item_id}")
+def get_item(item_id: int):
+    if item_id not in db:
+        raise HTTPException(
+            status_code=404,
+            detail={"message": "Item not found", "item_id": item_id}
+        )
+    return db[item_id]
+
+# Custom exception class
+class AppError(Exception):
+    def __init__(self, code: str, message: str):
+        self.code = code
+        self.message = message
+
+# Custom exception handler
+@app.exception_handler(AppError)
+async def app_error_handler(request: Request, exc: AppError):
+    return JSONResponse(
+        status_code=400,
+        content={"error_code": exc.code, "message": exc.message}
+    )
+
+# Override 404 globally
+@app.exception_handler(404)
+async def not_found_handler(request: Request, exc):
+    return JSONResponse(status_code=404, content={"error": "Route not found"})</pre>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">2</div><h2>CORS Middleware</h2></div>
+    <pre>from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "https://myapp.com"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allow_headers=["*"],
+)
+
+# Development only — allow all origins:
+# allow_origins=["*"]</pre>
+    <div class="callout amber">
+      <div class="callout-title">Never use allow_origins=["*"] in production</div>
+      <p>Wildcard origins disable CORS protection. In production, list specific origins. If you need credentials (cookies/auth), wildcard isn't even allowed by browsers — you must list origins explicitly.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">3</div><h2>Custom Middleware</h2></div>
+    <pre>import time
+from fastapi import Request
+
+@app.middleware("http")
+async def add_timing_header(request: Request, call_next):
+    start = time.time()
+    response = await call_next(request)        # process request
+    duration = time.time() - start
+    response.headers["X-Process-Time"] = str(duration)
+    return response
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    print(f"➡ {request.method} {request.url.path}")
+    response = await call_next(request)
+    print(f"⬅ {response.status_code}")
+    return response</pre>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">4</div><h2>Background Tasks</h2></div>
+    <pre>from fastapi import BackgroundTasks
+import smtplib
+
+def send_welcome_email(email: str, name: str):
+    # This runs after the response is sent — doesn't block the client
+    print(f"Sending welcome email to {email}...")
+    time.sleep(2)  # simulate slow email send
+    print(f"Email sent to {name}!")
+
+@app.post("/users", status_code=201)
+def create_user(user: UserCreate, background_tasks: BackgroundTasks):
+    # Create user in DB
+    new_user = save_user(user)
+    # Schedule background work
+    background_tasks.add_task(send_welcome_email, user.email, user.name)
+    # Response sent immediately, email sends asynchronously
+    return new_user</pre>
+    <div class="callout teal">
+      <div class="callout-title">Background tasks vs task queues</div>
+      <p>Background tasks are simple and great for fire-and-forget work (emails, logging). For reliable distributed task processing with retries and persistence, use a proper queue like Celery or BullMQ instead.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">5</div><h2>Dependency Injection</h2></div>
+    <pre>from fastapi import Depends
+
+# A dependency function
+def get_db():
+    db = SessionLocal()   # create DB session
+    try:
+        yield db
+    finally:
+        db.close()         # always clean up
+
+@app.get("/users/{user_id}")
+def get_user(user_id: int, db = Depends(get_db)):
+    return db.query(User).filter(User.id == user_id).first()
+
+# Auth dependency
+from fastapi import Header
+
+def verify_api_key(x_api_key: str = Header(...)):
+    if x_api_key != "secret123":
+        raise HTTPException(status_code=403, detail="Invalid API Key")
+    return x_api_key
+
+@app.get("/protected", dependencies=[Depends(verify_api_key)])
+def protected_route():
+    return {"message": "You are authorized!"}</pre>
+    <div class="callout green">
+      <div class="callout-title">Dependencies are composable</div>
+      <p>Dependencies can depend on other dependencies, enabling a tree of reusable logic. Share DB sessions, auth checks, query pagination, and more — without duplicating code across routes.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">6</div><h2>Improvements Checklist</h2></div>
+    <div class="grid">
+      <div class="card t"><h3>🛡 Error Handling</h3><p>Custom exceptions + global error handlers for consistent error responses.</p></div>
+      <div class="card g"><h3>🌐 CORS</h3><p>Whitelist frontend origins only. Never use wildcard in production.</p></div>
+      <div class="card b"><h3>⏱ Middleware</h3><p>Add request logging and timing headers for observability.</p></div>
+      <div class="card p"><h3>⚙ Dependencies</h3><p>Inject DB sessions, auth, and shared logic via Depends().</p></div>
+      <div class="card r"><h3>📬 Background</h3><p>Offload emails and notifications to background tasks.</p></div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  function apply(t){document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}
+  try{apply(localStorage.getItem('theme')||'light');}catch(e){}
+  window.addEventListener('message',function(e){if(e.data&&e.data.type==='set-theme'){try{localStorage.setItem('theme',e.data.theme);}catch(e2){}apply(e.data.theme);}});
+})();
+</script>
+</body>
+</html>

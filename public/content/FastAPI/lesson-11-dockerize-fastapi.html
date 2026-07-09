@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dockerize FastAPI — FastAPI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--bg2:#f8fafc;--bg3:#f1f5f9;--border:#e2e8f0;--text:#0f172a;--text2:#475569;--text3:#94a3b8;--accent:#0d9488;--accent-soft:#f0fdfa;--green:#16a34a;--green-soft:#f0fdf4;--amber:#d97706;--amber-soft:#fffbeb;--blue:#2563eb;--blue-soft:#eff6ff;--purple:#7c3aed;--purple-soft:#faf5ff;--red:#dc2626;--red-soft:#fef2f2;--code-bg:#f8fafc;--code-text:#0f766e;--radius:10px;}
+[data-theme="dark"]{--bg:#0d1117;--bg2:#161b22;--bg3:#1c2230;--border:#30363d;--text:#e6edf3;--text2:#8b949e;--text3:#484f58;--accent:#2dd4bf;--accent-soft:#0a2520;--green:#4ade80;--green-soft:#0d2318;--amber:#fbbf24;--amber-soft:#1c1a00;--blue:#60a5fa;--blue-soft:#0d1b2e;--purple:#c4b5fd;--purple-soft:#1a0d2e;--red:#f87171;--red-soft:#2d1515;--code-bg:#1c2230;--code-text:#4dd0c4;}
+*,*::before,*::after{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.75;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+.hd{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.hd-brand{font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px}
+.hd-icon{width:26px;height:26px;background:var(--accent-soft);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:7px 14px;border-radius:7px;text-decoration:none;transition:opacity .15s}.dl-btn:hover{opacity:.88}
+.hero{padding:48px 24px 32px;max-width:820px;margin:0 auto}
+.tag{display:inline-flex;background:var(--accent-soft);color:var(--accent);font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px;border:1px solid var(--accent)}
+.hero h1{font-size:clamp(26px,4vw,42px);font-weight:800;line-height:1.1;margin:0 0 12px;letter-spacing:-.02em}
+.hero h1 em{color:var(--accent);font-style:normal}
+.hero p{font-size:16px;color:var(--text2);margin:0 0 20px;max-width:640px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--text3)}
+.content{max-width:820px;margin:0 auto;padding:8px 24px 80px}
+.section{margin-bottom:44px}
+.sec-hd{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.sec-hd h2{font-size:20px;font-weight:800;color:var(--text);margin:0}
+.sec-num{width:32px;height:32px;border-radius:8px;background:var(--accent);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+h3{font-size:14px;font-weight:700;color:var(--text);margin:20px 0 8px}
+p{margin:0 0 12px;color:var(--text2)}ul,ol{margin:0 0 12px;padding-left:20px;color:var(--text2)}li{margin-bottom:5px}strong{color:var(--text)}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;margin:0 0 14px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.65;color:var(--text2)}
+code{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--code-bg);color:var(--code-text);padding:2px 6px;border-radius:4px}
+.callout{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;border-left:4px solid}
+.callout.teal{background:var(--accent-soft);border-color:var(--accent)}.callout.green{background:var(--green-soft);border-color:var(--green)}.callout.amber{background:var(--amber-soft);border-color:var(--amber)}.callout.blue{background:var(--blue-soft);border-color:var(--blue)}.callout.red{background:var(--red-soft);border-color:var(--red)}
+.callout-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;color:var(--text)}.callout p{margin:0;font-size:13.5px;color:var(--text2)}
+.file-tree{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:14px 0 20px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text2);line-height:1.8}
+.ft-dir{color:var(--blue);font-weight:600}.ft-file{color:var(--text2)}.ft-note{color:var(--text3);font-size:11px}
+.diagram{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:14px 0 20px;overflow-x:auto}
+.diag-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.diag-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.d-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;margin:6px 0}
+.d-node{background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:9px 16px;font-size:12px;font-weight:700;color:var(--text);text-align:center;min-width:80px;line-height:1.3}
+.d-node small{display:block;font-size:10px;font-weight:400;color:var(--text3);margin-top:2px}
+.d-node.t{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.d-node.g{border-color:var(--green);background:var(--green-soft);color:var(--green)}
+.d-node.b{border-color:var(--blue);background:var(--blue-soft);color:var(--blue)}
+.d-arrow{color:var(--text3);font-size:18px;padding:0 2px;flex-shrink:0}
+.dl-card{background:linear-gradient(135deg,var(--accent-soft),var(--bg2));border:1px solid var(--accent);border-radius:var(--radius);padding:22px;display:flex;align-items:center;gap:18px;margin-bottom:28px}
+.dl-card .fi{font-size:40px;flex-shrink:0}
+.dl-card h3{font-size:15px;font-weight:800;margin:0 0 4px}
+.dl-card p{font-size:12.5px;margin:0 0 12px;color:var(--text2)}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-brand"><div class="hd-icon">⚡</div>FastAPI Track</div>
+  <a class="dl-btn" href="/content/FastAPI/11%20Dockerize_FastAPI_Notes.docx" download>⬇ Download Notes</a>
+</header>
+<div class="hero">
+  <div class="tag">Lesson 11 of 13 · FastAPI</div>
+  <h1>Dockerize <em>FastAPI</em></h1>
+  <p>Package your FastAPI application into a Docker container with a production-ready Dockerfile, use docker-compose for multi-service apps, and build a local development workflow.</p>
+  <div class="meta"><span>⏱ 25 min</span><span>🐳 Dockerfile</span><span>🔧 docker-compose</span></div>
+</div>
+<div class="content">
+  <div class="dl-card">
+    <div class="fi">📄</div>
+    <div>
+      <h3>11 Dockerize_FastAPI_Notes.docx</h3>
+      <p>Complete guide to dockerizing FastAPI: Dockerfile, multi-stage builds, docker-compose, and workflows.</p>
+      <a class="dl-btn" href="/content/FastAPI/11%20Dockerize_FastAPI_Notes.docx" download>⬇ Download Full Notes</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">1</div><h2>Project Structure</h2></div>
+    <div class="file-tree">
+<span class="ft-dir">my-fastapi-app/</span>
+├── <span class="ft-file">main.py</span>           <span class="ft-note"># FastAPI app</span>
+├── <span class="ft-file">requirements.txt</span>  <span class="ft-note"># Python dependencies</span>
+├── <span class="ft-file">Dockerfile</span>        <span class="ft-note"># Build instructions</span>
+├── <span class="ft-file">.dockerignore</span>     <span class="ft-note"># Exclude files from build</span>
+└── <span class="ft-file">docker-compose.yml</span> <span class="ft-note"># Multi-service config</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">2</div><h2>Production Dockerfile</h2></div>
+    <pre># Dockerfile
+FROM python:3.11-slim
+
+# Prevents Python from writing .pyc files
+ENV PYTHONDONTWRITEBYTECODE=1
+# Prevents Python from buffering stdout/stderr (see logs immediately)
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Install dependencies (separate layer for caching)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy source code
+COPY . .
+
+# Create non-root user for security
+RUN adduser --disabled-password --gecos '' appuser
+USER appuser
+
+EXPOSE 8000
+
+# Use gunicorn with uvicorn workers for production
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]</pre>
+    <h3>requirements.txt</h3>
+    <pre>fastapi==0.111.0
+uvicorn[standard]==0.30.0
+pydantic==2.7.1
+# Add your other dependencies here</pre>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">3</div><h2>docker-compose for Multi-Service Apps</h2></div>
+    <pre># docker-compose.yml
+version: "3.9"
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/mydb
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app      # mount code for hot reload in dev
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  pg_data:</pre>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">4</div><h2>Build &amp; Run Workflow</h2></div>
+    <pre># Build and start all services
+docker-compose up --build
+
+# Start in background
+docker-compose up -d --build
+
+# View logs
+docker-compose logs -f api
+
+# Stop all services
+docker-compose down
+
+# Stop and remove volumes (reset DB)
+docker-compose down -v
+
+# Run a one-off command (e.g. DB migrations)
+docker-compose run api alembic upgrade head
+
+# Rebuild just the API container
+docker-compose up --build api</pre>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">5</div><h2>Dev vs Prod Configuration</h2></div>
+    <pre># docker-compose.override.yml (auto-applied in dev)
+version: "3.9"
+
+services:
+  api:
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/app   # live reload on file changes
+    environment:
+      - DEBUG=true
+
+# docker-compose.prod.yml (use explicitly in production)
+# docker-compose -f docker-compose.yml -f docker-compose.prod.yml up</pre>
+    <div class="callout teal">
+      <div class="callout-title">--reload only in development</div>
+      <p>The <code>--reload</code> flag watches for file changes and restarts the server. Never use it in production — it's slow, uses extra memory, and the file-watcher can cause security issues in containerized environments.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">6</div><h2>Service Communication in docker-compose</h2></div>
+    <div class="diagram">
+      <div class="diag-title">Container Networking</div>
+      <div class="d-row">
+        <div class="d-node b">Browser<small>localhost:8000</small></div>
+        <div class="d-arrow">→</div>
+        <div class="d-node t">api container<small>:8000</small></div>
+        <div class="d-arrow">→</div>
+        <div class="d-node g">db container<small>db:5432</small></div>
+      </div>
+    </div>
+    <p>Inside docker-compose, containers talk to each other using <strong>service names as hostnames</strong>. Your API connects to <code>db:5432</code> (not <code>localhost:5432</code>) because <code>db</code> is the service name defined in <code>docker-compose.yml</code>.</p>
+    <div class="callout amber">
+      <div class="callout-title">depends_on is not enough</div>
+      <p><code>depends_on</code> only waits for the container to start — not for the service inside (like Postgres) to be ready. In production, add a health check or a startup retry loop in your app so it reconnects if the DB isn't ready yet.</p>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  function apply(t){document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}
+  try{apply(localStorage.getItem('theme')||'light');}catch(e){}
+  window.addEventListener('message',function(e){if(e.data&&e.data.type==='set-theme'){try{localStorage.setItem('theme',e.data.theme);}catch(e2){}apply(e.data.theme);}});
+})();
+</script>
+</body>
+</html>

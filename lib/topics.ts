@@ -331,6 +331,121 @@ export const TOPICS: Topic[] = [
       },
     ],
   },
+  {
+    slug: "fastapi",
+    title: "FastAPI",
+    shortTitle: "FastAPI",
+    description:
+      "Build production-ready APIs with Python's fastest framework — HTTP fundamentals, Pydantic validation, CRUD patterns, ML model serving, Docker, and full AWS deployment.",
+    color: "#0d9488",
+    icon: "⚡",
+    lessons: [
+      {
+        slug: "api-fundamentals",
+        title: "API Fundamentals",
+        description:
+          "What APIs are, the HTTP request/response cycle, HTTP methods and status codes, REST principles, and JSON data format.",
+        htmlFile: "/content/FastAPI/lesson-1-api-fundamentals.html",
+        duration: "20 min",
+      },
+      {
+        slug: "fastapi-philosophy",
+        title: "FastAPI Philosophy",
+        description:
+          "Why FastAPI exists, its performance advantages over Flask and Django REST, auto-documentation, and your first Hello World endpoint.",
+        htmlFile: "/content/FastAPI/lesson-2-fastapi-philosophy.html",
+        duration: "18 min",
+      },
+      {
+        slug: "http-methods",
+        title: "HTTP Methods in FastAPI",
+        description:
+          "Master GET, POST, PUT, PATCH, and DELETE route decorators, idempotency, status codes, and a complete CRUD API skeleton.",
+        htmlFile: "/content/FastAPI/lesson-3-http-methods.html",
+        duration: "22 min",
+      },
+      {
+        slug: "path-query-params",
+        title: "Path & Query Parameters",
+        description:
+          "URL anatomy, dynamic path parameters with type validation, Enum params, optional query parameters with defaults, and when to use each.",
+        htmlFile: "/content/FastAPI/lesson-4-path-query-params.html",
+        duration: "20 min",
+      },
+      {
+        slug: "pydantic",
+        title: "Pydantic Crash Course",
+        description:
+          "BaseModel, type coercion, Field constraints, nested models, and serialization with model_dump() and exclude_unset for PATCH endpoints.",
+        htmlFile: "/content/FastAPI/lesson-5-pydantic.html",
+        duration: "25 min",
+      },
+      {
+        slug: "post-requests",
+        title: "POST Requests & Request Body",
+        description:
+          "Receiving JSON bodies, parsing with Pydantic, HTTP status codes, response_model for output filtering, and batch POST endpoints.",
+        htmlFile: "/content/FastAPI/lesson-6-post-requests.html",
+        duration: "20 min",
+      },
+      {
+        slug: "put-delete",
+        title: "PUT & DELETE",
+        description:
+          "Full replace vs partial update, model_copy for PATCH, safe deletion with 404 handling, and organizing routes with APIRouter.",
+        htmlFile: "/content/FastAPI/lesson-7-put-delete.html",
+        duration: "20 min",
+      },
+      {
+        slug: "serving-ml-models",
+        title: "Serving ML Models",
+        description:
+          "Load models at startup with lifespan, tabular prediction endpoints, image upload with UploadFile, batch inference, and production patterns.",
+        htmlFile: "/content/FastAPI/lesson-8-serving-ml-models.html",
+        duration: "30 min",
+      },
+      {
+        slug: "improving-fastapi",
+        title: "Improving Your FastAPI App",
+        description:
+          "Custom error handling, CORS middleware, request logging, background tasks, and dependency injection with Depends().",
+        htmlFile: "/content/FastAPI/lesson-9-improving-fastapi.html",
+        duration: "30 min",
+      },
+      {
+        slug: "docker-crash-course",
+        title: "Docker Crash Course",
+        description:
+          "Docker concepts (image vs container), writing a Dockerfile, essential CLI commands, .dockerignore, and environment variables.",
+        htmlFile: "/content/FastAPI/lesson-10-docker-crash-course.html",
+        duration: "30 min",
+      },
+      {
+        slug: "dockerize-fastapi",
+        title: "Dockerize FastAPI",
+        description:
+          "Production Dockerfile for FastAPI, docker-compose with Postgres and Redis, dev vs prod configs, and container networking.",
+        htmlFile: "/content/FastAPI/lesson-11-dockerize-fastapi.html",
+        duration: "25 min",
+      },
+      {
+        slug: "deploy-aws",
+        title: "Deploy to AWS",
+        description:
+          "Three AWS deployment paths — EC2 with Docker, ECR + ECS Fargate for managed containers, and App Runner for the simplest route.",
+        htmlFile: "/content/FastAPI/lesson-12-deploy-aws.html",
+        duration: "35 min",
+      },
+      {
+        slug: "course-launch",
+        title: "Course Complete & Next Steps",
+        description:
+          "Review all 13 lessons, production best practices checklist, recommended project structure, and what to learn next.",
+        htmlFile: "/content/FastAPI/lesson-13-course-launch.html",
+        duration: "20 min",
+      },
+    ],
+  },
   // ── Add future topics here ──────────────────────────────────────────────────
   // {
   //   slug: "langchain",

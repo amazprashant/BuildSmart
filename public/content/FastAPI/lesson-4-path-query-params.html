@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Path & Query Parameters — FastAPI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--bg2:#f8fafc;--bg3:#f1f5f9;--border:#e2e8f0;--text:#0f172a;--text2:#475569;--text3:#94a3b8;--accent:#0d9488;--accent-soft:#f0fdfa;--green:#16a34a;--green-soft:#f0fdf4;--amber:#d97706;--amber-soft:#fffbeb;--blue:#2563eb;--blue-soft:#eff6ff;--purple:#7c3aed;--purple-soft:#faf5ff;--code-bg:#f8fafc;--code-text:#0f766e;--shadow:0 1px 3px rgba(15,23,42,.07);--radius:10px;}
+[data-theme="dark"]{--bg:#0d1117;--bg2:#161b22;--bg3:#1c2230;--border:#30363d;--text:#e6edf3;--text2:#8b949e;--text3:#484f58;--accent:#2dd4bf;--accent-soft:#0a2520;--green:#4ade80;--green-soft:#0d2318;--amber:#fbbf24;--amber-soft:#1c1a00;--blue:#60a5fa;--blue-soft:#0d1b2e;--purple:#c4b5fd;--purple-soft:#1a0d2e;--code-bg:#1c2230;--code-text:#4dd0c4;}
+*,*::before,*::after{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.75;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+.hd{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.hd-brand{font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px}
+.hd-icon{width:26px;height:26px;background:var(--accent-soft);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:7px 14px;border-radius:7px;text-decoration:none;transition:opacity .15s}.dl-btn:hover{opacity:.88}
+.hero{padding:48px 24px 32px;max-width:820px;margin:0 auto}
+.tag{display:inline-flex;background:var(--accent-soft);color:var(--accent);font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px;border:1px solid var(--accent)}
+.hero h1{font-size:clamp(26px,4vw,42px);font-weight:800;line-height:1.1;margin:0 0 12px;letter-spacing:-.02em}
+.hero h1 em{color:var(--accent);font-style:normal}
+.hero p{font-size:16px;color:var(--text2);margin:0 0 20px;max-width:640px;line-height:1.65}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--text3)}
+.content{max-width:820px;margin:0 auto;padding:8px 24px 80px}
+.section{margin-bottom:44px}
+.sec-hd{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.sec-hd h2{font-size:20px;font-weight:800;color:var(--text);margin:0}
+.sec-num{width:32px;height:32px;border-radius:8px;background:var(--accent);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+h3{font-size:14px;font-weight:700;color:var(--text);margin:20px 0 8px}
+p{margin:0 0 12px;color:var(--text2)}ul,ol{margin:0 0 12px;padding-left:20px;color:var(--text2)}li{margin-bottom:5px}strong{color:var(--text)}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;margin:0 0 14px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.65;color:var(--text2)}
+code{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--code-bg);color:var(--code-text);padding:2px 6px;border-radius:4px}
+.callout{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;border-left:4px solid}
+.callout.teal{background:var(--accent-soft);border-color:var(--accent)}.callout.green{background:var(--green-soft);border-color:var(--green)}.callout.amber{background:var(--amber-soft);border-color:var(--amber)}.callout.blue{background:var(--blue-soft);border-color:var(--blue)}
+.callout-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;color:var(--text)}.callout p{margin:0;font-size:13.5px;color:var(--text2)}
+.url-anatomy{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:14px 0 20px;font-family:'JetBrains Mono',monospace;overflow-x:auto}
+.url-line{font-size:14px;font-weight:700;color:var(--text);word-break:break-all;line-height:2}
+.url-base{color:var(--text2)}
+.url-path{color:var(--blue);font-size:15px}
+.url-param{color:var(--accent);font-size:15px;background:var(--accent-soft);padding:0 3px;border-radius:3px}
+.url-query{color:var(--amber);font-size:15px}
+.url-qval{color:var(--purple);font-size:15px}
+.url-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px;font-family:'Inter',sans-serif}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.table-wrap{overflow-x:auto;margin:0 0 18px;border-radius:var(--radius);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--bg3);color:var(--text);font-weight:700;padding:9px 14px;text-align:left;border-bottom:2px solid var(--border)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text2)}
+tr:last-child td{border-bottom:none}tr:hover td{background:var(--bg2)}
+.dl-card{background:linear-gradient(135deg,var(--accent-soft),var(--bg2));border:1px solid var(--accent);border-radius:var(--radius);padding:22px;display:flex;align-items:center;gap:18px;margin-bottom:28px}
+.dl-card .fi{font-size:40px;flex-shrink:0}
+.dl-card h3{font-size:15px;font-weight:800;margin:0 0 4px}
+.dl-card p{font-size:12.5px;margin:0 0 12px;color:var(--text2)}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-brand"><div class="hd-icon">⚡</div>FastAPI Track</div>
+  <a class="dl-btn" href="/content/FastAPI/4%20Path_Query_Params_FastAPI_Notes.docx" download>⬇ Download Notes</a>
+</header>
+<div class="hero">
+  <div class="tag">Lesson 4 of 13 · FastAPI</div>
+  <h1>Path &amp; Query <em>Parameters</em></h1>
+  <p>Understand the difference between path parameters and query parameters, how FastAPI automatically extracts and validates them from the URL, and how to set defaults and optional values.</p>
+  <div class="meta"><span>⏱ 20 min</span><span>🛣 URL Design</span><span>✅ Auto Validation</span></div>
+</div>
+<div class="content">
+  <div class="dl-card">
+    <div class="fi">📄</div>
+    <div>
+      <h3>4 Path_Query_Params_FastAPI_Notes.docx</h3>
+      <p>Complete notes on path parameters, query parameters, validation, and optional values in FastAPI.</p>
+      <a class="dl-btn" href="/content/FastAPI/4%20Path_Query_Params_FastAPI_Notes.docx" download>⬇ Download Full Notes</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">1</div><h2>Anatomy of a URL</h2></div>
+    <div class="url-anatomy">
+      <div class="url-line">
+        <span class="url-base">https://api.example.com</span><span class="url-path">/users/</span><span class="url-param">42</span><span class="url-path">/orders</span><span class="url-query">?status=</span><span class="url-qval">shipped</span><span class="url-query">&amp;page=</span><span class="url-qval">2</span><span class="url-query">&amp;limit=</span><span class="url-qval">10</span>
+      </div>
+      <div class="url-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div>Path — resource location</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--accent)"></div>Path Parameter — dynamic segment</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--amber)"></div>Query Key — filter/option name</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--purple)"></div>Query Value — filter value</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">2</div><h2>Path Parameters</h2></div>
+    <p>Path parameters are <strong>required</strong> dynamic parts of the URL path. Define them with <code>{curly_braces}</code> in the route and match the variable name in the function.</p>
+    <pre>@app.get("/users/{user_id}")
+def get_user(user_id: int):        # ← int type → auto validates & converts
+    return {"user_id": user_id}
+
+@app.get("/users/{user_id}/posts/{post_id}")
+def get_post(user_id: int, post_id: int):
+    return {"user_id": user_id, "post_id": post_id}
+
+# /users/42      → {"user_id": 42}
+# /users/abc     → 422 Unprocessable Entity (not an int!)
+# /users/42/posts/7 → {"user_id": 42, "post_id": 7}</pre>
+
+    <h3>Enum Path Parameters</h3>
+    <pre>from enum import Enum
+
+class ModelName(str, Enum):
+    alexnet = "alexnet"
+    resnet = "resnet"
+    lenet = "lenet"
+
+@app.get("/models/{model_name}")
+def get_model(model_name: ModelName):
+    return {"model": model_name, "message": f"You chose {model_name.value}"}
+
+# /models/alexnet → valid ✅
+# /models/unknown → 422 Unprocessable Entity ✅ (auto-validated)</pre>
+    <div class="callout teal">
+      <div class="callout-title">Path parameter ordering matters</div>
+      <p>If you have <code>/users/me</code> and <code>/users/{user_id}</code>, put the static route <em>first</em>. FastAPI matches routes in order — <code>/users/me</code> would be captured as <code>user_id="me"</code> if the dynamic route is declared first.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">3</div><h2>Query Parameters</h2></div>
+    <p>Query parameters come after <code>?</code> in the URL. In FastAPI, any function parameter that's <em>not</em> a path parameter is treated as a query parameter.</p>
+    <pre>@app.get("/items")
+def list_items(
+    skip: int = 0,           # optional with default 0
+    limit: int = 10,         # optional with default 10
+    search: str | None = None  # optional, can be None
+):
+    return {"skip": skip, "limit": limit, "search": search}
+
+# GET /items                      → skip=0, limit=10, search=None
+# GET /items?limit=5              → skip=0, limit=5, search=None
+# GET /items?skip=20&search=shoe  → skip=20, limit=10, search="shoe"</pre>
+
+    <h3>Required Query Parameters</h3>
+    <pre># No default value = required query parameter
+@app.get("/search")
+def search(q: str):  # ← required! No default.
+    return {"query": q}
+
+# GET /search        → 422 Error: field required
+# GET /search?q=hat  → {"query": "hat"}</pre>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">4</div><h2>Combining Path + Query Params</h2></div>
+    <pre>@app.get("/users/{user_id}/items")
+def get_user_items(
+    user_id: int,           # ← path param
+    skip: int = 0,          # ← query param
+    limit: int = 10,        # ← query param
+    active: bool = True     # ← query param (bool: "true"/"false"/"1"/"0")
+):
+    return {
+        "user_id": user_id,
+        "skip": skip,
+        "limit": limit,
+        "active": active
+    }
+
+# GET /users/42/items?skip=5&active=false
+# → {"user_id": 42, "skip": 5, "limit": 10, "active": False}</pre>
+    <div class="callout amber">
+      <div class="callout-title">Boolean query parameters</div>
+      <p>FastAPI accepts <code>true</code>, <code>True</code>, <code>1</code>, <code>on</code>, <code>yes</code> as <code>True</code>, and <code>false</code>, <code>False</code>, <code>0</code>, <code>off</code>, <code>no</code> as <code>False</code> for boolean query parameters.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">5</div><h2>Path vs Query — When to Use Each</h2></div>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Use</th><th>Path Param</th><th>Query Param</th></tr>
+        <tr><td>Identifying a specific resource</td><td>✅ Best choice</td><td>❌ Avoid</td></tr>
+        <tr><td>Filtering a list</td><td>❌ Not suitable</td><td>✅ Best choice</td></tr>
+        <tr><td>Required value</td><td>✅ Always required</td><td>✅ Can be required or optional</td></tr>
+        <tr><td>Optional value</td><td>❌ Always present</td><td>✅ Can have defaults</td></tr>
+        <tr><td>Example</td><td><code>/users/42</code></td><td><code>/users?role=admin</code></td></div>
+      </table>
+    </div>
+    <div class="callout green">
+      <div class="callout-title">Rule of thumb</div>
+      <p>Path for <strong>identity</strong> (which specific resource), query for <strong>options</strong> (how to filter, sort, paginate). <code>/products/123</code> → product 123. <code>/products?category=shoes&sort=price</code> → filtered product list.</p>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  function apply(t){document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}
+  try{apply(localStorage.getItem('theme')||'light');}catch(e){}
+  window.addEventListener('message',function(e){if(e.data&&e.data.type==='set-theme'){try{localStorage.setItem('theme',e.data.theme);}catch(e2){}apply(e.data.theme);}});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POST Requests in FastAPI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--bg2:#f8fafc;--bg3:#f1f5f9;--border:#e2e8f0;--text:#0f172a;--text2:#475569;--text3:#94a3b8;--accent:#0d9488;--accent-soft:#f0fdfa;--green:#16a34a;--green-soft:#f0fdf4;--amber:#d97706;--amber-soft:#fffbeb;--blue:#2563eb;--blue-soft:#eff6ff;--purple:#7c3aed;--purple-soft:#faf5ff;--red:#dc2626;--red-soft:#fef2f2;--code-bg:#f8fafc;--code-text:#0f766e;--shadow:0 1px 3px rgba(15,23,42,.07);--radius:10px;}
+[data-theme="dark"]{--bg:#0d1117;--bg2:#161b22;--bg3:#1c2230;--border:#30363d;--text:#e6edf3;--text2:#8b949e;--text3:#484f58;--accent:#2dd4bf;--accent-soft:#0a2520;--green:#4ade80;--green-soft:#0d2318;--amber:#fbbf24;--amber-soft:#1c1a00;--blue:#60a5fa;--blue-soft:#0d1b2e;--purple:#c4b5fd;--purple-soft:#1a0d2e;--red:#f87171;--red-soft:#2d1515;--code-bg:#1c2230;--code-text:#4dd0c4;}
+*,*::before,*::after{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.75;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+.hd{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.hd-brand{font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px}
+.hd-icon{width:26px;height:26px;background:var(--accent-soft);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:7px 14px;border-radius:7px;text-decoration:none;transition:opacity .15s}.dl-btn:hover{opacity:.88}
+.hero{padding:48px 24px 32px;max-width:820px;margin:0 auto}
+.tag{display:inline-flex;background:var(--accent-soft);color:var(--accent);font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px;border:1px solid var(--accent)}
+.hero h1{font-size:clamp(26px,4vw,42px);font-weight:800;line-height:1.1;margin:0 0 12px;letter-spacing:-.02em}
+.hero h1 em{color:var(--accent);font-style:normal}
+.hero p{font-size:16px;color:var(--text2);margin:0 0 20px;max-width:640px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--text3)}
+.content{max-width:820px;margin:0 auto;padding:8px 24px 80px}
+.section{margin-bottom:44px}
+.sec-hd{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.sec-hd h2{font-size:20px;font-weight:800;color:var(--text);margin:0}
+.sec-num{width:32px;height:32px;border-radius:8px;background:var(--accent);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+h3{font-size:14px;font-weight:700;color:var(--text);margin:20px 0 8px}
+p{margin:0 0 12px;color:var(--text2)}ul,ol{margin:0 0 12px;padding-left:20px;color:var(--text2)}li{margin-bottom:5px}strong{color:var(--text)}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;margin:0 0 14px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.65;color:var(--text2)}
+code{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--code-bg);color:var(--code-text);padding:2px 6px;border-radius:4px}
+.callout{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;border-left:4px solid}
+.callout.teal{background:var(--accent-soft);border-color:var(--accent)}.callout.green{background:var(--green-soft);border-color:var(--green)}.callout.amber{background:var(--amber-soft);border-color:var(--amber)}.callout.blue{background:var(--blue-soft);border-color:var(--blue)}.callout.red{background:var(--red-soft);border-color:var(--red)}
+.callout-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;color:var(--text)}.callout p{margin:0;font-size:13.5px;color:var(--text2)}
+.diagram{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:14px 0 20px;overflow-x:auto}
+.diag-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.diag-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.d-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;margin:6px 0}
+.d-node{background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:9px 16px;font-size:12px;font-weight:700;color:var(--text);text-align:center;min-width:80px;line-height:1.3}
+.d-node small{display:block;font-size:10px;font-weight:400;color:var(--text3);margin-top:2px}
+.d-node.t{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.d-node.g{border-color:var(--green);background:var(--green-soft);color:var(--green)}
+.d-node.r{border-color:var(--red);background:var(--red-soft);color:var(--red)}
+.d-node.b{border-color:var(--blue);background:var(--blue-soft);color:var(--blue)}
+.d-arrow{color:var(--text3);font-size:18px;padding:0 2px;flex-shrink:0}
+.dl-card{background:linear-gradient(135deg,var(--accent-soft),var(--bg2));border:1px solid var(--accent);border-radius:var(--radius);padding:22px;display:flex;align-items:center;gap:18px;margin-bottom:28px}
+.dl-card .fi{font-size:40px;flex-shrink:0}
+.dl-card h3{font-size:15px;font-weight:800;margin:0 0 4px}
+.dl-card p{font-size:12.5px;margin:0 0 12px;color:var(--text2)}
+.table-wrap{overflow-x:auto;margin:0 0 18px;border-radius:var(--radius);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--bg3);color:var(--text);font-weight:700;padding:9px 14px;text-align:left;border-bottom:2px solid var(--border)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text2)}
+tr:last-child td{border-bottom:none}tr:hover td{background:var(--bg2)}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-brand"><div class="hd-icon">⚡</div>FastAPI Track</div>
+  <a class="dl-btn" href="/content/FastAPI/6%20POST_Request_FastAPI_Notes.docx" download>⬇ Download Notes</a>
+</header>
+<div class="hero">
+  <div class="tag">Lesson 6 of 13 · FastAPI</div>
+  <h1>POST Requests &amp; <em>Request Body</em></h1>
+  <p>Learn how to receive JSON data via POST requests, validate it with Pydantic models, mix path/query params with request bodies, and return appropriate status codes.</p>
+  <div class="meta"><span>⏱ 20 min</span><span>📥 Request Body</span><span>🔗 Pydantic Integration</span></div>
+</div>
+<div class="content">
+  <div class="dl-card">
+    <div class="fi">📄</div>
+    <div>
+      <h3>6 POST_Request_FastAPI_Notes.docx</h3>
+      <p>Notes covering POST request handling, request body parsing, validation, and response models.</p>
+      <a class="dl-btn" href="/content/FastAPI/6%20POST_Request_FastAPI_Notes.docx" download>⬇ Download Full Notes</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">1</div><h2>How POST Body Parsing Works</h2></div>
+    <div class="diagram">
+      <div class="diag-title">POST Request Flow</div>
+      <div class="d-row">
+        <div class="d-node b">Client<small>Sends JSON body</small></div>
+        <div class="d-arrow">→</div>
+        <div class="d-node">FastAPI<small>Reads Content-Type</small></div>
+        <div class="d-arrow">→</div>
+        <div class="d-node t">Pydantic Model<small>Validates &amp; parses</small></div>
+        <div class="d-arrow">→</div>
+        <div class="d-node g">Your Function<small>Python object ready</small></div>
+      </div>
+    </div>
+    <p>When a function parameter type is a <strong>Pydantic BaseModel</strong>, FastAPI automatically reads the request body as JSON and validates it. No manual JSON parsing needed.</p>
+    <pre>from fastapi import FastAPI
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class Item(BaseModel):
+    name: str
+    description: str | None = None
+    price: float
+    tax: float | None = None
+
+@app.post("/items")
+def create_item(item: Item):
+    return item  # Pydantic model serializes to JSON automatically
+
+# Request body (JSON):
+# {
+#   "name": "Laptop",
+#   "price": 49999.0,
+#   "description": "Gaming laptop",
+#   "tax": 4999.9
+# }</pre>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">2</div><h2>Status Codes</h2></div>
+    <pre>from fastapi import status
+
+@app.post("/items", status_code=status.HTTP_201_CREATED)
+def create_item(item: Item):
+    return item
+
+@app.delete("/items/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_item(id: int):
+    return None  # 204 sends no body</pre>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Status Code</th><th>Meaning</th><th>When to Use</th></tr>
+        <tr><td><code>200 OK</code></td><td>Success</td><td>GET, PUT, PATCH responses</td></tr>
+        <tr><td><code>201 Created</code></td><td>Resource created</td><td>Successful POST</td></tr>
+        <tr><td><code>204 No Content</code></td><td>Success, no body</td><td>DELETE</td></tr>
+        <tr><td><code>400 Bad Request</code></td><td>Invalid input</td><td>Business logic errors</td></tr>
+        <tr><td><code>404 Not Found</code></td><td>Resource missing</td><td>ID not in DB</td></tr>
+        <tr><td><code>422 Unprocessable</code></td><td>Validation failed</td><td>Auto-returned by FastAPI</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">3</div><h2>Mixing Path + Query + Body</h2></div>
+    <pre>@app.put("/users/{user_id}/items/{item_id}")
+def update_item(
+    user_id: int,          # path param
+    item_id: int,          # path param
+    q: str | None = None,  # query param
+    item: Item = None      # request body (Pydantic model)
+):
+    result = {"user_id": user_id, "item_id": item_id}
+    if q:
+        result["query"] = q
+    if item:
+        result["item"] = item
+    return result
+
+# FastAPI knows the difference:
+# • Path params  → declared in @app.xxx("/route/{param}")
+# • Query params → simple types (str/int/bool) not in path
+# • Body         → Pydantic BaseModel subclass</pre>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">4</div><h2>Response Model</h2></div>
+    <pre>class UserCreate(BaseModel):
+    name: str
+    email: str
+    password: str  # ← accept password in input...
+
+class UserResponse(BaseModel):
+    id: int
+    name: str
+    email: str
+    # No password field! ← don't return it
+
+@app.post(
+    "/users",
+    response_model=UserResponse,    # ← filters output to this shape
+    status_code=201
+)
+def create_user(user: UserCreate):
+    # Imagine saving to DB and getting back an id
+    return {"id": 1, "name": user.name, "email": user.email, "password": user.password}
+    # FastAPI strips 'password' from response automatically ✅</pre>
+    <div class="callout teal">
+      <div class="callout-title">Input vs Output models</div>
+      <p>Use separate Pydantic models for input (what you accept) and output (what you return). This pattern ensures sensitive fields like passwords and internal IDs never leak into API responses, without any manual filtering.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">5</div><h2>Receiving a List in the Body</h2></div>
+    <pre>from typing import List
+
+@app.post("/items/batch")
+def create_many(items: List[Item]):
+    return {"created": len(items), "items": items}
+
+# Send array in JSON body:
+# [
+#   {"name": "Pen", "price": 10.0},
+#   {"name": "Notebook", "price": 50.0}
+# ]</pre>
+    <div class="callout amber">
+      <div class="callout-title">Multiple body parameters</div>
+      <p>If you need multiple top-level body objects, use <code>Body()</code> from <code>fastapi</code> with <code>embed=True</code> or define a wrapper Pydantic model. FastAPI can only auto-detect one bare Pydantic model as the body at a time.</p>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  function apply(t){document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}
+  try{apply(localStorage.getItem('theme')||'light');}catch(e){}
+  window.addEventListener('message',function(e){if(e.data&&e.data.type==='set-theme'){try{localStorage.setItem('theme',e.data.theme);}catch(e2){}apply(e.data.theme);}});
+})();
+</script>
+</body>
+</html>

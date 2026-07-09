@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Serving ML Models with FastAPI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--bg2:#f8fafc;--bg3:#f1f5f9;--border:#e2e8f0;--text:#0f172a;--text2:#475569;--text3:#94a3b8;--accent:#0d9488;--accent-soft:#f0fdfa;--green:#16a34a;--green-soft:#f0fdf4;--amber:#d97706;--amber-soft:#fffbeb;--blue:#2563eb;--blue-soft:#eff6ff;--purple:#7c3aed;--purple-soft:#faf5ff;--red:#dc2626;--red-soft:#fef2f2;--code-bg:#f8fafc;--code-text:#0f766e;--radius:10px;}
+[data-theme="dark"]{--bg:#0d1117;--bg2:#161b22;--bg3:#1c2230;--border:#30363d;--text:#e6edf3;--text2:#8b949e;--text3:#484f58;--accent:#2dd4bf;--accent-soft:#0a2520;--green:#4ade80;--green-soft:#0d2318;--amber:#fbbf24;--amber-soft:#1c1a00;--blue:#60a5fa;--blue-soft:#0d1b2e;--purple:#c4b5fd;--purple-soft:#1a0d2e;--red:#f87171;--red-soft:#2d1515;--code-bg:#1c2230;--code-text:#4dd0c4;}
+*,*::before,*::after{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.75;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+.hd{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.hd-brand{font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px}
+.hd-icon{width:26px;height:26px;background:var(--accent-soft);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:7px 14px;border-radius:7px;text-decoration:none;transition:opacity .15s}.dl-btn:hover{opacity:.88}
+.hero{padding:48px 24px 32px;max-width:820px;margin:0 auto}
+.tag{display:inline-flex;background:var(--accent-soft);color:var(--accent);font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px;border:1px solid var(--accent)}
+.hero h1{font-size:clamp(26px,4vw,42px);font-weight:800;line-height:1.1;margin:0 0 12px;letter-spacing:-.02em}
+.hero h1 em{color:var(--accent);font-style:normal}
+.hero p{font-size:16px;color:var(--text2);margin:0 0 20px;max-width:640px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--text3)}
+.content{max-width:820px;margin:0 auto;padding:8px 24px 80px}
+.section{margin-bottom:44px}
+.sec-hd{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.sec-hd h2{font-size:20px;font-weight:800;color:var(--text);margin:0}
+.sec-num{width:32px;height:32px;border-radius:8px;background:var(--accent);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+h3{font-size:14px;font-weight:700;color:var(--text);margin:20px 0 8px}
+p{margin:0 0 12px;color:var(--text2)}ul,ol{margin:0 0 12px;padding-left:20px;color:var(--text2)}li{margin-bottom:5px}strong{color:var(--text)}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;margin:0 0 14px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.65;color:var(--text2)}
+code{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--code-bg);color:var(--code-text);padding:2px 6px;border-radius:4px}
+.callout{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;border-left:4px solid}
+.callout.teal{background:var(--accent-soft);border-color:var(--accent)}.callout.green{background:var(--green-soft);border-color:var(--green)}.callout.amber{background:var(--amber-soft);border-color:var(--amber)}.callout.blue{background:var(--blue-soft);border-color:var(--blue)}.callout.red{background:var(--red-soft);border-color:var(--red)}
+.callout-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;color:var(--text)}.callout p{margin:0;font-size:13.5px;color:var(--text2)}
+.diagram{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:14px 0 20px;overflow-x:auto}
+.diag-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.diag-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.d-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;margin:6px 0}
+.d-node{background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:9px 16px;font-size:12px;font-weight:700;color:var(--text);text-align:center;min-width:80px;line-height:1.3}
+.d-node small{display:block;font-size:10px;font-weight:400;color:var(--text3);margin-top:2px}
+.d-node.t{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.d-node.g{border-color:var(--green);background:var(--green-soft);color:var(--green)}
+.d-node.b{border-color:var(--blue);background:var(--blue-soft);color:var(--blue)}
+.d-node.p{border-color:var(--purple);background:var(--purple-soft);color:var(--purple)}
+.d-arrow{color:var(--text3);font-size:18px;padding:0 2px;flex-shrink:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:12px;margin:14px 0 20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card.t{border-top:3px solid var(--accent)}.card.g{border-top:3px solid var(--green)}.card.b{border-top:3px solid var(--blue)}.card.p{border-top:3px solid var(--purple)}
+.card h3{font-size:13px;font-weight:700;margin:0 0 5px;color:var(--text)}
+.card p{font-size:12.5px;margin:0;color:var(--text2)}
+.dl-card{background:linear-gradient(135deg,var(--accent-soft),var(--bg2));border:1px solid var(--accent);border-radius:var(--radius);padding:22px;display:flex;align-items:center;gap:18px;margin-bottom:28px}
+.dl-card .fi{font-size:40px;flex-shrink:0}
+.dl-card h3{font-size:15px;font-weight:800;margin:0 0 4px}
+.dl-card p{font-size:12.5px;margin:0 0 12px;color:var(--text2)}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-brand"><div class="hd-icon">⚡</div>FastAPI Track</div>
+  <a class="dl-btn" href="/content/FastAPI/8%20Serving_ML_Models_FastAPI_Notes.docx" download>⬇ Download Notes</a>
+</header>
+<div class="hero">
+  <div class="tag">Lesson 8 of 13 · FastAPI</div>
+  <h1>Serving <em>ML Models</em> with FastAPI</h1>
+  <p>FastAPI is the go-to framework for deploying machine learning models as APIs. Learn how to load models at startup, create prediction endpoints, handle images and batches, and serve ML models in production.</p>
+  <div class="meta"><span>⏱ 30 min</span><span>🤖 ML Deployment</span><span>⚡ Production Ready</span></div>
+</div>
+<div class="content">
+  <div class="dl-card">
+    <div class="fi">📄</div>
+    <div>
+      <h3>8 Serving_ML_Models_FastAPI_Notes.docx</h3>
+      <p>Complete notes on deploying ML models with FastAPI: loading, prediction endpoints, async inference, and production tips.</p>
+      <a class="dl-btn" href="/content/FastAPI/8%20Serving_ML_Models_FastAPI_Notes.docx" download>⬇ Download Full Notes</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">1</div><h2>ML Serving Architecture</h2></div>
+    <div class="diagram">
+      <div class="diag-title">Request to Prediction Flow</div>
+      <div class="d-row">
+        <div class="d-node b">Client<small>sends input data</small></div>
+        <div class="d-arrow">→</div>
+        <div class="d-node t">FastAPI<small>validates request</small></div>
+        <div class="d-arrow">→</div>
+        <div class="d-node">Preprocess<small>normalize/transform</small></div>
+        <div class="d-arrow">→</div>
+        <div class="d-node p">ML Model<small>predict()</small></div>
+        <div class="d-arrow">→</div>
+        <div class="d-node g">Response<small>JSON result</small></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">2</div><h2>Load Model at Startup — Lifespan</h2></div>
+    <pre>from contextlib import asynccontextmanager
+from fastapi import FastAPI
+import joblib
+
+# Global model variable (loaded once at startup)
+ml_model = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: load model into memory once
+    global ml_model
+    ml_model = joblib.load("model/iris_classifier.pkl")
+    print("Model loaded ✅")
+    yield
+    # Shutdown: cleanup (optional)
+    ml_model = None
+    print("Model unloaded")
+
+app = FastAPI(lifespan=lifespan)</pre>
+    <div class="callout teal">
+      <div class="callout-title">Always load models in lifespan, not at module level</div>
+      <p>Loading models in the <code>lifespan</code> context manager ensures they are loaded once when the server starts — not once per request. Loading heavy models per-request would be catastrophically slow (100ms vs 10s+).</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">3</div><h2>Prediction Endpoint (Tabular Data)</h2></div>
+    <pre>from pydantic import BaseModel
+import numpy as np
+
+class IrisInput(BaseModel):
+    sepal_length: float
+    sepal_width: float
+    petal_length: float
+    petal_width: float
+
+class IrisPrediction(BaseModel):
+    predicted_class: int
+    class_name: str
+    confidence: float
+
+CLASS_NAMES = ["setosa", "versicolor", "virginica"]
+
+@app.post("/predict", response_model=IrisPrediction)
+def predict_iris(data: IrisInput):
+    features = np.array([[
+        data.sepal_length, data.sepal_width,
+        data.petal_length, data.petal_width
+    ]])
+
+    prediction = ml_model.predict(features)[0]
+    proba = ml_model.predict_proba(features)[0]
+    confidence = float(proba[prediction])
+
+    return IrisPrediction(
+        predicted_class=int(prediction),
+        class_name=CLASS_NAMES[prediction],
+        confidence=round(confidence, 4)
+    )</pre>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">4</div><h2>Image Prediction with UploadFile</h2></div>
+    <pre>from fastapi import UploadFile, File
+from PIL import Image
+import io
+
+@app.post("/predict/image")
+async def predict_image(file: UploadFile = File(...)):
+    # Read image bytes
+    contents = await file.read()
+    image = Image.open(io.BytesIO(contents)).convert("RGB")
+
+    # Preprocess for your model
+    image = image.resize((224, 224))
+    img_array = np.array(image) / 255.0          # normalize
+    img_array = np.expand_dims(img_array, axis=0) # add batch dim
+
+    predictions = ml_model.predict(img_array)
+    class_idx = np.argmax(predictions[0])
+
+    return {
+        "class_index": int(class_idx),
+        "confidence": float(predictions[0][class_idx]),
+        "filename": file.filename
+    }</pre>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">5</div><h2>Batch Predictions</h2></div>
+    <pre>from typing import List
+
+class BatchInput(BaseModel):
+    instances: List[IrisInput]
+
+class BatchPrediction(BaseModel):
+    predictions: List[IrisPrediction]
+    count: int
+
+@app.post("/predict/batch", response_model=BatchPrediction)
+def batch_predict(batch: BatchInput):
+    features = np.array([[
+        inst.sepal_length, inst.sepal_width,
+        inst.petal_length, inst.petal_width
+    ] for inst in batch.instances])
+
+    preds = ml_model.predict(features)
+    probas = ml_model.predict_proba(features)
+
+    results = [
+        IrisPrediction(
+            predicted_class=int(p),
+            class_name=CLASS_NAMES[p],
+            confidence=round(float(probas[i][p]), 4)
+        )
+        for i, p in enumerate(preds)
+    ]
+
+    return BatchPrediction(predictions=results, count=len(results))</pre>
+    <div class="callout amber">
+      <div class="callout-title">Async vs sync prediction routes</div>
+      <p>Use <code>async def</code> for I/O-heavy operations (image reading, HTTP calls). For CPU-heavy model inference (sklearn, PyTorch), use regular <code>def</code> — FastAPI runs sync route handlers in a thread pool, keeping the event loop free.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd"><div class="sec-num">6</div><h2>Best Practices</h2></div>
+    <div class="grid">
+      <div class="card t"><h3>🚀 Load Once</h3><p>Load models in <code>lifespan</code>, keep in memory as globals or app state.</p></div>
+      <div class="card g"><h3>📝 Typed I/O</h3><p>Use Pydantic for input validation and <code>response_model</code> for consistent output.</p></div>
+      <div class="card b"><h3>⚡ Batch</h3><p>Support batch prediction endpoints — single model call is much faster than N calls.</p></div>
+      <div class="card p"><h3>🛡 Validate</h3><p>Validate input ranges (no negative image sizes, reasonable feature values) at the Pydantic layer.</p></div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  function apply(t){document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}
+  try{apply(localStorage.getItem('theme')||'light');}catch(e){}
+  window.addEventListener('message',function(e){if(e.data&&e.data.type==='set-theme'){try{localStorage.setItem('theme',e.data.theme);}catch(e2){}apply(e.data.theme);}});
+})();
+</script>
+</body>
+</html>
